@@ -253,6 +253,7 @@
     <a class="brand" href="./"><span class="dot"></span> home · alxsongs</a>
     <nav class="topnav">
       <a class="navchip" href="games.html" title="Dutch Blitz scoreboard">Dutch Blitz</a>
+      <span id="authSlot"></span>
     </nav>
     <div class="right">
       <span id="clock">--:--:--</span>
@@ -281,7 +282,7 @@
   <main class="grid">
 
     <!-- ============ ON THIS DAY ============ -->
-    <section class="card span-12">
+    <section class="card span-12" data-card="onthisday">
       <div class="card-head">
         <h2><span class="idx">01 /</span> On This Day</h2>
         <button class="btn ghost" id="otdShuffle" title="Another one">↻ another</button>
@@ -293,7 +294,7 @@
     </section>
 
     <!-- ============ OVERHEAD ============ -->
-    <section class="card span-12">
+    <section class="card span-12" data-card="overhead">
       <div class="card-head">
         <h2><span class="idx">02 /</span> Overhead</h2>
         <div class="oh-controls">
@@ -350,7 +351,7 @@
     </section>
 
     <!-- ============ NEWS ============ -->
-    <section class="card span-12">
+    <section class="card span-12" data-card="feeds">
       <div class="card-head">
         <h2><span class="idx">03 /</span> Feeds</h2>
         <div class="oh-controls">
@@ -364,7 +365,7 @@
     </section>
 
     <!-- ============ ESPORTS ============ -->
-    <section class="card span-12">
+    <section class="card span-12" data-card="esports">
       <div class="card-head">
         <h2><span class="idx">04 /</span> Esports</h2>
         <div class="oh-controls">
@@ -400,8 +401,12 @@
   </footer>
 </div>
 
+<!-- account + preferences modal -->
+<div class="modal-bg" id="authModalBg"><div class="modal" id="authModal"></div></div>
+
 <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
 <script src="config.js"></script>
+<script src="auth.js"></script>
 <script>
 (function(){
   "use strict";
@@ -409,6 +414,24 @@
 
   function $(id){ return document.getElementById(id); }
   function pad(n){ return n < 10 ? "0" + n : "" + n; }
+
+  /* Preferences come from auth.js — per-user when signed in, per-browser
+     otherwise. Always read through this so a missing key can't break a card. */
+  var PREF_DEFAULTS = {
+    topics: ["music","science","tech","world"],
+    games: ["lol","cs2"],
+    flight_radius: 20,
+    cards: { onthisday:true, overhead:true, feeds:true, esports:true }
+  };
+  function prefs(){
+    var p = window.PREFS || {};
+    return {
+      topics: (p.topics && p.topics.length) ? p.topics : PREF_DEFAULTS.topics,
+      games: p.games || PREF_DEFAULTS.games,
+      flight_radius: p.flight_radius || PREF_DEFAULTS.flight_radius,
+      cards: p.cards || PREF_DEFAULTS.cards
+    };
+  }
   function esc(s){
     return String(s).replace(/[&<>"]/g, function(c){
       return ({ "&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;" })[c];
@@ -1097,7 +1120,7 @@
      ===================================================================== */
 
   var TOPIC_LABEL = { music:"Music", science:"Science", tech:"Tech", world:"UK & World" };
-  var TOPICS = ["music","science","tech","world"];
+  var TOPIC_ORDER = ["music","science","tech","world"];
   var PER_TOPIC = 5;
 
   function ago(ts){
@@ -1111,7 +1134,10 @@
   function renderNews(j){
     var box = $("news");
     var topics = j.topics || {};
-    var cols = TOPICS.filter(function(t){ return (topics[t] || []).length; });
+    var wanted = prefs().topics;
+    var cols = TOPIC_ORDER.filter(function(t){
+      return wanted.indexOf(t) !== -1 && (topics[t] || []).length;
+    });
 
     if (!cols.length){
       box.innerHTML = '<div class="state err">No headlines came back.</div>';
@@ -1149,7 +1175,7 @@
       $("news").innerHTML = '<div class="state">Headlines need the Worker — set FLIGHT_PROXY in config.js.</div>';
       return;
     }
-    fetchTimeout(PROXY + "/news?topics=" + TOPICS.join(","), 15000)
+    fetchTimeout(PROXY + "/news?topics=" + prefs().topics.join(","), 15000)
       .then(function(r){ if(!r.ok) throw new Error(r.status); return r.json(); })
       .then(renderNews)
       .catch(function(){
@@ -1161,14 +1187,13 @@
     $("news").innerHTML = '<div class="state">Fetching…</div>';
     loadNews();
   });
-  loadNews();
 
   /* =====================================================================
      ESPORTS — PandaScore, via the Worker
      Live matches now, then the next few fixtures.
      ===================================================================== */
 
-  var GAMES = ["lol","cs2"];
+  var GAME_ORDER = ["lol","cs2"];
 
   function kickoff(iso){
     if (!iso) return "TBC";
@@ -1225,7 +1250,8 @@
     }
 
     var games = j.games || {};
-    var cols = GAMES.filter(function(g){ return games[g]; });
+    var wanted = prefs().games;
+    var cols = GAME_ORDER.filter(function(g){ return wanted.indexOf(g) !== -1 && games[g]; });
     var liveCount = 0;
 
     box.innerHTML = '<div class="es-grid">' + cols.map(function(g){
@@ -1258,7 +1284,7 @@
       $("esports").innerHTML = '<div class="state">Esports needs the Worker — set FLIGHT_PROXY in config.js.</div>';
       return;
     }
-    fetchTimeout(PROXY + "/esports?games=" + GAMES.join(","), 15000)
+    fetchTimeout(PROXY + "/esports?games=" + (prefs().games.join(",") || "lol,cs2"), 15000)
       .then(function(r){ if(!r.ok) throw new Error(r.status); return r.json(); })
       .then(renderEsports)
       .catch(function(){
@@ -1270,8 +1296,64 @@
     $("esports").innerHTML = '<div class="state">Fetching…</div>';
     loadEsports();
   });
-  loadEsports();
   setInterval(loadEsports, 180000);   // live scores tick over every 3 min
+
+  /* =====================================================================
+     PREFERENCES — react to sign-in, sign-out and edits
+     ===================================================================== */
+
+  function applyPrefs(){
+    var p = prefs();
+
+    /* show or hide whole sections */
+    [].forEach.call(document.querySelectorAll("[data-card]"), function(el){
+      var key = el.getAttribute("data-card");
+      el.hidden = p.cards[key] === false;
+    });
+
+    /* radius can be set from the preferences panel as well as the slider */
+    if (p.flight_radius !== radius){
+      radius = p.flight_radius;
+      $("radiusSlider").value = radius;
+      $("radiusVal").textContent = radius + " nm";
+      $("rng1").textContent = Math.round(radius * 0.67) + "nm";
+      $("rng2").textContent = radius + "nm";
+      fitToRadius();
+      loadFlights();
+    }
+  }
+
+  /* Hold the first fetch until preferences have settled, otherwise a signed-in
+     user briefly sees everyone's default columns and we pay for two round
+     trips. auth.js always announces once, even signed out. */
+  var booted = false, lastKey = "";
+
+  function bootFeeds(){
+    if (booted) return;
+    booted = true;
+    lastKey = prefs().topics.join(",") + "|" + prefs().games.join(",");
+    loadNews();
+    loadEsports();
+  }
+
+  window.addEventListener("prefs:changed", function(){
+    var p = prefs();
+    applyPrefs();
+
+    if (!booted){ bootFeeds(); return; }
+
+    /* afterwards, only re-fetch when the selection actually changed */
+    var key = p.topics.join(",") + "|" + p.games.join(",");
+    if (key !== lastKey){
+      lastKey = key;
+      loadNews();
+      loadEsports();
+    }
+  });
+
+  applyPrefs();
+  /* safety net: if auth.js is missing or errors, don't leave the cards empty */
+  setTimeout(bootFeeds, 1500);
 
 })();
 </script>
