@@ -464,9 +464,25 @@
     return Math.ceil((((t - start) / 86400000) + 1) / 7);
   }
 
+  /* Greeting name: whoever is signed in, else the site owner. */
+  function greetName(){
+    var a = window.AUTH;
+    if (a && a.signedIn){
+      if (a.profile && a.profile.display_name) return a.profile.display_name;
+      if (a.user && a.user.email) return a.user.email.split("@")[0];
+    }
+    return C.OWNER_NAME || "you";
+  }
+
+  function paintGreeting(){
+    $("greeting").textContent = greetingFor(new Date().getHours());
+    $("owner").textContent = greetName();
+  }
+
+  window.addEventListener("auth:changed", paintGreeting);
+
   var now = new Date();
-  $("owner").textContent = C.OWNER_NAME || "you";
-  $("greeting").textContent = greetingFor(now.getHours());
+  paintGreeting();
   $("daynum").textContent = DAYS[now.getDay()] + " " + now.getDate() + " " + MONTHS[now.getMonth()];
   $("weeknum").textContent = "W" + weekNumber(now);
   tick(); setInterval(tick, 1000);
