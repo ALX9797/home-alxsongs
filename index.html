@@ -780,8 +780,16 @@
     if (selected) renderDetail();
   }
 
-  function loadFlights(){
+  /* Upstreams throttle intermittently, so a single miss is not worth showing
+     the user. Retry a couple of times, quickly, before admitting defeat. */
+  var RETRY_MS = [1500, 4000];
+  var retryTimer = null;
+
+  function loadFlights(attemptNo){
     if (lat == null) return;
+    attemptNo = attemptNo || 0;
+    clearTimeout(retryTimer);
+
     var la = lat.toFixed(4), lo = lon.toFixed(4);
     var tried = [];
 
@@ -789,11 +797,15 @@
     var order = [provider];
     PROVIDERS.forEach(function(_, i){ if (i !== provider) order.push(i); });
 
-    function attempt(n){
-      var i = order[n];
-      if (n >= order.length){
-        $("flSource").textContent = "";
-        var hint = PROXY
+    function giveUp(){
+      /* Already showing aircraft? Keep them and mention it quietly instead of
+         blanking a working card over a transient blip. */
+      if (aircraft.length){
+        $("flSource").textContent = "reconnecting…";
+        return;
+      }
+      $("flSource").textContent = "";
+      var hint = PROXY
           ? 'Check the Worker is deployed and that FLIGHT_PROXY in config.js matches its URL.'
           : 'No FLIGHT_PROXY set in config.js. If you have already set one, ' +
             'you are seeing a cached config.js — hard refresh (Cmd/Ctrl+Shift+R). ' +
@@ -804,20 +816,47 @@
           tried.map(function(t){ return esc(t.name) + ' — ' + esc(t.why); }).join('<br>') +
           '</div>' +
           '<div class="state" style="padding-top:8px;color:var(--ink-dim)">' + hint + '</div>';
+    }
+
+    function attempt(n){
+      if (n >= order.length){
+        /* one full pass failed — retry shortly rather than waiting for the poll */
+        if (attemptNo < RETRY_MS.length){
+          if (!aircraft.length){
+            $("flights").innerHTML = '<div class="state">Feed busy, retrying…</div>';
+          } else {
+            $("flSource").textContent = "retrying…";
+          }
+          retryTimer = setTimeout(function(){ loadFlights(attemptNo + 1); }, RETRY_MS[attemptNo]);
+          return;
+        }
+        giveUp();
         return;
       }
+      var i = order[n];
       var p = PROVIDERS[i];
       fetchTimeout(p.url(la, lo, radius))
         .then(function(r){
           if (!r.ok){ var e = new Error("http"); e.status = r.status; throw e; }
-          /* the Worker tells us which upstream actually served it */
-          var upstream = null;
-          try { upstream = r.headers.get("X-Source"); } catch (err) {}
-          return r.json().then(function(j){ return { data: j, upstream: upstream }; });
+          /* the Worker tells us which upstream served it, and how old it is */
+          var upstream = null, cacheState = null, fetchedAt = null;
+          try {
+            upstream   = r.headers.get("X-Source");
+            cacheState = r.headers.get("X-Cache");
+            fetchedAt  = r.headers.get("X-Fetched-At");
+          } catch (err) {}
+          return r.json().then(function(j){
+            return { data: j, upstream: upstream, cacheState: cacheState, fetchedAt: fetchedAt };
+          });
         })
         .then(function(res){
           provider = i;
-          $("flSource").textContent = "via " + (res.upstream || p.name);
+          var label = "via " + (res.upstream || p.name);
+          if (res.cacheState === "STALE"){
+            var age = res.fetchedAt ? Math.round((Date.now() - new Date(res.fetchedAt).getTime())/1000) : null;
+            label += age ? " · " + (age < 90 ? age + "s" : Math.round(age/60) + "m") + " old" : " · cached";
+          }
+          $("flSource").textContent = label;
           applyFlights(res.data);
         })
         .catch(function(e){
@@ -852,7 +891,8 @@
     if (view === "map" && map) setTimeout(function(){ map.invalidateSize(); fitToRadius(); }, 30);
   });
 
-  $("flRefresh").addEventListener("click", loadFlights);
+  /* wrapped: the click event must not be mistaken for a retry counter */
+  $("flRefresh").addEventListener("click", function(){ loadFlights(); });
 
   function startFlights(label){
     $("posmeta").textContent = label;
