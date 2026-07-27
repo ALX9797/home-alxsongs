@@ -449,12 +449,16 @@
      and stick with whichever answers first. Same response shape either way;
      adsb.fi additionally gives us "desc" and "ownOp".
   */
-  var PROVIDERS = [
-    { name: "adsb.lol", url: function(la, lo, r){
-        return "https://api.adsb.lol/v2/lat/"+la+"/lon/"+lo+"/dist/"+r; } },
-    { name: "adsb.fi",  url: function(la, lo, r){
-        return "https://opendata.adsb.fi/api/v3/lat/"+la+"/lon/"+lo+"/dist/"+r; } }
-  ];
+  var PROXY = (C.FLIGHT_PROXY || "").replace(/\/+$/, "");
+
+  var PROVIDERS = PROXY
+    ? [ { name: "proxy", url: function(la, lo, r){
+            return PROXY + "?lat=" + la + "&lon=" + lo + "&dist=" + r; } } ]
+    : [ { name: "adsb.lol", url: function(la, lo, r){
+            return "https://api.adsb.lol/v2/lat/"+la+"/lon/"+lo+"/dist/"+r; } },
+        { name: "adsb.fi",  url: function(la, lo, r){
+            return "https://opendata.adsb.fi/api/v3/lat/"+la+"/lon/"+lo+"/dist/"+r; } } ];
+
   var provider = 0;   // index of the one currently working
 
   function compass(deg){
@@ -794,23 +798,31 @@
       var i = order[n];
       if (n >= order.length){
         $("flSource").textContent = "";
+        var hint = PROXY
+          ? 'Check the Worker is deployed and that FLIGHT_PROXY in config.js matches its URL.'
+          : 'These feeds don\'t send CORS headers, so the browser blocks them. ' +
+            'Set FLIGHT_PROXY in config.js — see SETUP.md, "Flight proxy".';
         $("flights").innerHTML =
           '<div class="state err">No flight feed reachable.</div>' +
           '<div class="state" style="padding-top:4px">' +
           tried.map(function(t){ return esc(t.name) + ' — ' + esc(t.why); }).join('<br>') +
-          '</div>';
+          '</div>' +
+          '<div class="state" style="padding-top:8px;color:var(--ink-dim)">' + hint + '</div>';
         return;
       }
       var p = PROVIDERS[i];
       fetchTimeout(p.url(la, lo, radius))
         .then(function(r){
           if (!r.ok){ var e = new Error("http"); e.status = r.status; throw e; }
-          return r.json();
+          /* the Worker tells us which upstream actually served it */
+          var upstream = null;
+          try { upstream = r.headers.get("X-Source"); } catch (err) {}
+          return r.json().then(function(j){ return { data: j, upstream: upstream }; });
         })
-        .then(function(j){
+        .then(function(res){
           provider = i;
-          $("flSource").textContent = "via " + p.name;
-          applyFlights(j);
+          $("flSource").textContent = "via " + (res.upstream || p.name);
+          applyFlights(res.data);
         })
         .catch(function(e){
           tried.push({ name: p.name, why: describeErr(e) });

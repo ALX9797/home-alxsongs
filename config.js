@@ -22,6 +22,12 @@ window.CONFIG = {
   // How far around you to look for aircraft, in nautical miles (max 250)
   FLIGHT_RADIUS_NM: 20,
 
+  // Your Cloudflare Worker URL (see SETUP.md -> "Flight proxy").
+  // The ADS-B feeds don't send CORS headers, so the browser can't read them
+  // directly — the Worker sits in front and adds them.
+  // e.g. "https://flight-proxy.yourname.workers.dev"
+  FLIGHT_PROXY: "https://flight-proxy-worker.alx-5ea.workers.dev/",
+
   // Fallback location used if you deny/skip the location prompt.
   // (Central London — change to wherever you'd rather default to.)
   FALLBACK_LAT: 51.5072,
