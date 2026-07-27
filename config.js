@@ -10,7 +10,7 @@
    ===================================================================== */
 
 window.CONFIG = {
-  SUPABASE_URL: "https://aysqksqikhsmbouoxved.supabase.co/rest/v1/",   // e.g. "https://abcdefgh.supabase.co"
+  SUPABASE_URL: "https://aysqksqikhsmbouoxved.supabase.co",   // e.g. "https://abcdefgh.supabase.co"
   SUPABASE_KEY: "sb_publishable_SvfAJkozhcEo8Vr3YGFwDQ_IfhurIru",   // the long "anon public" key
 
   // Table name created by supabase-schema.sql
