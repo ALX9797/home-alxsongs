@@ -215,36 +215,29 @@ h1,h2,h3{ margin:0; font-weight:700; letter-spacing:-.02em; }
 .btn:disabled{ opacity:.35; cursor:not-allowed; }
 .btn.lg{ font-size:12px; padding: 13px 22px; }
 
-/* ---------- big nav tile (GAMES) ---------- */
-.tile{
-  grid-column: span 12;
-  position: relative;
-  display: block;
+/* ---------- top bar nav chips ---------- */
+.topnav{ display:flex; gap:8px; align-items:center; }
+
+.navchip{
+  display:inline-flex; align-items:center; gap:7px;
+  font-family: var(--mono);
+  font-size: 10px;
+  letter-spacing: .18em;
+  text-transform: uppercase;
+  color: var(--ink-dim);
   text-decoration: none;
-  color: var(--ink);
-  border: 1px solid var(--line);
+  padding: 7px 12px;
+  border: 1px solid var(--line-hot);
   border-radius: var(--r);
-  padding: 26px 22px;
-  overflow: hidden;
-  background:
-    linear-gradient(110deg, rgba(216,255,62,.10), rgba(255,61,127,.10) 55%, transparent 85%),
-    var(--panel);
-  transition: .22s ease;
+  white-space: nowrap;
+  transition: .16s ease;
 }
-.tile:hover{ border-color: var(--acid); transform: translateY(-2px); }
-.tile .big{
-  font-size: clamp(30px, 6vw, 54px);
-  letter-spacing: -.04em;
-  line-height: 1;
-  font-weight: 700;
+.navchip svg{ width:13px; height:13px; flex:none; }
+.navchip:hover{
+  color: #0a0a0a;
+  background: var(--acid);
+  border-color: var(--acid);
 }
-.tile .sub{ color: var(--ink-dim); font-size:13px; margin-top:8px; max-width: 46ch; }
-.tile .arrow{
-  position:absolute; right:22px; top:50%; transform: translateY(-50%);
-  font-size: 34px; color: var(--acid);
-  transition:.22s ease;
-}
-.tile:hover .arrow{ transform: translateY(-50%) translateX(6px); }
 
 /* ---------- generic list rows ---------- */
 .row{
