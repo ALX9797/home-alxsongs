@@ -63,10 +63,14 @@
           <h2><span class="idx">01 /</span> Invites</h2>
           <span class="tag" id="inviteMeta"></span>
         </div>
+        <div class="danger-note" style="border-color:var(--line-hot);background:rgba(255,255,255,.02)">
+          Adding someone here <b>does not email them</b> — it only allows that address
+          to create an account. Send them the link yourself with the button on their row.
+        </div>
         <div class="addrow">
           <input type="text" id="newEmail" placeholder="email address" autocomplete="off">
           <input type="text" id="newNote" placeholder="note (optional)" autocomplete="off">
-          <button class="btn acid" id="addInvite">+ Invite</button>
+          <button class="btn acid" id="addInvite">+ Allow access</button>
         </div>
         <div id="inviteMsg"></div>
         <div class="scroll-x"><div id="invites"><div class="skel"></div><div class="skel" style="width:60%"></div></div></div>
@@ -183,7 +187,10 @@
           '<td><span class="pill ' + (has ? "joined" : "pending") + '">' +
             (has ? "signed up" : "not yet") + '</span></td>' +
           '<td class="mono-sm">' + when(i.created_at) + '</td>' +
-          '<td class="act"><button class="btn ghost hot" data-revoke="' + esc(i.email) + '">Revoke</button></td>' +
+          '<td class="act">' +
+            (has ? '' : '<button class="btn ghost" data-copy="' + esc(i.email) + '">Copy invite</button> ') +
+            '<button class="btn ghost hot" data-revoke="' + esc(i.email) + '">Revoke</button>' +
+          '</td>' +
         '</tr>';
       }).join("") + '</tbody></table>';
   }
@@ -217,7 +224,31 @@
       .then(function(){ $("addInvite").disabled = false; });
   });
 
+  /* Hands you a ready-made message to paste wherever you actually talk to them. */
+  function inviteText(email){
+    var origin = window.location.origin;
+    return "You've got access to my dashboard: " + origin + "\n\n" +
+      "Click Sign in, then Create account, and use this email: " + email + "\n" +
+      "Pick any password you like — it only works for that address.";
+  }
+
   $("invites").addEventListener("click", function(e){
+    var copy = e.target.closest("[data-copy]");
+    if (copy){
+      var text = inviteText(copy.getAttribute("data-copy"));
+      var done = function(){
+        var old = copy.textContent;
+        copy.textContent = "Copied";
+        setTimeout(function(){ copy.textContent = old; }, 1600);
+      };
+      if (navigator.clipboard && navigator.clipboard.writeText){
+        navigator.clipboard.writeText(text).then(done, function(){ window.prompt("Copy this:", text); });
+      } else {
+        window.prompt("Copy this:", text);
+      }
+      return;
+    }
+
     var b = e.target.closest("[data-revoke]");
     if (!b) return;
     var email = b.getAttribute("data-revoke");
