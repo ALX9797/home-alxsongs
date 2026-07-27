@@ -207,6 +207,7 @@
             <input type="range" id="radiusSlider" min="5" max="100" step="5" value="20">
             <b id="radiusVal">20 nm</b>
           </label>
+          <span class="tag" id="flSource"></span>
           <button class="btn ghost" id="flRefresh" title="Refresh now">↻</button>
         </div>
       </div>
@@ -276,7 +277,9 @@
 
   <footer class="foot">
     <span>home.alxsongs.com</span>
-    <span>flights: adsb.lol · routes: adsbdb · photos: planespotters · history: wikipedia</span>
+    <span>flights: <a href="https://adsb.lol" target="_blank" rel="noopener">adsb.lol</a> /
+      <a href="https://adsb.fi" target="_blank" rel="noopener">adsb.fi</a> ·
+      routes: adsbdb · photos: planespotters · history: wikipedia</span>
   </footer>
 </div>
 
@@ -441,12 +444,49 @@
   $("rng1").textContent = Math.round(radius * 0.67) + "nm";
   $("rng2").textContent = radius + "nm";
 
+  /* ---------------- data sources ----------------
+     Community ADS-B feeds. They're volunteer-run, so we try them in order
+     and stick with whichever answers first. Same response shape either way;
+     adsb.fi additionally gives us "desc" and "ownOp".
+  */
+  var PROVIDERS = [
+    { name: "adsb.lol", url: function(la, lo, r){
+        return "https://api.adsb.lol/v2/lat/"+la+"/lon/"+lo+"/dist/"+r; } },
+    { name: "adsb.fi",  url: function(la, lo, r){
+        return "https://opendata.adsb.fi/api/v3/lat/"+la+"/lon/"+lo+"/dist/"+r; } }
+  ];
+  var provider = 0;   // index of the one currently working
+
   function compass(deg){
     var pts = ["N","NNE","NE","ENE","E","ESE","SE","SSE","S","SSW","SW","WSW","W","WNW","NW","NNW"];
     return pts[Math.round(((deg % 360) / 22.5)) % 16];
   }
-  function typeName(t){ return TYPES[t] || t || "Unknown type"; }
+
+  /* "PILATUS PC-24" -> "Pilatus PC-24"  (model codes stay shouty) */
+  function titleCase(s){
+    return String(s).toLowerCase().split(" ").map(function(word){
+      if (/\d/.test(word)) return word.toUpperCase();
+      return word.replace(/^[a-z]/, function(c){ return c.toUpperCase(); });
+    }).join(" ");
+  }
+
+  /* adsb.fi ships a human description; adsb.lol doesn't, so fall back to our map */
+  function typeName(a){
+    if (typeof a === "string") return TYPES[a] || a || "Unknown type";
+    if (TYPES[a.t]) return TYPES[a.t];
+    if (a.desc) return titleCase(a.desc);
+    return a.t || "Unknown type";
+  }
   function callOf(a){ return (a.flight || "").trim() || a.r || (a.hex || "").toUpperCase(); }
+
+  /* "Jetfly Aviation [JFA]" -> "Jetfly Aviation" */
+  function cleanOp(s){ return s ? String(s).replace(/\s*\[[^\]]*\]\s*/g, "").trim() : null; }
+
+  /* operator: published route first, then whatever the feed gave us */
+  function operatorOf(a){
+    var rt = routeFor(a);
+    return (rt && rt.airline) || cleanOp(a.ownOp) || null;
+  }
   function altOf(a){ return typeof a.alt_baro === "number" ? Math.round(a.alt_baro).toLocaleString() + " ft" : "—"; }
 
   /* ---------------- routes (adsbdb) ---------------- */
@@ -600,7 +640,7 @@
 
     box.innerHTML = aircraft.slice(0, 14).map(function(a){
       var rt = routeFor(a);
-      var op = (rt && rt.airline) || null;
+      var op = operatorOf(a);
       var routeLine = rt && rt.from && rt.to
         ? '<div class="fl-route">' + esc(rt.from.code) + ' <span class="ar">→</span> ' + esc(rt.to.code) +
           '<span class="ar"> · ' + esc(rt.to.city || "") + '</span></div>'
@@ -611,7 +651,7 @@
           '<div class="fl-call">' + esc(callOf(a)) + '</div>' +
           (op ? '<div class="fl-op">' + esc(op) + '</div>' : "") +
           routeLine +
-          '<div class="fl-sub">' + esc(typeName(a.t)) + ' · ' + a.dst.toFixed(1) + ' nm ' + compass(a.dir || 0) + '</div>' +
+          '<div class="fl-sub">' + esc(typeName(a)) + ' · ' + a.dst.toFixed(1) + ' nm ' + compass(a.dir || 0) + '</div>' +
         '</div>' +
         '<div class="fl-alt">' + altOf(a) + climb +
           '<span>' + (a.gs ? Math.round(a.gs) + " kt" : "") + '</span></div>' +
@@ -659,6 +699,7 @@
     $("detail").classList.add("on");
 
     var rt = routeFor(a);
+    var op = operatorOf(a);
     var ph = photos[a.hex];
 
     var routeBlock = rt && rt.from && rt.to
@@ -682,12 +723,12 @@
     $("detail").innerHTML =
       '<button class="btn ghost d-back" id="dBack">← all aircraft</button>' +
       '<div class="d-call">' + esc(callOf(a)) + '</div>' +
-      ((rt && rt.airline) ? '<div class="d-op">' + esc(rt.airline) + '</div>' : "") +
+      (op ? '<div class="d-op">' + esc(op) + '</div>' : "") +
       ((rt && rt.radio) ? '<div class="d-radio">radio: ' + esc(rt.radio) + '</div>' : "") +
       photoBlock +
       routeBlock +
       '<div class="d-stats">' +
-        stat("Aircraft", esc(typeName(a.t))) +
+        stat("Aircraft", esc(typeName(a))) +
         stat("Registration", esc(a.r || "—")) +
         stat("Altitude", altOf(a)) +
         stat("Vertical", vs) +
@@ -709,25 +750,75 @@
   }
 
   /* ---------------- polling ---------------- */
+
+  /* fetch with a hard timeout, so one dead provider can't stall the chain */
+  function fetchTimeout(url, ms){
+    if (typeof AbortController === "undefined") return fetch(url);
+    var ctrl = new AbortController();
+    var t = setTimeout(function(){ ctrl.abort(); }, ms || 9000);
+    return fetch(url, { signal: ctrl.signal }).then(function(r){
+      clearTimeout(t); return r;
+    }, function(e){ clearTimeout(t); throw e; });
+  }
+
+  /* A fetch that rejects with no HTTP status is almost always CORS, an
+     offline network, or a blocking extension — worth saying so plainly. */
+  function describeErr(e){
+    if (e && e.name === "AbortError") return "timed out";
+    if (e && e.status) return "HTTP " + e.status;
+    return "blocked or unreachable (CORS / network)";
+  }
+
+  function applyFlights(j){
+    aircraft = (j.ac || []).filter(function(a){
+      return a.alt_baro !== "ground" && typeof a.dst === "number" && a.t !== "TWR";
+    }).sort(function(a,b){ return a.dst - b.dst; });
+
+    fetchRoutes(aircraft);
+    renderList();
+    drawBlips();
+    syncMarkers();
+    if (selected) renderDetail();
+  }
+
   function loadFlights(){
     if (lat == null) return;
-    var url = "https://api.adsb.lol/v2/lat/" + lat.toFixed(4) + "/lon/" + lon.toFixed(4) + "/dist/" + radius;
-    fetch(url)
-      .then(function(r){ if(!r.ok) throw new Error(r.status); return r.json(); })
-      .then(function(j){
-        aircraft = (j.ac || []).filter(function(a){
-          return a.alt_baro !== "ground" && typeof a.dst === "number" && a.t !== "TWR";
-        }).sort(function(a,b){ return a.dst - b.dst; });
+    var la = lat.toFixed(4), lo = lon.toFixed(4);
+    var tried = [];
 
-        fetchRoutes(aircraft);
-        renderList();
-        drawBlips();
-        syncMarkers();
-        if (selected) renderDetail();
-      })
-      .catch(function(){
-        $("flights").innerHTML = '<div class="state err">Flight feed unavailable right now.</div>';
-      });
+    /* try the one that worked last time first, then the rest */
+    var order = [provider];
+    PROVIDERS.forEach(function(_, i){ if (i !== provider) order.push(i); });
+
+    function attempt(n){
+      var i = order[n];
+      if (n >= order.length){
+        $("flSource").textContent = "";
+        $("flights").innerHTML =
+          '<div class="state err">No flight feed reachable.</div>' +
+          '<div class="state" style="padding-top:4px">' +
+          tried.map(function(t){ return esc(t.name) + ' — ' + esc(t.why); }).join('<br>') +
+          '</div>';
+        return;
+      }
+      var p = PROVIDERS[i];
+      fetchTimeout(p.url(la, lo, radius))
+        .then(function(r){
+          if (!r.ok){ var e = new Error("http"); e.status = r.status; throw e; }
+          return r.json();
+        })
+        .then(function(j){
+          provider = i;
+          $("flSource").textContent = "via " + p.name;
+          applyFlights(j);
+        })
+        .catch(function(e){
+          tried.push({ name: p.name, why: describeErr(e) });
+          attempt(n + 1);
+        });
+    }
+
+    attempt(0);
   }
 
   /* ---------------- controls ---------------- */
