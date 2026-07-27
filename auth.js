@@ -16,7 +16,12 @@
   "use strict";
 
   var C = window.CONFIG || {};
-  var URL_ = (C.SUPABASE_URL || "").replace(/\/+$/, "");
+
+  /* Accept either the bare project URL or the ".../rest/v1/" form the Supabase
+     dashboard displays — we append the API path ourselves. */
+  var URL_ = (C.SUPABASE_URL || "")
+    .replace(/\/+$/, "")
+    .replace(/\/(rest|auth|storage|realtime)\/v\d+$/, "");
   var KEY = C.SUPABASE_KEY || "";
   var enabled = !!(URL_ && KEY);
 
@@ -72,6 +77,27 @@
   function announce(){
     setTimeout(function(){
       window.dispatchEvent(new CustomEvent("prefs:changed", { detail: window.PREFS }));
+    }, 0);
+  }
+
+  /* Shared auth state, for the admin page and anything else that needs it.
+     isAdmin is a UI hint only — the database enforces it independently, so
+     faking it here gets you a nicer-looking page and nothing more. */
+  function publish(){
+    window.AUTH = {
+      enabled: enabled,
+      signedIn: !!(session && session.user),
+      user: (session && session.user) ? { id: session.user.id, email: session.user.email } : null,
+      profile: profile,
+      isAdmin: !!(profile && profile.is_admin),
+      token: session ? session.access_token : null,
+      url: URL_,
+      key: KEY,
+      signIn: function(){ signInModal(); },
+      signOut: function(){ saveSession(null); profile = null; renderChip(); publish(); }
+    };
+    setTimeout(function(){
+      window.dispatchEvent(new CustomEvent("auth:changed", { detail: window.AUTH }));
     }, 0);
   }
 
@@ -216,7 +242,9 @@
     if (!enabled){ slot.innerHTML = ""; return; }
 
     if (session && session.user){
-      slot.innerHTML = '<button class="navchip" id="acctBtn" title="' +
+      var admin = profile && profile.is_admin
+        ? '<a class="navchip" href="admin.html" title="Admin">Admin</a>' : "";
+      slot.innerHTML = admin + '<button class="navchip" id="acctBtn" title="' +
         esc(session.user.email) + '">' + esc(nameOf()) + '</button>';
       $("acctBtn").addEventListener("click", accountModal);
     } else {
@@ -419,12 +447,12 @@
       if (e.key === "Escape") closeModal();
     });
 
-    if (!enabled){ renderChip(); announce(); return; }
+    if (!enabled){ renderChip(); publish(); announce(); return; }
 
     var fromLink = consumeHashSession();
     if (!fromLink) session = loadSession();
 
-    if (!session){ renderChip(); announce(); return; }
+    if (!session){ renderChip(); publish(); announce(); return; }
 
     refreshIfNeeded()
       .then(function(okToGo){
@@ -437,11 +465,13 @@
       })
       .then(function(res){
         renderChip();
+        publish();
         if (res[1]) setPrefs(res[1]); else announce();
       })
       .catch(function(){
         saveSession(null);
         renderChip();
+        publish();
         announce();
       });
   }

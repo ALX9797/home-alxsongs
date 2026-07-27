@@ -1,0 +1,372 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Admin · alxsongs</title>
+<meta name="robots" content="noindex, nofollow">
+<meta name="theme-color" content="#08090b">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' fill='%2308090b'/><circle cx='50' cy='50' r='26' fill='%234de3ff'/></svg>">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&family=Space+Grotesk:wght@400;500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="core.css">
+<style>
+  .pagehead{ padding:34px 0 26px; }
+  .pagehead h1{ font-size:clamp(34px,7vw,64px); line-height:.95; letter-spacing:-.045em; }
+  .pagehead h1 em{ font-style:normal; color:var(--ice); }
+  .pagehead p{ color:var(--ink-dim); max-width:58ch; margin:14px 0 0; font-size:14px; }
+
+  .gate{ max-width:460px; margin:60px auto; text-align:center; }
+  .gate h2{ font-size:22px; margin-bottom:10px; letter-spacing:-.02em; }
+  .gate p{ color:var(--ink-dim); font-size:14px; margin:0 0 20px; }
+
+  .addrow{ display:grid; grid-template-columns:1fr 1fr auto; gap:8px; margin-bottom:18px; }
+  @media (max-width:640px){ .addrow{ grid-template-columns:1fr; } }
+
+  .pill{
+    font-family:var(--mono); font-size:9px; letter-spacing:.14em; text-transform:uppercase;
+    padding:3px 7px; border-radius:2px; border:1px solid currentColor; white-space:nowrap;
+  }
+  .pill.admin{ color:var(--acid); }
+  .pill.joined{ color:var(--ice); }
+  .pill.pending{ color:var(--ink-faint); }
+
+  td.act{ text-align:right; white-space:nowrap; }
+  .mono-sm{ font-family:var(--mono); font-size:11px; color:var(--ink-faint); }
+  .danger-note{
+    border:1px solid rgba(255,61,127,.4); background:rgba(255,61,127,.05);
+    border-radius:2px; padding:12px 14px; margin-bottom:16px;
+    font-size:13px; color:var(--ink-dim);
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header class="topbar">
+    <a class="brand" href="index.html"><span class="dot" style="background:var(--ice)"></span> ← home</a>
+    <nav class="topnav"><span id="authSlot"></span></nav>
+  </header>
+
+  <!-- shown only once we know the visitor is an admin -->
+  <div id="adminBody" hidden>
+    <section class="pagehead">
+      <h1>ADMIN <em>CENTRE</em></h1>
+      <p>Who can get in, who actually has, and the Dutch Blitz ledger. Everything
+         here is enforced by the database as well — this page is just the friendly way in.</p>
+    </section>
+
+    <main class="grid">
+      <section class="card span-12">
+        <div class="card-head">
+          <h2><span class="idx">01 /</span> Invites</h2>
+          <span class="tag" id="inviteMeta"></span>
+        </div>
+        <div class="addrow">
+          <input type="text" id="newEmail" placeholder="email address" autocomplete="off">
+          <input type="text" id="newNote" placeholder="note (optional)" autocomplete="off">
+          <button class="btn acid" id="addInvite">+ Invite</button>
+        </div>
+        <div id="inviteMsg"></div>
+        <div class="scroll-x"><div id="invites"><div class="skel"></div><div class="skel" style="width:60%"></div></div></div>
+      </section>
+
+      <section class="card span-12">
+        <div class="card-head">
+          <h2><span class="idx">02 /</span> Accounts</h2>
+          <span class="tag" id="userMeta"></span>
+        </div>
+        <div id="userMsg"></div>
+        <div class="scroll-x"><div id="users"><div class="skel"></div><div class="skel" style="width:70%"></div></div></div>
+      </section>
+
+      <section class="card span-12">
+        <div class="card-head">
+          <h2><span class="idx">03 /</span> Dutch Blitz ledger</h2>
+          <span class="tag" id="gameMeta"></span>
+        </div>
+        <div id="gameMsg"></div>
+        <div class="scroll-x"><div id="games"><div class="skel"></div><div class="skel" style="width:50%"></div></div></div>
+      </section>
+    </main>
+  </div>
+
+  <!-- shown to everyone else -->
+  <div id="gate" class="gate" hidden></div>
+
+  <footer class="foot">
+    <span>admin · home.alxsongs.com</span>
+    <span id="whoami"></span>
+  </footer>
+</div>
+
+<div class="modal-bg" id="authModalBg"><div class="modal" id="authModal"></div></div>
+
+<script src="config.js"></script>
+<script src="auth.js"></script>
+<script>
+(function(){
+  "use strict";
+
+  function $(id){ return document.getElementById(id); }
+  function esc(s){
+    return String(s == null ? "" : s).replace(/[&<>"]/g, function(c){
+      return ({ "&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;" })[c];
+    });
+  }
+  function when(iso){
+    if (!iso) return "—";
+    var d = new Date(iso);
+    return d.toLocaleDateString([], { day:"2-digit", month:"short", year:"2-digit" });
+  }
+  function msg(el, text, bad){
+    $(el).innerHTML = text
+      ? '<div class="state' + (bad ? " err" : "") + '" style="padding:6px 0 12px">' + esc(text) + '</div>'
+      : "";
+  }
+
+  var A = null;   // window.AUTH once resolved
+
+  /* ---------------- supabase ---------------- */
+
+  function rest(path, opts){
+    opts = opts || {};
+    return fetch(A.url + path, {
+      method: opts.method || "GET",
+      headers: {
+        apikey: A.key,
+        Authorization: "Bearer " + A.token,
+        "Content-Type": "application/json",
+        Prefer: opts.prefer || "return=representation"
+      },
+      body: opts.body ? JSON.stringify(opts.body) : undefined
+    }).then(function(r){
+      if (!r.ok){
+        return r.json().catch(function(){ return {}; }).then(function(j){
+          throw new Error(j.message || j.hint || ("request failed (" + r.status + ")"));
+        });
+      }
+      return r.status === 204 ? null : r.json();
+    });
+  }
+
+  function rpc(fn, args){
+    return rest("/rest/v1/rpc/" + fn, { method: "POST", body: args || {} });
+  }
+
+  /* ---------------- invites ---------------- */
+
+  var invites = [], users = [];
+
+  function renderInvites(){
+    var box = $("invites");
+    if (!invites.length){
+      box.innerHTML = '<div class="state">Nobody invited yet.</div>';
+      $("inviteMeta").textContent = "0 invited";
+      return;
+    }
+    $("inviteMeta").textContent = invites.length + " invited";
+
+    /* who has actually taken the invite up */
+    var joined = {};
+    users.forEach(function(u){ joined[(u.email || "").toLowerCase()] = true; });
+
+    box.innerHTML = '<table><thead><tr>' +
+      '<th>Email</th><th>Note</th><th>Status</th><th>Invited</th><th></th>' +
+      '</tr></thead><tbody>' +
+      invites.map(function(i){
+        var has = joined[(i.email || "").toLowerCase()];
+        return '<tr>' +
+          '<td>' + esc(i.email) + '</td>' +
+          '<td class="mono-sm">' + esc(i.note || "") + '</td>' +
+          '<td><span class="pill ' + (has ? "joined" : "pending") + '">' +
+            (has ? "signed up" : "not yet") + '</span></td>' +
+          '<td class="mono-sm">' + when(i.created_at) + '</td>' +
+          '<td class="act"><button class="btn ghost hot" data-revoke="' + esc(i.email) + '">Revoke</button></td>' +
+        '</tr>';
+      }).join("") + '</tbody></table>';
+  }
+
+  function loadInvites(){
+    return rest("/rest/v1/allowed_emails?select=*&order=created_at.desc")
+      .then(function(rows){ invites = rows || []; renderInvites(); })
+      .catch(function(e){ $("invites").innerHTML = '<div class="state err">' + esc(e.message) + '</div>'; });
+  }
+
+  $("addInvite").addEventListener("click", function(){
+    var email = ($("newEmail").value || "").trim().toLowerCase();
+    var note = ($("newNote").value || "").trim();
+    if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)){
+      msg("inviteMsg", "That doesn't look like an email address.", true);
+      return;
+    }
+    if (invites.some(function(i){ return (i.email || "").toLowerCase() === email; })){
+      msg("inviteMsg", "That address is already invited.", true);
+      return;
+    }
+    this.disabled = true;
+    msg("inviteMsg", "Adding…");
+    rest("/rest/v1/allowed_emails", { method: "POST", body: { email: email, note: note || null } })
+      .then(function(){
+        $("newEmail").value = ""; $("newNote").value = "";
+        msg("inviteMsg", "");
+        return loadInvites();
+      })
+      .catch(function(e){ msg("inviteMsg", e.message, true); })
+      .then(function(){ $("addInvite").disabled = false; });
+  });
+
+  $("invites").addEventListener("click", function(e){
+    var b = e.target.closest("[data-revoke]");
+    if (!b) return;
+    var email = b.getAttribute("data-revoke");
+    if (!confirm("Revoke the invite for " + email + "?\n\nIf they already have an account it keeps working — remove it under Accounts.")) return;
+    rest("/rest/v1/allowed_emails?email=eq." + encodeURIComponent(email), { method: "DELETE", prefer: "return=minimal" })
+      .then(loadInvites)
+      .catch(function(err){ msg("inviteMsg", err.message, true); });
+  });
+
+  /* ---------------- accounts ---------------- */
+
+  function renderUsers(){
+    var box = $("users");
+    if (!users.length){
+      box.innerHTML = '<div class="state">No accounts yet.</div>';
+      $("userMeta").textContent = "0 accounts";
+      return;
+    }
+    $("userMeta").textContent = users.length + " account" + (users.length === 1 ? "" : "s");
+
+    box.innerHTML = '<table><thead><tr>' +
+      '<th>Person</th><th>Email</th><th>Joined</th><th>Last seen</th><th></th>' +
+      '</tr></thead><tbody>' +
+      users.map(function(u){
+        var me = A.user && u.id === A.user.id;
+        return '<tr>' +
+          '<td><span style="font-weight:500">' + esc(u.display_name || "—") + '</span>' +
+            (u.is_admin ? ' <span class="pill admin">admin</span>' : '') +
+            (me ? ' <span class="mono-sm">(you)</span>' : '') + '</td>' +
+          '<td class="mono-sm">' + esc(u.email) + '</td>' +
+          '<td class="mono-sm">' + when(u.created_at) + '</td>' +
+          '<td class="mono-sm">' + when(u.last_sign_in_at) + '</td>' +
+          '<td class="act">' +
+            (me ? '' :
+              '<button class="btn ghost" data-admin="' + esc(u.id) + '" data-make="' + (u.is_admin ? "0" : "1") + '">' +
+                (u.is_admin ? "Remove admin" : "Make admin") + '</button> ' +
+              '<button class="btn ghost hot" data-del="' + esc(u.id) + '" data-email="' + esc(u.email) + '">Delete</button>') +
+          '</td>' +
+        '</tr>';
+      }).join("") + '</tbody></table>';
+  }
+
+  function loadUsers(){
+    return rpc("admin_list_users")
+      .then(function(rows){ users = rows || []; renderUsers(); renderInvites(); })
+      .catch(function(e){ $("users").innerHTML = '<div class="state err">' + esc(e.message) + '</div>'; });
+  }
+
+  $("users").addEventListener("click", function(e){
+    var mk = e.target.closest("[data-admin]");
+    if (mk){
+      var make = mk.getAttribute("data-make") === "1";
+      if (!confirm(make ? "Give this person full admin rights?" : "Remove admin rights?")) return;
+      rpc("admin_set_admin", { target: mk.getAttribute("data-admin"), make_admin: make })
+        .then(loadUsers)
+        .catch(function(err){ msg("userMsg", err.message, true); });
+      return;
+    }
+
+    var del = e.target.closest("[data-del]");
+    if (del){
+      var email = del.getAttribute("data-email");
+      var typed = prompt("This permanently deletes " + email + " and their saved settings.\n\nType the email address to confirm:");
+      if (!typed || typed.trim().toLowerCase() !== email.toLowerCase()){
+        if (typed !== null) msg("userMsg", "Didn't match — nothing was deleted.", true);
+        return;
+      }
+      msg("userMsg", "Deleting…");
+      rpc("admin_delete_user", { target: del.getAttribute("data-del") })
+        .then(function(){ msg("userMsg", ""); return loadUsers(); })
+        .catch(function(err){ msg("userMsg", err.message, true); });
+    }
+  });
+
+  /* ---------------- dutch blitz ---------------- */
+
+  function loadGames(){
+    return rest("/rest/v1/dutch_blitz_games?select=*&order=played_at.desc&limit=100")
+      .then(function(rows){
+        rows = rows || [];
+        $("gameMeta").textContent = rows.length + " game" + (rows.length === 1 ? "" : "s");
+        if (!rows.length){
+          $("games").innerHTML = '<div class="state">No games recorded yet.</div>';
+          return;
+        }
+        $("games").innerHTML = '<table><thead><tr>' +
+          '<th>Played</th><th>Winner</th><th>Players</th><th>Target</th><th></th>' +
+          '</tr></thead><tbody>' +
+          rows.map(function(g){
+            return '<tr>' +
+              '<td class="mono-sm">' + when(g.played_at) + '</td>' +
+              '<td style="color:var(--acid);font-weight:500">' + esc(g.winner) + '</td>' +
+              '<td class="mono-sm">' + esc((g.players || []).join(", ")) + '</td>' +
+              '<td class="mono-sm">' + esc(g.target_score) + '</td>' +
+              '<td class="act"><button class="btn ghost hot" data-game="' + esc(g.id) + '">Delete</button></td>' +
+            '</tr>';
+          }).join("") + '</tbody></table>';
+      })
+      .catch(function(e){ $("games").innerHTML = '<div class="state err">' + esc(e.message) + '</div>'; });
+  }
+
+  $("games").addEventListener("click", function(e){
+    var b = e.target.closest("[data-game]");
+    if (!b) return;
+    if (!confirm("Delete this game from the ledger?")) return;
+    rest("/rest/v1/dutch_blitz_games?id=eq." + encodeURIComponent(b.getAttribute("data-game")),
+         { method: "DELETE", prefer: "return=minimal" })
+      .then(loadGames)
+      .catch(function(err){ msg("gameMsg", err.message, true); });
+  });
+
+  /* ---------------- gate ---------------- */
+
+  function showGate(title, body, withSignIn){
+    $("adminBody").hidden = true;
+    $("gate").hidden = false;
+    $("gate").innerHTML = '<h2>' + esc(title) + '</h2><p>' + esc(body) + '</p>' +
+      (withSignIn ? '<button class="btn acid lg" id="gateSignIn">Sign in</button>' : '') +
+      '<div style="margin-top:16px"><a class="btn" href="index.html">← Back to the dashboard</a></div>';
+    if (withSignIn && window.AUTH && window.AUTH.signIn){
+      $("gateSignIn").addEventListener("click", window.AUTH.signIn);
+    }
+  }
+
+  function start(auth){
+    A = auth;
+    $("whoami").textContent = A.signedIn ? A.user.email : "";
+
+    if (!A.enabled){
+      showGate("Not configured", "Supabase isn't set up yet, so there's nothing to administer.", false);
+      return;
+    }
+    if (!A.signedIn){
+      showGate("Sign in required", "This page is for site admins.", true);
+      return;
+    }
+    if (!A.isAdmin){
+      showGate("No access", "Your account doesn't have admin rights.", false);
+      return;
+    }
+
+    $("gate").hidden = true;
+    $("adminBody").hidden = false;
+    loadUsers().then(loadInvites).then(loadGames);
+  }
+
+  window.addEventListener("auth:changed", function(e){ start(e.detail); });
+  if (window.AUTH) start(window.AUTH);
+})();
+</script>
+</body>
+</html>
