@@ -169,22 +169,40 @@
     });
   }
 
-  /* magic-link callback arrives as #access_token=...&refresh_token=... */
+  /* Email links come back as a URL fragment — either tokens, or an error.
+     Returns "session", "recovery", "error" or false. */
+  var hashError = null, isRecovery = false;
+
+  function clearHash(){
+    history.replaceState(null, "", window.location.pathname + window.location.search);
+  }
+
   function consumeHashSession(){
     var h = window.location.hash || "";
-    if (h.indexOf("access_token=") === -1) return false;
+    if (!h || h.length < 2) return false;
     var p = new URLSearchParams(h.replace(/^#/, ""));
+
+    if (p.get("error")){
+      var code = p.get("error_code") || "";
+      hashError = /expired/i.test(code)
+        ? "That link has expired or was already used. Sign in with your password below, or request a new link."
+        : (p.get("error_description") || "That link didn't work.").replace(/\+/g, " ");
+      clearHash();
+      return "error";
+    }
+
     var at = p.get("access_token");
     if (!at) return false;
+
     saveSession({
       access_token: at,
       refresh_token: p.get("refresh_token"),
       expires_at: Math.floor(Date.now()/1000) + parseInt(p.get("expires_in") || "3600", 10),
       user: null
     });
-    /* don't leave tokens sitting in the address bar */
-    history.replaceState(null, "", window.location.pathname + window.location.search);
-    return true;
+    isRecovery = p.get("type") === "recovery";
+    clearHash();   /* don't leave tokens sitting in the address bar */
+    return isRecovery ? "recovery" : "session";
   }
 
   function fetchUser(){
@@ -230,6 +248,20 @@
 
   /* ---------------- UI ---------------- */
 
+  /* Everything that has to happen once we hold a valid session. */
+  function hydrate(){
+    return fetchUser()
+      .then(function(){
+        renderChip();
+        return Promise.all([fetchProfile(), fetchPrefs()]);
+      })
+      .then(function(res){
+        renderChip();
+        publish();
+        if (res[1]) setPrefs(res[1]); else announce();
+      });
+  }
+
   function nameOf(){
     if (profile && profile.display_name) return profile.display_name;
     if (session && session.user && session.user.email) return session.user.email.split("@")[0];
@@ -249,7 +281,7 @@
       $("acctBtn").addEventListener("click", accountModal);
     } else {
       slot.innerHTML = '<button class="navchip" id="signInBtn">Sign in</button>';
-      $("signInBtn").addEventListener("click", signInModal);
+      $("signInBtn").addEventListener("click", function(){ signInModal("signin"); });
     }
   }
 
@@ -260,72 +292,250 @@
   }
   function closeModal(){ $("authModalBg").classList.remove("open"); }
 
-  function signInModal(){
+  var MIN_PW = 8;
+
+  /* Turns GoTrue's terse errors into something a person can act on. */
+  function readError(j, fallback){
+    var m = (j && (j.msg || j.error_description || j.message)) || "";
+    if (/invited/i.test(m)) return "That address hasn't been invited to this site.";
+    if (/rate limit|too many/i.test(m)) return "Too many emails sent recently. Wait an hour, or sign in with your password.";
+    if (/invalid login|invalid credentials/i.test(m)) return "Wrong email or password.";
+    if (/already registered|already been registered/i.test(m)) return "That account already exists — sign in instead.";
+    if (/password/i.test(m) && /short|least/i.test(m)) return "Password must be at least " + MIN_PW + " characters.";
+    if (/not confirmed/i.test(m)) return "Check your email and confirm the address first.";
+    return m || fallback;
+  }
+
+  function say(text, bad){
+    var el = $("authMsg");
+    if (!el) return;
+    el.className = "state" + (bad ? " err" : "");
+    el.innerHTML = text;
+  }
+
+  function tokenFrom(j){
+    return {
+      access_token: j.access_token,
+      refresh_token: j.refresh_token,
+      expires_at: j.expires_at || Math.floor(Date.now()/1000) + (j.expires_in || 3600),
+      user: j.user || null
+    };
+  }
+
+  function signInModal(mode){
+    /* guard: this is used directly as a click handler in places, so the
+       argument can arrive as an Event rather than a mode string */
+    if (typeof mode !== "string" || !/^(signin|signup|reset)$/.test(mode)) mode = "signin";
+
+    var titles = { signin:"Sign in", signup:"Create your account", reset:"Reset password" };
+    var pwField = '<label class="f">Password</label>' +
+      '<input type="password" id="authPw" autocomplete="' +
+      (mode === "signup" ? "new-password" : "current-password") + '">';
+
     openModal(
-      '<h3>Sign in</h3>' +
-      '<div class="tag">invite only · no password needed</div>' +
+      '<h3>' + titles[mode] + '</h3>' +
+      '<div class="tag">invite only</div>' +
+
       '<label class="f">Email address</label>' +
       '<input type="text" id="authEmail" placeholder="you@example.com" autocomplete="email">' +
+
+      (mode === "reset" ? "" : pwField) +
+      (mode === "signup"
+        ? '<label class="f">Confirm password</label>' +
+          '<input type="password" id="authPw2" autocomplete="new-password">'
+        : "") +
+
       '<div class="state" id="authMsg" style="padding:10px 0 0"></div>' +
+
       '<div style="display:flex;gap:8px;margin-top:18px">' +
-        '<button class="btn acid lg" id="authGo" style="flex:1;justify-content:center">Email me a link</button>' +
+        '<button class="btn acid lg" id="authGo" style="flex:1;justify-content:center">' +
+          (mode === "signin" ? "Sign in" : mode === "signup" ? "Create account" : "Email reset link") +
+        '</button>' +
         '<button class="btn lg" id="authCancel">Cancel</button>' +
       '</div>' +
-      '<div class="state" style="padding-top:14px;color:var(--ink-faint);font-size:11px">' +
-      'We send a one-time link. Clicking it signs you in — there is no password to ' +
-      'choose, forget or leak.</div>'
+
+      '<div style="margin-top:16px;padding-top:14px;border-top:1px solid var(--line);' +
+           'display:flex;gap:14px;flex-wrap:wrap">' +
+        (mode !== "signin" ? '<button class="btn ghost" data-mode="signin">← Sign in</button>' : "") +
+        (mode === "signin" ? '<button class="btn ghost" data-mode="signup">Create account</button>' : "") +
+        (mode === "signin" ? '<button class="btn ghost" data-mode="reset">Forgot password?</button>' : "") +
+        (mode === "signin" ? '<button class="btn ghost" id="authMagic">Email me a link</button>' : "") +
+      '</div>'
     );
 
+    if (hashError){ say(esc(hashError), true); hashError = null; }
+
     $("authCancel").addEventListener("click", closeModal);
-    var input = $("authEmail");
-    input.focus();
-    input.addEventListener("keydown", function(e){ if (e.key === "Enter") go(); });
+    /* mode switching is delegated once, in boot() — binding it here would
+       stack a fresh listener every time the modal is reopened */
+
+    var emailEl = $("authEmail");
+    emailEl.focus();
+    [emailEl, $("authPw"), $("authPw2")].forEach(function(el){
+      if (el) el.addEventListener("keydown", function(e){ if (e.key === "Enter") go(); });
+    });
     $("authGo").addEventListener("click", go);
+    if ($("authMagic")) $("authMagic").addEventListener("click", magicLink);
+
+    function creds(){
+      return {
+        email: (emailEl.value || "").trim().toLowerCase(),
+        pw: $("authPw") ? $("authPw").value : "",
+        pw2: $("authPw2") ? $("authPw2").value : ""
+      };
+    }
+    function validEmail(e){ return /^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(e); }
 
     function go(){
-      var email = (input.value || "").trim();
-      if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)){
-        $("authMsg").className = "state err";
-        $("authMsg").textContent = "That doesn't look like an email address.";
-        return;
+      var c = creds();
+      if (!validEmail(c.email)) return say("That doesn't look like an email address.", true);
+
+      if (mode === "reset") return sendReset(c.email);
+
+      if (!c.pw) return say("Enter your password.", true);
+      if (mode === "signup"){
+        if (c.pw.length < MIN_PW) return say("Password must be at least " + MIN_PW + " characters.", true);
+        if (c.pw !== c.pw2) return say("The two passwords don't match.", true);
+        return signUp(c.email, c.pw);
       }
-      $("authGo").disabled = true;
-      $("authMsg").className = "state";
-      $("authMsg").textContent = "Sending…";
+      return passwordSignIn(c.email, c.pw);
+    }
 
-      /* redirect_to is a query parameter on the REST endpoint — the
-         options.emailRedirectTo form only works via the JS SDK. Get this
-         wrong and the link falls back to the project's Site URL, which
-         defaults to localhost. It must also be listed under
-         Authentication -> URL Configuration -> Redirect URLs. */
-      var back = window.location.origin + window.location.pathname;
+    function busy(text){ $("authGo").disabled = true; say(text); }
+    function free(){ $("authGo").disabled = false; }
 
-      fetch(URL_ + "/auth/v1/otp?redirect_to=" + encodeURIComponent(back), {
+    function passwordSignIn(email, pw){
+      busy("Signing in…");
+      fetch(URL_ + "/auth/v1/token?grant_type=password", {
         method: "POST",
         headers: { apikey: KEY, "Content-Type": "application/json" },
-        body: JSON.stringify({ email: email, create_user: true })
-      }).then(function(r){
+        body: JSON.stringify({ email: email, password: pw })
+      })
+      .then(function(r){ return r.json().then(function(j){ return { ok:r.ok, j:j }; }); })
+      .then(function(res){
+        if (!res.ok){ say(esc(readError(res.j, "Couldn't sign you in.")), true); free(); return; }
+        saveSession(tokenFrom(res.j));
+        say("Signed in.");
+        return hydrate().then(closeModal);
+      })
+      .catch(function(){ say("Network error. Try again.", true); free(); });
+    }
+
+    function signUp(email, pw){
+      busy("Creating your account…");
+      fetch(URL_ + "/auth/v1/signup", {
+        method: "POST",
+        headers: { apikey: KEY, "Content-Type": "application/json" },
+        body: JSON.stringify({ email: email, password: pw })
+      })
+      .then(function(r){ return r.json().then(function(j){ return { ok:r.ok, j:j }; }); })
+      .then(function(res){
+        if (!res.ok){ say(esc(readError(res.j, "Couldn't create the account.")), true); free(); return; }
+
+        /* With email confirmation off, Supabase returns a session straight away.
+           With it on, it returns the user and expects them to confirm first. */
+        if (res.j.access_token){
+          saveSession(tokenFrom(res.j));
+          say("Account created.");
+          return hydrate().then(closeModal);
+        }
+        say('Account created. Check <b style="color:var(--acid)">' + esc(email) +
+            '</b> to confirm your address, then sign in.');
+        $("authGo").textContent = "Done";
+      })
+      .catch(function(){ say("Network error. Try again.", true); free(); });
+    }
+
+    function sendReset(email){
+      busy("Sending…");
+      var back = window.location.origin + window.location.pathname;
+      fetch(URL_ + "/auth/v1/recover?redirect_to=" + encodeURIComponent(back), {
+        method: "POST",
+        headers: { apikey: KEY, "Content-Type": "application/json" },
+        body: JSON.stringify({ email: email })
+      })
+      .then(function(r){
         if (r.ok){
-          $("authMsg").className = "state";
-          $("authMsg").innerHTML = 'Check <b style="color:var(--acid)">' + esc(email) +
-            '</b> for a sign-in link. It expires in an hour.';
+          say('If that address has an account, a reset link is on its way to <b style="color:var(--acid)">' +
+              esc(email) + '</b>.');
           $("authGo").textContent = "Sent";
           return;
         }
         return r.json().catch(function(){ return {}; }).then(function(j){
-          $("authMsg").className = "state err";
-          /* the invite trigger surfaces here */
-          $("authMsg").textContent = /invited/i.test(j.msg || j.error_description || j.message || "")
-            ? "That address hasn't been invited to this site."
-            : (j.msg || j.error_description || j.message || "Couldn't send the link. Try again.");
-          $("authGo").disabled = false;
+          say(esc(readError(j, "Couldn't send the reset link.")), true); free();
         });
-      }).catch(function(){
-        $("authMsg").className = "state err";
-        $("authMsg").textContent = "Network error. Try again.";
+      })
+      .catch(function(){ say("Network error. Try again.", true); free(); });
+    }
+
+    function magicLink(){
+      var c = creds();
+      if (!validEmail(c.email)) return say("Enter your email address first.", true);
+      busy("Sending…");
+      /* redirect_to is a query parameter on the REST endpoint — the
+         options.emailRedirectTo body field is JS-SDK-only and is ignored
+         here, falling back to the project's Site URL. */
+      var back = window.location.origin + window.location.pathname;
+      fetch(URL_ + "/auth/v1/otp?redirect_to=" + encodeURIComponent(back), {
+        method: "POST",
+        headers: { apikey: KEY, "Content-Type": "application/json" },
+        body: JSON.stringify({ email: c.email, create_user: true })
+      })
+      .then(function(r){
+        if (r.ok){
+          say('Check <b style="color:var(--acid)">' + esc(c.email) +
+              '</b> for a sign-in link. Use it within the hour — each link works once.');
+          return;
+        }
+        return r.json().catch(function(){ return {}; }).then(function(j){
+          say(esc(readError(j, "Couldn't send the link.")), true); free();
+        });
+      })
+      .catch(function(){ say("Network error. Try again.", true); free(); });
+    }
+  }
+
+  /* After a recovery link: set a new password on the temporary session. */
+  function newPasswordModal(){
+    openModal(
+      '<h3>Choose a new password</h3>' +
+      '<div class="tag">you are signed in from the reset link</div>' +
+      '<label class="f">New password</label>' +
+      '<input type="password" id="authPw" autocomplete="new-password">' +
+      '<label class="f">Confirm</label>' +
+      '<input type="password" id="authPw2" autocomplete="new-password">' +
+      '<div class="state" id="authMsg" style="padding:10px 0 0"></div>' +
+      '<div style="display:flex;gap:8px;margin-top:18px">' +
+        '<button class="btn acid lg" id="authGo" style="flex:1;justify-content:center">Save password</button>' +
+      '</div>'
+    );
+    $("authPw").focus();
+    $("authGo").addEventListener("click", function(){
+      var pw = $("authPw").value, pw2 = $("authPw2").value;
+      if (pw.length < MIN_PW) return say("Password must be at least " + MIN_PW + " characters.", true);
+      if (pw !== pw2) return say("The two passwords don't match.", true);
+      $("authGo").disabled = true;
+      say("Saving…");
+      updatePassword(pw).then(function(){
+        say("Password saved.");
+        setTimeout(closeModal, 600);
+      }).catch(function(e){
+        say(esc(e.message), true);
         $("authGo").disabled = false;
       });
-    }
+    });
+  }
+
+  function updatePassword(pw){
+    return api("/auth/v1/user", { method: "PUT", body: { password: pw } })
+      .then(function(r){
+        if (!r.ok){
+          return r.json().catch(function(){ return {}; }).then(function(j){
+            throw new Error(readError(j, "Couldn't save the password."));
+          });
+        }
+        return true;
+      });
   }
 
   function accountModal(){
@@ -369,10 +579,44 @@
         '<button class="btn acid lg" id="prefSave" style="flex:1;justify-content:center">Save</button>' +
         '<button class="btn lg" id="prefClose">Close</button>' +
       '</div>' +
-      '<div style="margin-top:16px;padding-top:14px;border-top:1px solid var(--line)">' +
+      '<div style="margin-top:16px;padding-top:14px;border-top:1px solid var(--line);' +
+           'display:flex;gap:10px;flex-wrap:wrap">' +
+        '<button class="btn ghost" id="changePw">Change password</button>' +
         '<button class="btn ghost hot" id="signOut">Sign out</button>' +
       '</div>'
     );
+
+    $("changePw").addEventListener("click", function(){
+      openModal(
+        '<h3>Change password</h3>' +
+        '<div class="tag">' + esc((session && session.user && session.user.email) || "") + '</div>' +
+        '<label class="f">New password</label>' +
+        '<input type="password" id="authPw" autocomplete="new-password">' +
+        '<label class="f">Confirm</label>' +
+        '<input type="password" id="authPw2" autocomplete="new-password">' +
+        '<div class="state" id="authMsg" style="padding:10px 0 0"></div>' +
+        '<div style="display:flex;gap:8px;margin-top:18px">' +
+          '<button class="btn acid lg" id="authGo" style="flex:1;justify-content:center">Save</button>' +
+          '<button class="btn lg" id="pwBack">Back</button>' +
+        '</div>'
+      );
+      $("authPw").focus();
+      $("pwBack").addEventListener("click", accountModal);
+      $("authGo").addEventListener("click", function(){
+        var a = $("authPw").value, b = $("authPw2").value;
+        if (a.length < MIN_PW) return say("Password must be at least " + MIN_PW + " characters.", true);
+        if (a !== b) return say("The two passwords don't match.", true);
+        $("authGo").disabled = true;
+        say("Saving…");
+        updatePassword(a).then(function(){
+          say("Password changed.");
+          setTimeout(accountModal, 700);
+        }).catch(function(e){
+          say(esc(e.message), true);
+          $("authGo").disabled = false;
+        });
+      });
+    });
 
     var draft = clone(p);
 
@@ -444,7 +688,11 @@
   function boot(){
     var bg = $("authModalBg");
     if (bg){
-      bg.addEventListener("click", function(e){ if (e.target === bg) closeModal(); });
+      bg.addEventListener("click", function(e){
+        if (e.target === bg) return closeModal();
+        var mode = e.target.closest("[data-mode]");
+        if (mode) signInModal(mode.getAttribute("data-mode"));
+      });
     }
     document.addEventListener("keydown", function(e){
       if (e.key === "Escape") closeModal();
@@ -452,24 +700,24 @@
 
     if (!enabled){ renderChip(); publish(); announce(); return; }
 
-    var fromLink = consumeHashSession();
-    if (!fromLink) session = loadSession();
+    var from = consumeHashSession();
 
+    if (from === "error"){
+      renderChip(); publish(); announce();
+      signInModal("signin");     /* surfaces the expired-link message */
+      return;
+    }
+
+    if (!from) session = loadSession();
     if (!session){ renderChip(); publish(); announce(); return; }
 
     refreshIfNeeded()
       .then(function(okToGo){
         if (!okToGo && !session) throw new Error("no session");
-        return fetchUser();
+        return hydrate();
       })
       .then(function(){
-        renderChip();
-        return Promise.all([fetchProfile(), fetchPrefs()]);
-      })
-      .then(function(res){
-        renderChip();
-        publish();
-        if (res[1]) setPrefs(res[1]); else announce();
+        if (from === "recovery") newPasswordModal();
       })
       .catch(function(){
         saveSession(null);
