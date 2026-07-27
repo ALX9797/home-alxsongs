@@ -1,0 +1,423 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Not-Wordle · alxsongs</title>
+<meta name="theme-color" content="#08090b">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' fill='%2308090b'/><rect x='24' y='24' width='52' height='52' rx='6' fill='%23d8ff3e'/></svg>">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&family=Space+Grotesk:wght@400;500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="core.css">
+<style>
+  .pagehead{ padding:28px 0 18px; text-align:center; }
+  .pagehead h1{ font-size:clamp(30px,6vw,52px); line-height:.95; letter-spacing:-.045em; }
+  .pagehead h1 em{ font-style:normal; color:var(--acid); }
+  .pagehead .sub{ font-family:var(--mono); font-size:11px; letter-spacing:.2em;
+    text-transform:uppercase; color:var(--ink-faint); margin-top:10px; }
+
+  .board{ display:grid; gap:6px; justify-content:center; margin:10px auto 18px; }
+  .brow{ display:grid; grid-template-columns:repeat(5,1fr); gap:6px; }
+  .tile{
+    width:56px; height:56px; display:flex; align-items:center; justify-content:center;
+    font-family:var(--mono); font-size:24px; text-transform:uppercase;
+    border:1px solid var(--line-hot); border-radius:3px; background:var(--bg-2);
+    color:var(--ink); transition:transform .12s ease, background .25s ease, border-color .25s ease;
+  }
+  .tile.filled{ border-color:var(--ink-faint); transform:scale(1.04); }
+  /* Deliberately not green/yellow/grey. */
+  .tile.exact{ background:var(--acid); border-color:var(--acid); color:#0a0a0a; }
+  .tile.close{ background:var(--ice); border-color:var(--ice); color:#0a0a0a; }
+  .tile.miss { background:#15181d; border-color:#15181d; color:var(--ink-faint); }
+  .brow.shake{ animation:shake .4s; }
+  @keyframes shake{
+    0%,100%{ transform:translateX(0) } 20%{ transform:translateX(-7px) }
+    40%{ transform:translateX(7px) } 60%{ transform:translateX(-4px) } 80%{ transform:translateX(4px) }
+  }
+  @media (max-width:420px){ .tile{ width:46px; height:46px; font-size:20px; } }
+
+  .keys{ display:grid; gap:5px; justify-content:center; margin:0 auto; max-width:520px; }
+  .krow{ display:flex; gap:5px; justify-content:center; }
+  .key{
+    min-width:34px; height:46px; padding:0 9px;
+    display:flex; align-items:center; justify-content:center;
+    font-family:var(--mono); font-size:12px; text-transform:uppercase;
+    background:#1a1e24; color:var(--ink); border:0; border-radius:3px; cursor:pointer;
+    transition:background .2s, color .2s;
+  }
+  .key:hover{ background:#232830; }
+  .key.wide{ min-width:56px; font-size:10px; letter-spacing:.1em; }
+  .key.exact{ background:var(--acid); color:#0a0a0a; }
+  .key.close{ background:var(--ice); color:#0a0a0a; }
+  .key.miss{ background:#101216; color:var(--ink-faint); }
+
+  .toast{
+    position:fixed; left:50%; top:22%; transform:translateX(-50%);
+    background:var(--ink); color:var(--bg); padding:10px 16px; border-radius:3px;
+    font-family:var(--mono); font-size:12px; letter-spacing:.06em;
+    opacity:0; pointer-events:none; transition:opacity .2s; z-index:80;
+  }
+  .toast.on{ opacity:1; }
+
+  .result{ text-align:center; margin-top:8px; }
+  .result .big{ font-size:clamp(22px,4vw,32px); letter-spacing:-.03em; }
+  .result .big span{ color:var(--acid); }
+  .grid-share{ font-size:20px; line-height:1.25; letter-spacing:2px; margin:14px 0; }
+
+  table.lb td.num, table.lb th.num{ text-align:right; font-family:var(--mono); }
+  .streak{ color:var(--acid); font-family:var(--mono); }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header class="topbar">
+    <a class="brand" href="index.html"><span class="dot"></span> ← home</a>
+    <nav class="topnav">
+      <a class="navchip" href="games.html">Dutch Blitz</a>
+      <span id="authSlot"></span>
+    </nav>
+  </header>
+
+  <section class="pagehead">
+    <h1>NOT-<em>WORDLE</em></h1>
+    <div class="sub" id="puzzleNo">—</div>
+  </section>
+
+  <main class="grid">
+    <section class="card span-12" style="padding-top:22px">
+      <div id="game">
+        <div class="board" id="board"></div>
+        <div class="keys" id="keys"></div>
+      </div>
+      <div id="done" hidden></div>
+    </section>
+
+    <section class="card span-12">
+      <div class="card-head">
+        <h2><span class="idx">all time /</span> Leaderboard</h2>
+        <span class="tag" id="lbMeta"></span>
+      </div>
+      <div id="leaderboard"><div class="skel"></div><div class="skel" style="width:60%"></div></div>
+    </section>
+  </main>
+
+  <footer class="foot">
+    <span>not-wordle · home.alxsongs.com</span>
+    <span>an original word game · not affiliated with anyone</span>
+  </footer>
+</div>
+
+<div class="toast" id="toast"></div>
+<div class="modal-bg" id="authModalBg"><div class="modal" id="authModal"></div></div>
+
+<script src="config.js"></script>
+<script src="auth.js"></script>
+<script src="words.js"></script>
+<script>
+(function(){
+  "use strict";
+
+  var C = window.CONFIG || {};
+  var PROXY = (C.FLIGHT_PROXY || "").replace(/\/+$/, "");
+  var ROWS = 6, COLS = 5;
+
+  function $(id){ return document.getElementById(id); }
+  function esc(s){
+    return String(s == null ? "" : s).replace(/[&<>"]/g, function(c){
+      return ({ "&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;" })[c];
+    });
+  }
+
+  var answer = null, day = null, number = null;
+  var guesses = [], current = "", finished = false;
+  var VALID = null;
+
+  /* ---------------- storage: one go per day, per browser ---------------- */
+  function key(){ return "notwordle." + day; }
+
+  function saveLocal(){
+    try {
+      localStorage.setItem(key(), JSON.stringify({
+        guesses: guesses, finished: finished
+      }));
+    } catch (e) {}
+  }
+  function loadLocal(){
+    try {
+      var s = JSON.parse(localStorage.getItem(key()) || "null");
+      if (s && Array.isArray(s.guesses)){ guesses = s.guesses; finished = !!s.finished; }
+    } catch (e) {}
+  }
+
+  /* ---------------- scoring ---------------- */
+
+  /* Two passes: exact matches first, so a repeated letter can't be marked
+     "close" when its only copy has already been placed. */
+  function score(guess, target){
+    var out = new Array(COLS).fill("miss");
+    var left = {};
+    var i;
+    for (i = 0; i < COLS; i++){
+      if (guess[i] === target[i]) out[i] = "exact";
+      else left[target[i]] = (left[target[i]] || 0) + 1;
+    }
+    for (i = 0; i < COLS; i++){
+      if (out[i] === "exact") continue;
+      var c = guess[i];
+      if (left[c] > 0){ out[i] = "close"; left[c]--; }
+    }
+    return out;
+  }
+
+  /* ---------------- rendering ---------------- */
+
+  function drawBoard(){
+    var html = "";
+    for (var r = 0; r < ROWS; r++){
+      var g = guesses[r];
+      var typing = (!finished && r === guesses.length) ? current : null;
+      html += '<div class="brow" data-row="' + r + '">';
+      for (var c = 0; c < COLS; c++){
+        var cls = "tile", ch = "";
+        if (g){
+          ch = g[c];
+          cls += " " + score(g, answer)[c];
+        } else if (typing != null && typing[c]){
+          ch = typing[c];
+          cls += " filled";
+        }
+        html += '<div class="' + cls + '">' + esc(ch) + '</div>';
+      }
+      html += '</div>';
+    }
+    $("board").innerHTML = html;
+  }
+
+  var KEYS = ["qwertyuiop", "asdfghjkl", "@zxcvbnm<"];
+
+  function drawKeys(){
+    var best = {};
+    var rank = { miss:0, close:1, exact:2 };
+    guesses.forEach(function(g){
+      var s = score(g, answer);
+      for (var i = 0; i < COLS; i++){
+        var c = g[i];
+        if (best[c] == null || rank[s[i]] > rank[best[c]]) best[c] = s[i];
+      }
+    });
+
+    $("keys").innerHTML = KEYS.map(function(row){
+      return '<div class="krow">' + row.split("").map(function(k){
+        if (k === "@") return '<button class="key wide" data-k="enter">Enter</button>';
+        if (k === "<") return '<button class="key wide" data-k="back">Del</button>';
+        return '<button class="key ' + (best[k] || "") + '" data-k="' + k + '">' + k + '</button>';
+      }).join("") + '</div>';
+    }).join("");
+  }
+
+  var toastTimer = null;
+  function toast(text){
+    $("toast").textContent = text;
+    $("toast").classList.add("on");
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(function(){ $("toast").classList.remove("on"); }, 1800);
+  }
+
+  function shake(){
+    var row = $("board").querySelector('[data-row="' + guesses.length + '"]');
+    if (!row) return;
+    row.classList.add("shake");
+    setTimeout(function(){ row.classList.remove("shake"); }, 420);
+  }
+
+  /* ---------------- play ---------------- */
+
+  function type(ch){
+    if (finished || current.length >= COLS) return;
+    current += ch;
+    drawBoard();
+  }
+  function back(){
+    if (finished) return;
+    current = current.slice(0, -1);
+    drawBoard();
+  }
+
+  function submit(){
+    if (finished) return;
+    if (current.length < COLS) { toast("Not enough letters"); return shake(); }
+    if (VALID && !VALID.has(current)) { toast("Not in word list"); return shake(); }
+
+    guesses.push(current);
+    var won = current === answer;
+    current = "";
+    if (won || guesses.length >= ROWS) finished = true;
+
+    saveLocal();
+    drawBoard();
+    drawKeys();
+    if (finished) finish(won);
+  }
+
+  function shareGrid(){
+    var sq = { exact:"🟩", close:"🟦", miss:"⬛" };
+    /* our palette, not theirs: lime + ice blue */
+    sq.exact = "🟩"; sq.close = "🟦";
+    return guesses.map(function(g){
+      return score(g, answer).map(function(s){ return sq[s]; }).join("");
+    }).join("\n");
+  }
+
+  function finish(won){
+    $("game").hidden = true;
+    $("done").hidden = false;
+    var grid = shareGrid();
+    $("done").innerHTML =
+      '<div class="result">' +
+        '<div class="big">' + (won
+          ? 'Got it in <span>' + guesses.length + '</span>'
+          : 'Out of goes — it was <span>' + esc(answer.toUpperCase()) + '</span>') + '</div>' +
+        '<div class="grid-share">' + grid.split("\n").join("<br>") + '</div>' +
+        '<div style="display:flex;gap:8px;justify-content:center;flex-wrap:wrap">' +
+          '<button class="btn acid" id="shareBtn">Copy result</button>' +
+          '<a class="btn" href="index.html">← Dashboard</a>' +
+        '</div>' +
+        '<div class="tag" style="margin-top:14px">next word at midnight</div>' +
+      '</div>';
+
+    $("shareBtn").addEventListener("click", function(){
+      var text = "Not-Wordle #" + number + " " + (won ? guesses.length : "X") + "/6\n\n" + grid;
+      if (navigator.clipboard && navigator.clipboard.writeText){
+        navigator.clipboard.writeText(text).then(function(){ toast("Copied"); },
+                                                 function(){ window.prompt("Copy:", text); });
+      } else window.prompt("Copy:", text);
+    });
+
+    saveResult(won);
+  }
+
+  /* ---------------- input ---------------- */
+
+  document.addEventListener("keydown", function(e){
+    if (finished) return;
+    if (e.key === "Enter") return submit();
+    if (e.key === "Backspace") return back();
+    var k = (e.key || "").toLowerCase();
+    if (/^[a-z]$/.test(k)) type(k);
+  });
+
+  $("keys").addEventListener("click", function(e){
+    var b = e.target.closest("[data-k]");
+    if (!b) return;
+    var k = b.getAttribute("data-k");
+    if (k === "enter") return submit();
+    if (k === "back") return back();
+    type(k);
+  });
+
+  /* ---------------- results + leaderboard ---------------- */
+
+  function sb(){
+    var a = window.AUTH;
+    return (a && a.signedIn) ? a : null;
+  }
+
+  function saveResult(won){
+    var a = sb();
+    if (!a) return;
+    fetch(a.url + "/rest/v1/word_results", {
+      method: "POST",
+      headers: {
+        apikey: a.key, Authorization: "Bearer " + a.token,
+        "Content-Type": "application/json", Prefer: "return=minimal"
+      },
+      body: JSON.stringify({
+        user_id: a.user.id, day: day, number: number,
+        guesses: guesses.length, solved: won, pattern: shareGrid()
+      })
+    }).then(loadLeaderboard).catch(function(){});
+  }
+
+  function loadLeaderboard(){
+    var a = sb();
+    if (!a){
+      $("leaderboard").innerHTML =
+        '<div class="state">Sign in on the dashboard to join the leaderboard.</div>';
+      $("lbMeta").textContent = "";
+      return;
+    }
+    fetch(a.url + "/rest/v1/rpc/word_leaderboard", {
+      method: "POST",
+      headers: {
+        apikey: a.key, Authorization: "Bearer " + a.token,
+        "Content-Type": "application/json"
+      },
+      body: "{}"
+    })
+    .then(function(r){ return r.ok ? r.json() : []; })
+    .then(function(rows){
+      rows = rows || [];
+      if (!rows.length){
+        $("leaderboard").innerHTML = '<div class="state">Nobody has played yet. Be first.</div>';
+        $("lbMeta").textContent = "";
+        return;
+      }
+      $("lbMeta").textContent = rows.length + " player" + (rows.length === 1 ? "" : "s");
+      $("leaderboard").innerHTML = '<div class="scroll-x"><table class="lb"><thead><tr>' +
+        '<th></th><th>Player</th><th class="num">Solved</th><th class="num">Played</th>' +
+        '<th class="num">Avg</th><th class="num">Streak</th><th class="num">Best</th>' +
+        '</tr></thead><tbody>' +
+        rows.map(function(r, i){
+          return '<tr>' +
+            '<td class="mono-sm" style="color:var(--ink-faint)">' + (i+1) + '</td>' +
+            '<td style="font-weight:500">' + esc(r.display_name) + '</td>' +
+            '<td class="num" style="color:var(--acid)">' + r.wins + '</td>' +
+            '<td class="num">' + r.played + '</td>' +
+            '<td class="num">' + (r.avg_guesses == null ? "—" : r.avg_guesses) + '</td>' +
+            '<td class="num streak">' + (r.current_streak || 0) + '</td>' +
+            '<td class="num">' + (r.best_streak || 0) + '</td>' +
+          '</tr>';
+        }).join("") + '</tbody></table></div>';
+    })
+    .catch(function(){
+      $("leaderboard").innerHTML = '<div class="state err">Couldn\'t load the leaderboard.</div>';
+    });
+  }
+
+  window.addEventListener("auth:changed", loadLeaderboard);
+
+  /* ---------------- boot ---------------- */
+
+  function start(){
+    VALID = new Set(window.WORD_GUESSES || []);
+    if (answer) VALID.add(answer);
+
+    loadLocal();
+    $("puzzleNo").textContent = "Puzzle #" + number + " · " + day;
+    drawBoard();
+    drawKeys();
+
+    if (finished) finish(guesses[guesses.length - 1] === answer);
+    loadLeaderboard();
+  }
+
+  if (!PROXY){
+    $("game").innerHTML = '<div class="state err">Needs the Worker — set FLIGHT_PROXY in config.js.</div>';
+  } else {
+    fetch(PROXY + "/word")
+      .then(function(r){ if (!r.ok) throw new Error(r.status); return r.json(); })
+      .then(function(j){
+        answer = String(j.word || "").toLowerCase();
+        day = j.day; number = j.number;
+        start();
+      })
+      .catch(function(){
+        $("game").innerHTML = '<div class="state err">Couldn\'t fetch today\'s word. Try refreshing.</div>';
+      });
+  }
+})();
+</script>
+</body>
+</html>
