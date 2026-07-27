@@ -293,14 +293,17 @@
       $("authMsg").className = "state";
       $("authMsg").textContent = "Sending…";
 
-      fetch(URL_ + "/auth/v1/otp", {
+      /* redirect_to is a query parameter on the REST endpoint — the
+         options.emailRedirectTo form only works via the JS SDK. Get this
+         wrong and the link falls back to the project's Site URL, which
+         defaults to localhost. It must also be listed under
+         Authentication -> URL Configuration -> Redirect URLs. */
+      var back = window.location.origin + window.location.pathname;
+
+      fetch(URL_ + "/auth/v1/otp?redirect_to=" + encodeURIComponent(back), {
         method: "POST",
         headers: { apikey: KEY, "Content-Type": "application/json" },
-        body: JSON.stringify({
-          email: email,
-          create_user: true,
-          options: { email_redirect_to: window.location.origin + window.location.pathname }
-        })
+        body: JSON.stringify({ email: email, create_user: true })
       }).then(function(r){
         if (r.ok){
           $("authMsg").className = "state";
