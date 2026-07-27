@@ -800,8 +800,9 @@
         $("flSource").textContent = "";
         var hint = PROXY
           ? 'Check the Worker is deployed and that FLIGHT_PROXY in config.js matches its URL.'
-          : 'These feeds don\'t send CORS headers, so the browser blocks them. ' +
-            'Set FLIGHT_PROXY in config.js — see SETUP.md, "Flight proxy".';
+          : 'No FLIGHT_PROXY set in config.js. If you have already set one, ' +
+            'you are seeing a cached config.js — hard refresh (Cmd/Ctrl+Shift+R). ' +
+            'Otherwise see SETUP.md, "Flight proxy".';
         $("flights").innerHTML =
           '<div class="state err">No flight feed reachable.</div>' +
           '<div class="state" style="padding-top:4px">' +
