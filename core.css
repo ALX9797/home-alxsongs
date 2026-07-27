@@ -232,7 +232,6 @@ h1,h2,h3{ margin:0; font-weight:700; letter-spacing:-.02em; }
   white-space: nowrap;
   transition: .16s ease;
 }
-.navchip svg{ width:13px; height:13px; flex:none; }
 .navchip:hover{
   color: #0a0a0a;
   background: var(--acid);
