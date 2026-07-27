@@ -1,0 +1,424 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>HOME · alxsongs</title>
+<meta name="description" content="A small private dashboard. On this day, aircraft overhead, and the Dutch Blitz ledger.">
+<meta name="theme-color" content="#08090b">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' fill='%2308090b'/><circle cx='50' cy='50' r='26' fill='%23d8ff3e'/></svg>">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&family=Space+Grotesk:wght@400;500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="core.css">
+<style>
+  /* ---- page-specific: radar ---- */
+  .radar-wrap{ display:grid; grid-template-columns: 210px 1fr; gap:20px; align-items:start; }
+  @media (max-width: 640px){ .radar-wrap{ grid-template-columns: 1fr; } }
+
+  .radar{ width:100%; max-width:210px; aspect-ratio:1; display:block; margin:0 auto; }
+  .radar .ring{ fill:none; stroke:var(--line-hot); stroke-width:1; }
+  .radar .cross{ stroke:var(--line); stroke-width:1; }
+  .radar .lbl{ font-family:var(--mono); font-size:7px; fill:var(--ink-faint); letter-spacing:.1em; }
+  .radar .me{ fill:var(--acid); }
+  .radar .blip{ fill:var(--ice); }
+  .radar .blip.near{ fill:var(--hot); }
+  .sweep{ transform-origin:100px 100px; animation: spin 4s linear infinite; }
+  @keyframes spin{ to{ transform: rotate(360deg); } }
+
+  .fl-row{ grid-template-columns: 62px 1fr auto; }
+  .fl-call{ font-family:var(--mono); color:var(--acid); font-size:12px; letter-spacing:.06em; }
+  .fl-main b{ font-weight:500; }
+  .fl-sub{ font-size:11px; color:var(--ink-faint); font-family:var(--mono); letter-spacing:.04em; }
+  .fl-alt{ font-family:var(--mono); font-size:12px; color:var(--ink-dim); text-align:right; white-space:nowrap; }
+  .fl-alt span{ display:block; font-size:10px; color:var(--ink-faint); }
+
+  /* ---- on this day ---- */
+  .otd-year{
+    font-family:var(--mono);
+    font-size: clamp(38px, 9vw, 62px);
+    line-height:1; letter-spacing:-.03em;
+    color: var(--acid);
+    display:block; margin-bottom: 12px;
+  }
+  .otd-text{ font-size: 17px; line-height:1.5; letter-spacing:-.01em; }
+  .otd-text a{ color:var(--ink); text-decoration: underline; text-decoration-color: var(--line-hot); text-underline-offset:3px; }
+  .otd-text a:hover{ text-decoration-color: var(--acid); }
+  .badge{
+    display:inline-block; font-family:var(--mono); font-size:9px; letter-spacing:.18em;
+    text-transform:uppercase; padding:3px 7px; border-radius:2px; margin-bottom:14px;
+    border:1px solid currentColor;
+  }
+  .badge.sci{ color: var(--ice); }
+  .badge.hist{ color: var(--amber); }
+  .otd-foot{ margin-top:18px; display:flex; gap:8px; align-items:center; flex-wrap:wrap; }
+
+  .soon{ color:var(--ink-faint); font-size:13px; }
+  .soon ul{ margin:10px 0 0; padding-left:16px; }
+  .soon li{ margin:4px 0; }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header class="topbar">
+    <a class="brand" href="./"><span class="dot"></span> home · alxsongs</a>
+    <div class="right">
+      <span id="clock">--:--:--</span>
+      <span style="color:var(--line-hot)"> / </span>
+      <span id="datestr">—</span>
+    </div>
+  </header>
+
+  <section class="hero">
+    <h1 class="greet"><span id="greeting">Hello</span>, <em id="owner">Alex</em>.</h1>
+    <div class="meta">
+      <div><span class="tag">day</span> <b id="daynum">—</b></div>
+      <div><span class="tag">week</span> <b id="weeknum">—</b></div>
+      <div><span class="tag">position</span> <b id="posmeta">locating…</b></div>
+      <div><span class="tag">overhead</span> <b id="ohmeta">—</b></div>
+    </div>
+  </section>
+
+  <main class="grid">
+
+    <!-- ============ ON THIS DAY ============ -->
+    <section class="card span-7">
+      <div class="card-head">
+        <h2><span class="idx">01 /</span> On This Day</h2>
+        <button class="btn ghost" id="otdShuffle" title="Another one">↻ another</button>
+      </div>
+      <div id="otd">
+        <div class="skel" style="width:40%;height:40px"></div>
+        <div class="skel"></div><div class="skel" style="width:80%"></div>
+      </div>
+    </section>
+
+    <!-- ============ OVERHEAD ============ -->
+    <section class="card span-5">
+      <div class="card-head">
+        <h2><span class="idx">02 /</span> Overhead</h2>
+        <button class="btn ghost" id="flRefresh">↻</button>
+      </div>
+      <div class="radar-wrap">
+        <svg class="radar" viewBox="0 0 200 200" aria-label="Radar of nearby aircraft">
+          <defs>
+            <linearGradient id="sw" x1="0" y1="0" x2="1" y2="0">
+              <stop offset="0%" stop-color="#d8ff3e" stop-opacity="0"/>
+              <stop offset="100%" stop-color="#d8ff3e" stop-opacity=".28"/>
+            </linearGradient>
+          </defs>
+          <g class="sweep"><path d="M100 100 L100 12 A88 88 0 0 1 162 38 Z" fill="url(#sw)"/></g>
+          <circle class="ring" cx="100" cy="100" r="88"/>
+          <circle class="ring" cx="100" cy="100" r="59" stroke-dasharray="2 4"/>
+          <circle class="ring" cx="100" cy="100" r="30" stroke-dasharray="2 4"/>
+          <line class="cross" x1="100" y1="10" x2="100" y2="190"/>
+          <line class="cross" x1="10" y1="100" x2="190" y2="100"/>
+          <text class="lbl" x="100" y="8" text-anchor="middle">N</text>
+          <text class="lbl" x="196" y="103" text-anchor="end">E</text>
+          <text class="lbl" x="100" y="198" text-anchor="middle">S</text>
+          <text class="lbl" x="4" y="103">W</text>
+          <circle class="me" cx="100" cy="100" r="2.5"/>
+          <g id="blips"></g>
+        </svg>
+        <div>
+          <div id="flights"><div class="skel"></div><div class="skel" style="width:70%"></div><div class="skel" style="width:85%"></div></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ GAMES TILE ============ -->
+    <a class="tile" href="games.html">
+      <div class="tag" style="margin-bottom:10px">03 / arcade</div>
+      <div class="big">DUTCH BLITZ<br>SCOREBOARD</div>
+      <div class="sub">Start a new game, track every round live, and settle once and for all who is actually good at this. All-time win table included.</div>
+      <div class="arrow">→</div>
+    </a>
+
+    <!-- ============ PLACEHOLDER ============ -->
+    <section class="card span-12">
+      <div class="card-head"><h2><span class="idx">04 /</span> Next up</h2><span class="tag">backlog</span></div>
+      <div class="soon">
+        Slots reserved. Say the word and any of these get built:
+        <ul>
+          <li>Personal news feeds — pick the topics, they land here each morning</li>
+          <li>Now-playing / recently-played from Spotify or Last.fm</li>
+          <li>Weather + sunrise/sunset strip across the top</li>
+          <li>Shared notes board that you and mates can post to</li>
+          <li>More games: darts ladder, FIFA table, pub-quiz score keeper</li>
+        </ul>
+      </div>
+    </section>
+
+  </main>
+
+  <footer class="foot">
+    <span>home.alxsongs.com</span>
+    <span>flight data: adsb.lol · history: wikipedia</span>
+  </footer>
+</div>
+
+<script src="config.js"></script>
+<script>
+(function(){
+  "use strict";
+  var C = window.CONFIG || {};
+
+  /* ---------------- clock / hero ---------------- */
+  var MONTHS = ["January","February","March","April","May","June","July","August","September","October","November","December"];
+  var DAYS = ["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"];
+
+  function pad(n){ return n < 10 ? "0" + n : "" + n; }
+
+  function tick(){
+    var d = new Date();
+    document.getElementById("clock").textContent = pad(d.getHours())+":"+pad(d.getMinutes())+":"+pad(d.getSeconds());
+    document.getElementById("datestr").textContent = (DAYS[d.getDay()].slice(0,3)+" "+d.getDate()+" "+MONTHS[d.getMonth()].slice(0,3)).toUpperCase();
+  }
+
+  function greetingFor(h){
+    if (h < 5)  return "Still up";
+    if (h < 12) return "Morning";
+    if (h < 18) return "Afternoon";
+    if (h < 22) return "Evening";
+    return "Late one";
+  }
+
+  function weekNumber(d){
+    var t = new Date(Date.UTC(d.getFullYear(), d.getMonth(), d.getDate()));
+    var day = t.getUTCDay() || 7;
+    t.setUTCDate(t.getUTCDate() + 4 - day);
+    var start = new Date(Date.UTC(t.getUTCFullYear(), 0, 1));
+    return Math.ceil((((t - start) / 86400000) + 1) / 7);
+  }
+
+  var now = new Date();
+  document.getElementById("owner").textContent = C.OWNER_NAME || "you";
+  document.getElementById("greeting").textContent = greetingFor(now.getHours());
+  document.getElementById("daynum").textContent =
+    DAYS[now.getDay()] + " " + now.getDate() + " " + MONTHS[now.getMonth()];
+  document.getElementById("weeknum").textContent = "W" + weekNumber(now);
+  tick(); setInterval(tick, 1000);
+
+  /* =====================================================================
+     ON THIS DAY
+     Wikipedia's "on this day" feed, weighted towards science + discovery.
+     ===================================================================== */
+
+  var SCI = /(discover|scientist|physic|chemist|biolog|astronom|astronaut|cosmonaut|telescope|spacecraft|space |satellite|orbit|launch|rocket|NASA|probe|comet|eclipse|planet|moon|element|vaccine|genome|DNA|patent|invent|experiment|theory|particle|atom|quantum|nuclear|computer|electric|engineer|mathematic|medicine|surgery|antibiotic|fossil|dinosaur|species|evolution|archaeolog|expedition|summit|Antarctic|mission|laboratory|Nobel|X-ray|laser|transistor|internet|microscope|aviation|aircraft|first flight|climate)/i;
+
+  var FALLBACK = [
+    { year: 1928, text: "Alexander Fleming returned from holiday to find a stray mould had killed the bacteria in a forgotten petri dish — the accident that became penicillin." },
+    { year: 1969, text: "Apollo 11's crew splashed down in the Pacific, ending the first mission to land humans on another world." },
+    { year: 1953, text: "Franklin's Photo 51 and the Watson–Crick model gave biology the double helix, and with it the language of heredity." },
+    { year: 1990, text: "The Hubble Space Telescope opened its eye above the atmosphere and quietly rewrote the age of the universe." },
+    { year: 1962, text: "Mariner 2 set off for Venus and became the first spacecraft to successfully visit another planet." },
+    { year: 1687, text: "Newton published the Principia, in which gravity stopped being a mystery and started being an equation." }
+  ];
+
+  var pool = [], poolIdx = 0;
+
+  function esc(s){
+    return String(s).replace(/[&<>\"]/g, function(c){
+      return ({ "&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;" })[c];
+    });
+  }
+
+  function renderOTD(){
+    var box = document.getElementById("otd");
+    if (!pool.length){
+      box.innerHTML = '<div class="state err">Could not reach the history feed. Try again later.</div>';
+      return;
+    }
+    var it = pool[poolIdx % pool.length];
+    var isSci = SCI.test(it.text);
+    var link = it.url
+      ? '<div class="otd-foot"><a class="btn" href="'+esc(it.url)+'" target="_blank" rel="noopener">read more ↗</a></div>'
+      : "";
+    box.innerHTML =
+      '<span class="badge '+(isSci?"sci":"hist")+'">'+(isSci?"science &amp; discovery":"moment in history")+'</span>' +
+      '<span class="otd-year">'+esc(it.year)+'</span>' +
+      '<div class="otd-text">'+esc(it.text)+'</div>' + link;
+  }
+
+  function loadOTD(){
+    var d = new Date();
+    var url = "https://en.wikipedia.org/api/rest_v1/feed/onthisday/all/" + pad(d.getMonth()+1) + "/" + pad(d.getDate());
+
+    fetch(url, { headers: { "Api-User-Agent": "home.alxsongs.com/1.0" } })
+      .then(function(r){ if(!r.ok) throw new Error(r.status); return r.json(); })
+      .then(function(j){
+        var items = [].concat(j.selected || [], j.events || []);
+        var mapped = items.filter(function(e){ return e && e.text && e.year; }).map(function(e){
+          var page = (e.pages && e.pages[0]) || null;
+          return {
+            year: e.year,
+            text: e.text,
+            url: page && page.content_urls && page.content_urls.desktop
+                 ? page.content_urls.desktop.page : null
+          };
+        });
+        // science first, then everything else — but keep both in the shuffle
+        var sci = mapped.filter(function(e){ return SCI.test(e.text); });
+        var rest = mapped.filter(function(e){ return !SCI.test(e.text); });
+        // shuffle each bucket so it's different every visit
+        function shuffle(a){ for(var i=a.length-1;i>0;i--){ var j=Math.floor(Math.random()*(i+1)); var t=a[i]; a[i]=a[j]; a[j]=t; } return a; }
+        pool = shuffle(sci).concat(shuffle(rest));
+        if (!pool.length) pool = FALLBACK.slice();
+        renderOTD();
+      })
+      .catch(function(){
+        pool = FALLBACK.slice().sort(function(){ return Math.random()-0.5; });
+        renderOTD();
+      });
+  }
+
+  document.getElementById("otdShuffle").addEventListener("click", function(){
+    poolIdx++; renderOTD();
+  });
+  loadOTD();
+
+  /* =====================================================================
+     OVERHEAD AIRCRAFT — adsb.lol (free, no key)
+     ===================================================================== */
+
+  var AIRLINES = {
+    BAW:"British Airways", SHT:"BA Shuttle", EZY:"easyJet", EZS:"easyJet Switzerland",
+    EJU:"easyJet Europe", RYR:"Ryanair", VIR:"Virgin Atlantic", UAL:"United",
+    AAL:"American", DAL:"Delta", KLM:"KLM", AFR:"Air France", DLH:"Lufthansa",
+    UAE:"Emirates", QTR:"Qatar Airways", ETD:"Etihad", SIA:"Singapore Airlines",
+    ACA:"Air Canada", TOM:"TUI", JAL:"Japan Airlines", ANA:"All Nippon",
+    IBE:"Iberia", TAP:"TAP Portugal", SWR:"Swiss", AUA:"Austrian", SAS:"SAS",
+    FIN:"Finnair", NAX:"Norwegian", WZZ:"Wizz Air", THY:"Turkish Airlines",
+    ITY:"ITA Airways", CFE:"BA CityFlyer", LOT:"LOT Polish", AEE:"Aegean",
+    ELY:"El Al", ETH:"Ethiopian", MSR:"EgyptAir", SAA:"South African",
+    QFA:"Qantas", CPA:"Cathay Pacific", CCA:"Air China", CES:"China Eastern",
+    BOX:"AeroLogic", GEC:"Lufthansa Cargo", FDX:"FedEx", UPS:"UPS",
+    NPT:"West Atlantic", BCS:"European Air Transport", CLX:"Cargolux"
+  };
+
+  var TYPES = {
+    A319:"Airbus A319", A320:"Airbus A320", A20N:"Airbus A320neo", A321:"Airbus A321",
+    A21N:"Airbus A321neo", A332:"Airbus A330-200", A333:"Airbus A330-300",
+    A339:"Airbus A330-900", A343:"Airbus A340-300", A346:"Airbus A340-600",
+    A359:"Airbus A350-900", A35K:"Airbus A350-1000", A388:"Airbus A380",
+    B733:"Boeing 737-300", B738:"Boeing 737-800", B739:"Boeing 737-900",
+    B38M:"Boeing 737 MAX 8", B39M:"Boeing 737 MAX 9", B752:"Boeing 757-200",
+    B763:"Boeing 767-300", B772:"Boeing 777-200", B77L:"Boeing 777-200LR",
+    B77W:"Boeing 777-300ER", B788:"Boeing 787-8", B789:"Boeing 787-9",
+    B78X:"Boeing 787-10", B744:"Boeing 747-400", B748:"Boeing 747-8",
+    BCS1:"Airbus A220-100", BCS3:"Airbus A220-300",
+    E170:"Embraer 170", E190:"Embraer 190", E195:"Embraer 195",
+    E75L:"Embraer 175", CRJ2:"Bombardier CRJ200", CRJ9:"Bombardier CRJ900",
+    DH8D:"Dash 8 Q400", AT72:"ATR 72", AT76:"ATR 72-600",
+    C172:"Cessna 172", C152:"Cessna 152", PA28:"Piper Cherokee",
+    P28R:"Piper Arrow", SR22:"Cirrus SR22", DA42:"Diamond DA42",
+    GLEX:"Bombardier Global", GL5T:"Global 5000", CL35:"Challenger 350",
+    G280:"Gulfstream G280", C56X:"Citation Excel", E55P:"Phenom 300",
+    EC35:"Airbus H135", EC45:"Airbus H145", A139:"AgustaWestland AW139",
+    B06:"Bell 206", R44:"Robinson R44", S76:"Sikorsky S-76",
+    D328:"Dornier 328", P68:"Partenavia P68"
+  };
+
+  var lat = null, lon = null;
+
+  function compass(deg){
+    var pts = ["N","NNE","NE","ENE","E","ESE","SE","SSE","S","SSW","SW","WSW","W","WNW","NW","NNW"];
+    return pts[Math.round(((deg % 360) / 22.5)) % 16];
+  }
+
+  function airlineOf(call){
+    if (!call) return null;
+    var p = call.trim().slice(0,3).toUpperCase();
+    return AIRLINES[p] || null;
+  }
+
+  function drawBlips(list){
+    var g = document.getElementById("blips");
+    var R = C.FLIGHT_RADIUS_NM || 20;
+    var out = "";
+    list.slice(0, 24).forEach(function(a){
+      var r = Math.min(a.dst / R, 1) * 88;
+      var th = (a.dir || 0) * Math.PI / 180;
+      var x = 100 + Math.sin(th) * r;
+      var y = 100 - Math.cos(th) * r;
+      var rot = (a.track != null ? a.track : 0);
+      var near = a.dst < R / 3 ? " near" : "";
+      out += '<g transform="translate('+x.toFixed(1)+','+y.toFixed(1)+') rotate('+rot.toFixed(0)+')">' +
+             '<path class="blip'+near+'" d="M0 -4 L2.6 3 L0 1.4 L-2.6 3 Z"><title>' +
+             esc((a.flight||"").trim() || a.r || a.hex) + ' · ' + a.dst.toFixed(1) + ' nm</title></path></g>';
+    });
+    g.innerHTML = out;
+  }
+
+  function renderFlights(list){
+    var box = document.getElementById("flights");
+    if (!list.length){
+      box.innerHTML = '<div class="state">Quiet skies. Nothing airborne within '+(C.FLIGHT_RADIUS_NM||20)+' nm.</div>';
+      document.getElementById("ohmeta").textContent = "0 aircraft";
+      return;
+    }
+    document.getElementById("ohmeta").textContent = list.length + " aircraft";
+
+    box.innerHTML = list.slice(0, 8).map(function(a){
+      var call = (a.flight || "").trim() || a.r || a.hex.toUpperCase();
+      var al = airlineOf(a.flight);
+      var ty = TYPES[a.t] || a.t || "unknown type";
+      var alt = typeof a.alt_baro === "number" ? Math.round(a.alt_baro).toLocaleString() + " ft" : "—";
+      var spd = a.gs ? Math.round(a.gs) + " kt" : "";
+      var climbing = a.baro_rate > 300 ? " ↑" : (a.baro_rate < -300 ? " ↓" : "");
+      return '<div class="row fl-row">' +
+        '<div class="fl-call">' + esc(call) + '</div>' +
+        '<div class="fl-main"><b>' + esc(al || ty) + '</b>' +
+          '<div class="fl-sub">' + esc(al ? ty : "") + (al ? " · " : "") +
+            a.dst.toFixed(1) + ' nm ' + compass(a.dir || 0) + '</div></div>' +
+        '<div class="fl-alt">' + alt + climbing + '<span>' + spd + '</span></div>' +
+      '</div>';
+    }).join("");
+  }
+
+  function loadFlights(){
+    if (lat == null) return;
+    var R = Math.min(C.FLIGHT_RADIUS_NM || 20, 250);
+    var url = "https://api.adsb.lol/v2/lat/" + lat.toFixed(4) + "/lon/" + lon.toFixed(4) + "/dist/" + R;
+
+    fetch(url)
+      .then(function(r){ if(!r.ok) throw new Error(r.status); return r.json(); })
+      .then(function(j){
+        var ac = (j.ac || []).filter(function(a){
+          return a.alt_baro !== "ground" && typeof a.dst === "number" && a.t !== "TWR";
+        }).sort(function(a,b){ return a.dst - b.dst; });
+        renderFlights(ac);
+        drawBlips(ac);
+      })
+      .catch(function(){
+        document.getElementById("flights").innerHTML =
+          '<div class="state err">Flight feed unavailable right now.</div>';
+      });
+  }
+
+  function startFlights(label){
+    document.getElementById("posmeta").textContent = label;
+    loadFlights();
+    setInterval(loadFlights, 30000);
+    document.getElementById("flRefresh").addEventListener("click", loadFlights);
+  }
+
+  if (navigator.geolocation){
+    document.getElementById("posmeta").textContent = "locating…";
+    navigator.geolocation.getCurrentPosition(function(p){
+      lat = p.coords.latitude; lon = p.coords.longitude;
+      startFlights(lat.toFixed(2) + "°, " + lon.toFixed(2) + "°");
+    }, function(){
+      lat = C.FALLBACK_LAT; lon = C.FALLBACK_LON;
+      startFlights(C.FALLBACK_LABEL || "default location");
+    }, { enableHighAccuracy:false, timeout:8000, maximumAge:600000 });
+  } else {
+    lat = C.FALLBACK_LAT; lon = C.FALLBACK_LON;
+    startFlights(C.FALLBACK_LABEL || "default location");
+  }
+
+})();
+</script>
+</body>
+</html>

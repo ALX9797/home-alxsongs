@@ -1,0 +1,587 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Dutch Blitz · alxsongs</title>
+<meta name="theme-color" content="#08090b">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' fill='%2308090b'/><circle cx='50' cy='50' r='26' fill='%23ff3d7f'/></svg>">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&family=Space+Grotesk:wght@400;500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="core.css">
+<style>
+  .pagehead{ padding: 34px 0 26px; }
+  .pagehead h1{
+    font-size: clamp(36px, 8vw, 72px);
+    line-height:.95; letter-spacing:-.045em;
+  }
+  .pagehead h1 em{ font-style:normal; color: var(--hot); }
+  .pagehead p{ color: var(--ink-dim); max-width: 56ch; margin: 14px 0 22px; font-size:14px; }
+  .actions{ display:flex; gap:10px; flex-wrap:wrap; align-items:center; }
+
+  .storepill{
+    font-family:var(--mono); font-size:10px; letter-spacing:.16em; text-transform:uppercase;
+    padding:6px 10px; border:1px solid var(--line-hot); border-radius:2px; color:var(--ink-faint);
+  }
+  .storepill.cloud{ color: var(--ice); border-color: rgba(77,227,255,.4); }
+
+  /* live game */
+  .lead td{ background: rgba(216,255,62,.06); }
+  .pname{ font-weight:500; }
+  .tot{ font-family:var(--mono); font-size:16px; }
+  .bar{ height:3px; background:var(--line); border-radius:2px; overflow:hidden; margin-top:5px; min-width:70px; }
+  .bar i{ display:block; height:100%; background:var(--acid); transition:width .35s ease; }
+
+  .entry input{ padding:7px 8px; font-size:13px; text-align:center; }
+  .entry .pair{ display:flex; gap:5px; }
+  .entry .pair input{ width:56px; }
+  .mini{ font-family:var(--mono); font-size:9px; letter-spacing:.14em; text-transform:uppercase; color:var(--ink-faint); display:block; margin-bottom:4px; }
+
+  .rank{ font-family:var(--mono); color:var(--ink-faint); width:26px; }
+  .rank.gold{ color: var(--acid); }
+  .wins{ font-family:var(--mono); font-size:15px; color:var(--acid); }
+
+  .tabs{ display:flex; gap:6px; }
+  .tabs .btn.on{ color:var(--bg); background:var(--ink); border-color:var(--ink); }
+
+  .hist{ padding:13px 0; border-bottom:1px solid var(--line); display:grid; grid-template-columns: 1fr auto; gap:12px; align-items:center; }
+  .hist:last-child{ border-bottom:0; }
+  .hist .w{ font-weight:500; }
+  .hist .w span{ color:var(--acid); }
+  .hist .d{ font-family:var(--mono); font-size:11px; color:var(--ink-faint); letter-spacing:.06em; margin-top:3px; }
+  .hist .sc{ font-family:var(--mono); font-size:11px; color:var(--ink-dim); }
+
+  .namegrid{ display:grid; gap:8px; }
+  .toggle{ display:flex; gap:6px; margin-top:6px; }
+
+  .win-banner{
+    border:1px solid var(--acid); border-radius:2px; padding:18px;
+    background: rgba(216,255,62,.07); margin-bottom:16px;
+  }
+  .win-banner .k{ font-size: clamp(26px,5vw,40px); letter-spacing:-.03em; line-height:1; }
+  .win-banner .k span{ color:var(--acid); }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header class="topbar">
+    <a class="brand" href="index.html"><span class="dot" style="background:var(--hot)"></span> ← home</a>
+    <div class="right"><span id="storeMode" class="storepill">…</span></div>
+  </header>
+
+  <section class="pagehead">
+    <h1>DUTCH <em>BLITZ</em><br>LEDGER</h1>
+    <p>Every round, every blitz pile, every humiliating negative score — recorded permanently. Scoring is cards played to the centre, minus two for each card left in your Blitz pile.</p>
+    <div class="actions">
+      <button class="btn acid lg" id="newGame">+ New game</button>
+      <button class="btn lg" id="resumeBtn" style="display:none">↺ Resume game</button>
+    </div>
+  </section>
+
+  <main class="grid">
+
+    <!-- ============ LIVE GAME ============ -->
+    <section class="card span-12" id="liveCard" style="display:none">
+      <div class="card-head">
+        <h2><span class="idx">live /</span> <span id="liveTitle">Game in progress</span></h2>
+        <div style="display:flex;gap:6px">
+          <button class="btn ghost" id="undoRound">↶ undo round</button>
+          <button class="btn ghost hot" id="abandon">✕ abandon</button>
+        </div>
+      </div>
+      <div id="winBanner"></div>
+      <div class="scroll-x">
+        <table id="liveTable"></table>
+      </div>
+      <div style="margin-top:16px;display:flex;gap:10px;flex-wrap:wrap;align-items:center">
+        <button class="btn acid" id="addRound">＋ Add round</button>
+        <span class="tag" id="roundHint"></span>
+      </div>
+    </section>
+
+    <!-- ============ TABLES ============ -->
+    <section class="card span-12">
+      <div class="card-head">
+        <h2><span class="idx">all time /</span> <span id="tabTitle">Leaderboard</span></h2>
+        <div class="tabs">
+          <button class="btn on" data-tab="board">Leaderboard</button>
+          <button class="btn" data-tab="history">History</button>
+        </div>
+      </div>
+      <div id="tabBody"><div class="skel"></div><div class="skel" style="width:70%"></div></div>
+    </section>
+
+  </main>
+
+  <footer class="foot">
+    <span>dutch blitz ledger</span>
+    <span id="footMode">—</span>
+  </footer>
+</div>
+
+<!-- ============ MODAL ============ -->
+<div class="modal-bg" id="modalBg">
+  <div class="modal" id="modal"></div>
+</div>
+
+<script src="config.js"></script>
+<script src="db.js"></script>
+<script>
+(function(){
+  "use strict";
+
+  var LIVE_KEY = "dutchblitz.live.v1";
+  var live = null;      // {players:[], target:int, rounds:[[..]], mode:'detail'|'simple', started:iso}
+  var games = [];       // finished games
+  var tab = "board";
+
+  function $(id){ return document.getElementById(id); }
+  function esc(s){
+    return String(s).replace(/[&<>"]/g, function(c){
+      return ({ "&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;" })[c];
+    });
+  }
+
+  /* ---------------- storage mode indicator ---------------- */
+  var cloud = DB.isCloud();
+  $("storeMode").textContent = cloud ? "cloud sync" : "this device only";
+  if (cloud) $("storeMode").classList.add("cloud");
+  $("footMode").textContent = cloud ? "supabase" : "local storage";
+
+  /* ---------------- modal helpers ---------------- */
+  function openModal(html){
+    $("modal").innerHTML = html;
+    $("modalBg").classList.add("open");
+  }
+  function closeModal(){ $("modalBg").classList.remove("open"); }
+  $("modalBg").addEventListener("click", function(e){
+    if (e.target === $("modalBg")) closeModal();
+  });
+  document.addEventListener("keydown", function(e){
+    if (e.key === "Escape") closeModal();
+  });
+
+  /* =====================================================================
+     NEW GAME FLOW
+     ===================================================================== */
+
+  function newGameModal(){
+    var counts = [2,3,4,5,6,7,8];
+    var targets = [75, 100, 150, 200];
+    openModal(
+      '<h3>New game</h3>' +
+      '<div class="tag">set it up, then start dealing</div>' +
+
+      '<label class="f">How many players?</label>' +
+      '<div class="chipbar" id="pcount">' +
+        counts.map(function(n){ return '<button class="chip'+(n===4?" on":"")+'" data-n="'+n+'">'+n+'</button>'; }).join("") +
+      '</div>' +
+
+      '<label class="f">Winning score</label>' +
+      '<div class="chipbar" id="tsel">' +
+        targets.map(function(n){ return '<button class="chip'+(n===75?" on":"")+'" data-t="'+n+'">'+n+'</button>'; }).join("") +
+      '</div>' +
+      '<input type="number" id="tcustom" placeholder="or type your own" style="margin-top:8px">' +
+
+      '<label class="f">Scoring style</label>' +
+      '<div class="chipbar" id="msel">' +
+        '<button class="chip on" data-m="detail">Centre &amp; Blitz</button>' +
+        '<button class="chip" data-m="simple">Round total only</button>' +
+      '</div>' +
+
+      '<label class="f">Player names</label>' +
+      '<div class="namegrid" id="names"></div>' +
+
+      '<div style="display:flex;gap:8px;margin-top:24px">' +
+        '<button class="btn acid lg" id="startGame" style="flex:1;justify-content:center">Start game</button>' +
+        '<button class="btn lg" id="cancelGame">Cancel</button>' +
+      '</div>'
+    );
+
+    var n = 4, target = 75, mode = "detail";
+
+    function drawNames(){
+      var prev = [].map.call($("names").querySelectorAll("input"), function(i){ return i.value; });
+      var suggested = suggestNames();
+      var html = "";
+      for (var i = 0; i < n; i++){
+        var v = prev[i] || suggested[i] || "";
+        html += '<input type="text" placeholder="Player '+(i+1)+'" value="'+esc(v)+'" maxlength="18">';
+      }
+      $("names").innerHTML = html;
+    }
+
+    function chipGroup(wrap, attr, cb){
+      $(wrap).addEventListener("click", function(e){
+        var b = e.target.closest(".chip");
+        if (!b) return;
+        [].forEach.call(this.querySelectorAll(".chip"), function(c){ c.classList.remove("on"); });
+        b.classList.add("on");
+        cb(b.getAttribute(attr));
+      });
+    }
+
+    chipGroup("pcount", "data-n", function(v){ n = +v; drawNames(); });
+    chipGroup("tsel", "data-t", function(v){ target = +v; $("tcustom").value = ""; });
+    chipGroup("msel", "data-m", function(v){ mode = v; });
+
+    $("tcustom").addEventListener("input", function(){
+      var v = parseInt(this.value, 10);
+      if (v > 0){
+        target = v;
+        [].forEach.call($("tsel").querySelectorAll(".chip"), function(c){ c.classList.remove("on"); });
+      }
+    });
+
+    drawNames();
+
+    $("cancelGame").addEventListener("click", closeModal);
+    $("startGame").addEventListener("click", function(){
+      var players = [].map.call($("names").querySelectorAll("input"), function(inp, i){
+        return (inp.value || "").trim() || ("Player " + (i+1));
+      });
+      // de-duplicate names so the leaderboard stays sane
+      var seen = {};
+      players = players.map(function(p){
+        var key = p.toLowerCase();
+        if (seen[key]) { seen[key]++; return p + " " + seen[key]; }
+        seen[key] = 1;
+        return p;
+      });
+      live = {
+        players: players,
+        target: target,
+        mode: mode,
+        rounds: [],
+        started: new Date().toISOString()
+      };
+      persistLive();
+      closeModal();
+      renderLive();
+    });
+  }
+
+  /* names seen before, most frequent first — makes setup one tap */
+  function suggestNames(){
+    var freq = {};
+    games.forEach(function(g){
+      (g.players || []).forEach(function(p){ freq[p] = (freq[p] || 0) + 1; });
+    });
+    return Object.keys(freq).sort(function(a,b){ return freq[b]-freq[a]; });
+  }
+
+  /* =====================================================================
+     LIVE GAME
+     ===================================================================== */
+
+  function persistLive(){
+    try{
+      if (live) localStorage.setItem(LIVE_KEY, JSON.stringify(live));
+      else localStorage.removeItem(LIVE_KEY);
+    }catch(e){}
+  }
+
+  function totals(){
+    if (!live) return [];
+    return live.players.map(function(_, i){
+      return live.rounds.reduce(function(s, r){ return s + (r[i] || 0); }, 0);
+    });
+  }
+
+  function winnerIndex(){
+    var t = totals();
+    var best = -Infinity, idx = -1;
+    t.forEach(function(v, i){ if (v > best){ best = v; idx = i; } });
+    return best >= live.target ? idx : -1;
+  }
+
+  function renderLive(){
+    if (!live){ $("liveCard").style.display = "none"; $("resumeBtn").style.display = "none"; return; }
+    $("liveCard").style.display = "";
+    $("resumeBtn").style.display = "none";
+    $("liveTitle").textContent = live.players.length + " players · first to " + live.target;
+
+    var t = totals();
+    var win = winnerIndex();
+    var maxT = Math.max.apply(null, t.concat([0]));
+
+    var head = '<thead><tr><th>Player</th>' +
+      live.rounds.map(function(_, i){ return '<th class="num">R'+(i+1)+'</th>'; }).join("") +
+      '<th class="num">Total</th></tr></thead>';
+
+    var body = '<tbody>' + live.players.map(function(p, i){
+      var pct = Math.max(0, Math.min(100, (t[i] / live.target) * 100));
+      return '<tr class="'+(t[i] === maxT && maxT > 0 ? "lead" : "")+'">' +
+        '<td><div class="pname">' + esc(p) + (win === i ? ' 👑' : '') + '</div>' +
+          '<div class="bar"><i style="width:'+pct.toFixed(0)+'%"></i></div></td>' +
+        live.rounds.map(function(r){
+          var v = r[i] || 0;
+          var col = v < 0 ? 'var(--hot)' : 'var(--ink-dim)';
+          return '<td class="num" style="color:'+col+'">' + (v > 0 ? "+" : "") + v + '</td>';
+        }).join("") +
+        '<td class="num tot">' + t[i] + '</td>' +
+      '</tr>';
+    }).join("") + '</tbody>';
+
+    $("liveTable").innerHTML = head + body;
+    $("roundHint").textContent = live.mode === "detail"
+      ? "round " + (live.rounds.length + 1) + " · centre cards − (2 × blitz left)"
+      : "round " + (live.rounds.length + 1);
+
+    $("undoRound").style.display = live.rounds.length ? "" : "none";
+
+    if (win >= 0){
+      $("winBanner").innerHTML =
+        '<div class="win-banner"><div class="k"><span>' + esc(live.players[win]) + '</span> takes it.</div>' +
+        '<div class="tag" style="margin-top:8px">' + t[win] + ' points in ' + live.rounds.length + ' rounds</div>' +
+        '<div style="margin-top:14px;display:flex;gap:8px;flex-wrap:wrap">' +
+          '<button class="btn acid" id="saveWin">Save to ledger</button>' +
+          '<button class="btn" id="keepPlaying">Keep playing</button>' +
+        '</div></div>';
+      $("addRound").style.display = "none";
+      $("saveWin").addEventListener("click", function(){ finishGame(win); });
+      $("keepPlaying").addEventListener("click", function(){
+        live.target = Math.max.apply(null, t) + 25;
+        persistLive(); renderLive();
+      });
+    } else {
+      $("winBanner").innerHTML = "";
+      $("addRound").style.display = "";
+    }
+  }
+
+  function addRoundModal(){
+    var detail = live.mode === "detail";
+    openModal(
+      '<h3>Round ' + (live.rounds.length + 1) + '</h3>' +
+      '<div class="tag">' + (detail ? "cards played to the centre, and cards left in the blitz pile" : "just the round score for each player") + '</div>' +
+      '<div class="entry" id="entry" style="margin-top:18px">' +
+        live.players.map(function(p, i){
+          return '<div style="margin-bottom:14px">' +
+            '<span class="mini">' + esc(p) + '</span>' +
+            (detail
+              ? '<div class="pair"><input type="number" data-c="'+i+'" placeholder="centre" inputmode="numeric">' +
+                '<input type="number" data-b="'+i+'" placeholder="blitz" inputmode="numeric">' +
+                '<div style="flex:1;display:flex;align-items:center;font-family:var(--mono);font-size:13px;color:var(--ink-faint)" id="pv'+i+'">= 0</div></div>'
+              : '<input type="number" data-s="'+i+'" placeholder="score" inputmode="numeric">') +
+          '</div>';
+        }).join("") +
+      '</div>' +
+      '<div style="display:flex;gap:8px;margin-top:14px">' +
+        '<button class="btn acid lg" id="saveRound" style="flex:1;justify-content:center">Save round</button>' +
+        '<button class="btn lg" id="cancelRound">Cancel</button>' +
+      '</div>'
+    );
+
+    function preview(){
+      if (!detail) return;
+      live.players.forEach(function(_, i){
+        var c = +($("entry").querySelector('[data-c="'+i+'"]').value || 0);
+        var b = +($("entry").querySelector('[data-b="'+i+'"]').value || 0);
+        var v = c - 2*b;
+        var el = $("pv"+i);
+        el.textContent = "= " + (v > 0 ? "+" : "") + v;
+        el.style.color = v < 0 ? "var(--hot)" : "var(--acid)";
+      });
+    }
+    $("entry").addEventListener("input", preview);
+    preview();
+
+    var first = $("entry").querySelector("input");
+    if (first) first.focus();
+
+    $("cancelRound").addEventListener("click", closeModal);
+    $("saveRound").addEventListener("click", function(){
+      var row = live.players.map(function(_, i){
+        if (detail){
+          var c = +($("entry").querySelector('[data-c="'+i+'"]').value || 0);
+          var b = +($("entry").querySelector('[data-b="'+i+'"]').value || 0);
+          return c - 2*b;
+        }
+        return +($("entry").querySelector('[data-s="'+i+'"]').value || 0);
+      });
+      live.rounds.push(row);
+      persistLive();
+      closeModal();
+      renderLive();
+    });
+  }
+
+  function finishGame(win){
+    var t = totals();
+    var scores = {};
+    live.players.forEach(function(p, i){ scores[p] = t[i]; });
+
+    var game = {
+      played_at: new Date().toISOString(),
+      target_score: live.target,
+      players: live.players,
+      winner: live.players[win],
+      final_scores: scores,
+      rounds: live.rounds
+    };
+
+    var btn = $("saveWin");
+    if (btn){ btn.disabled = true; btn.textContent = "Saving…"; }
+
+    DB.save(game).then(function(saved){
+      games.unshift(saved || game);
+      live = null; persistLive();
+      renderLive();
+      renderTab();
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }).catch(function(err){
+      alert("Couldn't save to the cloud: " + err.message + "\n\nThe game has been kept so you can try again.");
+      if (btn){ btn.disabled = false; btn.textContent = "Save to ledger"; }
+    });
+  }
+
+  $("newGame").addEventListener("click", function(){
+    if (live && live.rounds.length){
+      if (!confirm("There's a game in progress. Start a new one and discard it?")) return;
+    }
+    live = null; persistLive();
+    newGameModal();
+  });
+  $("addRound").addEventListener("click", addRoundModal);
+  $("undoRound").addEventListener("click", function(){
+    if (!live || !live.rounds.length) return;
+    live.rounds.pop(); persistLive(); renderLive();
+  });
+  $("abandon").addEventListener("click", function(){
+    if (!confirm("Bin this game without saving it?")) return;
+    live = null; persistLive(); renderLive();
+  });
+  $("resumeBtn").addEventListener("click", renderLive);
+
+  /* =====================================================================
+     LEADERBOARD + HISTORY
+     ===================================================================== */
+
+  function buildStats(){
+    var s = {};
+    function ensure(p){
+      if (!s[p]) s[p] = { name:p, games:0, wins:0, points:0, best:-Infinity, bestRound:-Infinity };
+      return s[p];
+    }
+    games.forEach(function(g){
+      var fs = g.final_scores || {};
+      (g.players || []).forEach(function(p){
+        var e = ensure(p);
+        e.games++;
+        var sc = fs[p];
+        if (typeof sc === "number"){
+          e.points += sc;
+          if (sc > e.best) e.best = sc;
+        }
+        if (g.winner === p) e.wins++;
+      });
+      var idx = {};
+      (g.players || []).forEach(function(p, i){ idx[i] = p; });
+      (g.rounds || []).forEach(function(r){
+        r.forEach(function(v, i){
+          var p = idx[i];
+          if (p && typeof v === "number" && v > s[p].bestRound) s[p].bestRound = v;
+        });
+      });
+    });
+    return Object.keys(s).map(function(k){ return s[k]; }).sort(function(a,b){
+      if (b.wins !== a.wins) return b.wins - a.wins;
+      return (b.wins/b.games) - (a.wins/a.games);
+    });
+  }
+
+  function renderBoard(){
+    var rows = buildStats();
+    if (!rows.length){
+      return '<div class="state">No games recorded yet. Hit <b style="color:var(--acid)">+ New game</b> and make some history.</div>';
+    }
+    return '<div class="scroll-x"><table><thead><tr>' +
+      '<th></th><th>Player</th><th class="num">Wins</th><th class="num">Played</th>' +
+      '<th class="num">Win %</th><th class="num">Best game</th><th class="num">Best round</th>' +
+      '</tr></thead><tbody>' +
+      rows.map(function(r, i){
+        return '<tr>' +
+          '<td class="rank'+(i===0?" gold":"")+'">'+(i+1)+'</td>' +
+          '<td class="pname">'+esc(r.name)+(i===0?' 👑':'')+'</td>' +
+          '<td class="num wins">'+r.wins+'</td>' +
+          '<td class="num">'+r.games+'</td>' +
+          '<td class="num">'+Math.round((r.wins/r.games)*100)+'%</td>' +
+          '<td class="num">'+(isFinite(r.best)?r.best:"—")+'</td>' +
+          '<td class="num">'+(isFinite(r.bestRound)?r.bestRound:"—")+'</td>' +
+        '</tr>';
+      }).join("") + '</tbody></table></div>';
+  }
+
+  function renderHistory(){
+    if (!games.length){
+      return '<div class="state">Nothing in the ledger yet.</div>';
+    }
+    return games.map(function(g){
+      var d = new Date(g.played_at);
+      var fs = g.final_scores || {};
+      var line = (g.players || []).map(function(p){
+        return esc(p) + " " + (fs[p] != null ? fs[p] : "—");
+      }).join("  ·  ");
+      return '<div class="hist">' +
+        '<div><div class="w"><span>' + esc(g.winner || "?") + '</span> won — to ' + (g.target_score||"?") + '</div>' +
+          '<div class="sc">' + line + '</div>' +
+          '<div class="d">' + d.toLocaleDateString() + ' ' + d.toLocaleTimeString([], {hour:"2-digit",minute:"2-digit"}) +
+            ' · ' + ((g.rounds||[]).length) + ' rounds</div></div>' +
+        '<button class="btn ghost hot" data-del="' + esc(g.id) + '">✕</button>' +
+      '</div>';
+    }).join("");
+  }
+
+  function renderTab(){
+    $("tabTitle").textContent = tab === "board" ? "Leaderboard" : "History";
+    $("tabBody").innerHTML = tab === "board" ? renderBoard() : renderHistory();
+  }
+
+  document.querySelector(".tabs").addEventListener("click", function(e){
+    var b = e.target.closest("[data-tab]");
+    if (!b) return;
+    [].forEach.call(this.querySelectorAll(".btn"), function(x){ x.classList.remove("on"); });
+    b.classList.add("on");
+    tab = b.getAttribute("data-tab");
+    renderTab();
+  });
+
+  $("tabBody").addEventListener("click", function(e){
+    var b = e.target.closest("[data-del]");
+    if (!b) return;
+    var id = b.getAttribute("data-del");
+    if (!confirm("Delete this game from the ledger?")) return;
+    DB.remove(id).then(function(){
+      games = games.filter(function(g){ return String(g.id) !== id; });
+      renderTab();
+    }).catch(function(err){ alert(err.message); });
+  });
+
+  /* =====================================================================
+     BOOT
+     ===================================================================== */
+
+  try{
+    var raw = localStorage.getItem(LIVE_KEY);
+    if (raw){
+      live = JSON.parse(raw);
+      $("resumeBtn").style.display = "";
+    }
+  }catch(e){}
+
+  DB.list().then(function(rows){
+    games = rows || [];
+    renderTab();
+    if (live) renderLive();
+  }).catch(function(err){
+    $("tabBody").innerHTML = '<div class="state err">Could not load the ledger: ' + esc(err.message) + '</div>';
+    if (live) renderLive();
+  });
+
+})();
+</script>
+</body>
+</html>
