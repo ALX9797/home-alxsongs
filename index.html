@@ -152,6 +152,42 @@
   .badge.hist{ color: var(--amber); }
   .otd-foot{ margin-top:16px; display:flex; gap:8px; align-items:center; flex-wrap:wrap; }
 
+  /* ---- weather in the top bar ---- */
+  .wx{ display:inline-flex; align-items:center; gap:7px; }
+  .wx-sep{ color:var(--line-hot); }
+  .wx-icon{ font-size:13px; line-height:1; }
+  .wx b{ color:var(--ink); font-weight:500; }
+  .wx-hilo{ color:var(--ink-faint); }
+  .wx-desc{ color:var(--ink-dim); }
+  @media (max-width: 720px){ .wx-desc{ display:none; } }
+
+  /* ---- news ---- */
+  .news-grid{ display:grid; grid-template-columns:repeat(4,1fr); gap:20px; }
+  @media (max-width:1000px){ .news-grid{ grid-template-columns:repeat(2,1fr); } }
+  @media (max-width:600px){ .news-grid{ grid-template-columns:1fr; } }
+
+  .news-col h3{
+    font-family:var(--mono); font-size:10px; letter-spacing:.2em; text-transform:uppercase;
+    color:var(--ink-faint); font-weight:400;
+    padding-bottom:8px; margin-bottom:4px; border-bottom:1px solid var(--line);
+  }
+  .news-col.music h3{ color:var(--hot); }
+  .news-col.science h3{ color:var(--ice); }
+  .news-col.tech h3{ color:var(--acid); }
+  .news-col.world h3{ color:var(--amber); }
+
+  .nw{
+    display:block; text-decoration:none; color:var(--ink);
+    padding:9px 0; border-bottom:1px dashed var(--line);
+  }
+  .news-col .nw:last-child{ border-bottom:0; }
+  .nw:hover .nw-t{ color:var(--acid); }
+  .nw-t{ font-size:13px; line-height:1.35; letter-spacing:-.005em; transition:color .13s; }
+  .nw-m{
+    font-family:var(--mono); font-size:9px; letter-spacing:.1em; text-transform:uppercase;
+    color:var(--ink-faint); margin-top:5px;
+  }
+
   .soon{ color:var(--ink-faint); font-size:13px; }
   .soon ul{ margin:10px 0 0; padding-left:16px; }
   .soon li{ margin:4px 0; }
@@ -169,6 +205,13 @@
       <span id="clock">--:--:--</span>
       <span style="color:var(--line-hot)"> / </span>
       <span id="datestr">—</span>
+      <span class="wx" id="wx" hidden>
+        <span class="wx-sep">/</span>
+        <span class="wx-icon" id="wxIcon"></span>
+        <b id="wxTemp">—</b>
+        <span class="wx-hilo" id="wxHiLo"></span>
+        <span class="wx-desc" id="wxDesc"></span>
+      </span>
     </div>
   </header>
 
@@ -253,15 +296,27 @@
       </div>
     </section>
 
+    <!-- ============ NEWS ============ -->
+    <section class="card span-12">
+      <div class="card-head">
+        <h2><span class="idx">03 /</span> Feeds</h2>
+        <div class="oh-controls">
+          <span class="tag" id="newsMeta"></span>
+          <button class="btn ghost" id="newsRefresh" title="Refresh headlines">↻</button>
+        </div>
+      </div>
+      <div id="news">
+        <div class="skel"></div><div class="skel" style="width:80%"></div><div class="skel" style="width:65%"></div>
+      </div>
+    </section>
+
     <!-- ============ PLACEHOLDER ============ -->
     <section class="card span-12">
-      <div class="card-head"><h2><span class="idx">03 /</span> Next up</h2><span class="tag">backlog</span></div>
+      <div class="card-head"><h2><span class="idx">04 /</span> Next up</h2><span class="tag">backlog</span></div>
       <div class="soon">
         Slots reserved. Say the word and any of these get built:
         <ul>
-          <li>Personal news feeds — pick the topics, they land here each morning</li>
-          <li>Now-playing / recently-played from Spotify or Last.fm</li>
-          <li>Weather + sunrise/sunset strip across the top</li>
+          <li>Now-playing / recently-played from Spotify</li>
           <li>Shared notes board that you and mates can post to</li>
           <li>More games: darts ladder, FIFA table, pub-quiz score keeper</li>
         </ul>
@@ -907,14 +962,133 @@
     navigator.geolocation.getCurrentPosition(function(p){
       lat = p.coords.latitude; lon = p.coords.longitude;
       startFlights(lat.toFixed(2) + "°, " + lon.toFixed(2) + "°");
+      loadWeather();
     }, function(){
       lat = C.FALLBACK_LAT; lon = C.FALLBACK_LON;
       startFlights(C.FALLBACK_LABEL || "default location");
+      loadWeather();
     }, { enableHighAccuracy:false, timeout:8000, maximumAge:600000 });
   } else {
     lat = C.FALLBACK_LAT; lon = C.FALLBACK_LON;
     startFlights(C.FALLBACK_LABEL || "default location");
+    loadWeather();
   }
+
+  /* =====================================================================
+     WEATHER — Open-Meteo, via the Worker (free, no key)
+     ===================================================================== */
+
+  /* WMO weather codes -> a short label and a glyph */
+  var WMO = {
+    0:["Clear","☀"], 1:["Mostly clear","🌤"], 2:["Partly cloudy","⛅"], 3:["Overcast","☁"],
+    45:["Fog","🌫"], 48:["Freezing fog","🌫"],
+    51:["Light drizzle","🌦"], 53:["Drizzle","🌦"], 55:["Heavy drizzle","🌦"],
+    56:["Freezing drizzle","🌧"], 57:["Freezing drizzle","🌧"],
+    61:["Light rain","🌦"], 63:["Rain","🌧"], 65:["Heavy rain","🌧"],
+    66:["Freezing rain","🌧"], 67:["Freezing rain","🌧"],
+    71:["Light snow","🌨"], 73:["Snow","🌨"], 75:["Heavy snow","❄"], 77:["Snow grains","🌨"],
+    80:["Showers","🌦"], 81:["Showers","🌧"], 82:["Heavy showers","⛈"],
+    85:["Snow showers","🌨"], 86:["Snow showers","🌨"],
+    95:["Thunderstorms","⛈"], 96:["Thunderstorms","⛈"], 99:["Thunderstorms","⛈"]
+  };
+
+  function wxFor(code){ return WMO[code] || ["—","•"]; }
+
+  function loadWeather(){
+    if (lat == null) return;
+    var url = PROXY
+      ? PROXY + "/weather?lat=" + lat.toFixed(3) + "&lon=" + lon.toFixed(3)
+      : "https://api.open-meteo.com/v1/forecast?latitude=" + lat.toFixed(3) +
+        "&longitude=" + lon.toFixed(3) +
+        "&current=temperature_2m,weather_code&daily=weather_code,temperature_2m_max," +
+        "temperature_2m_min,precipitation_probability_max&timezone=auto&forecast_days=1";
+
+    fetchTimeout(url, 8000)
+      .then(function(r){ if(!r.ok) throw new Error(r.status); return r.json(); })
+      .then(function(j){
+        var cur = j.current || {};
+        var day = j.daily || {};
+        var code = cur.weather_code != null ? cur.weather_code : (day.weather_code || [])[0];
+        var wx = wxFor(code);
+
+        var hi = (day.temperature_2m_max || [])[0];
+        var lo = (day.temperature_2m_min || [])[0];
+        var rain = (day.precipitation_probability_max || [])[0];
+
+        $("wxIcon").textContent = wx[1];
+        $("wxTemp").textContent = cur.temperature_2m != null ? Math.round(cur.temperature_2m) + "°" : "—";
+        $("wxHiLo").textContent = (hi != null && lo != null)
+          ? Math.round(hi) + "° / " + Math.round(lo) + "°" : "";
+        $("wxDesc").textContent = wx[0] + (rain != null && rain >= 20 ? " · " + rain + "% rain" : "");
+        $("wx").hidden = false;
+      })
+      .catch(function(){ /* weather is a nicety — stay quiet if it fails */ });
+  }
+
+  /* =====================================================================
+     NEWS — RSS, merged and de-duplicated by the Worker
+     ===================================================================== */
+
+  var TOPIC_LABEL = { music:"Music", science:"Science", tech:"Tech", world:"UK & World" };
+  var TOPICS = ["music","science","tech","world"];
+  var PER_TOPIC = 5;
+
+  function ago(ts){
+    if (!ts) return "";
+    var s = Math.max(0, Math.round((Date.now() - ts) / 1000));
+    if (s < 3600) return Math.max(1, Math.round(s/60)) + "m ago";
+    if (s < 86400) return Math.round(s/3600) + "h ago";
+    return Math.round(s/86400) + "d ago";
+  }
+
+  function renderNews(j){
+    var box = $("news");
+    var topics = j.topics || {};
+    var cols = TOPICS.filter(function(t){ return (topics[t] || []).length; });
+
+    if (!cols.length){
+      box.innerHTML = '<div class="state err">No headlines came back.</div>';
+      return;
+    }
+
+    box.innerHTML = '<div class="news-grid">' + cols.map(function(t){
+      return '<div class="news-col ' + t + '">' +
+        '<h3>' + esc(TOPIC_LABEL[t] || t) + '</h3>' +
+        topics[t].slice(0, PER_TOPIC).map(function(it){
+          return '<a class="nw" href="' + esc(it.link) + '" target="_blank" rel="noopener">' +
+            '<div class="nw-t">' + esc(it.title) + '</div>' +
+            '<div class="nw-m">' + esc(it.source) + (it.ts ? ' · ' + ago(it.ts) : '') + '</div>' +
+          '</a>';
+        }).join("") +
+      '</div>';
+    }).join("") + '</div>';
+
+    /* quietly surface any feeds that are refusing, so they can be pruned */
+    var f = j.feeds || {};
+    var n = (f.ok || []).length;
+    $("newsMeta").textContent = n + " source" + (n === 1 ? "" : "s") +
+      ((f.failed || []).length ? " · " + f.failed.length + " down" : "");
+    $("newsMeta").title = (f.failed || []).length ? "Not responding:\n" + f.failed.join("\n") : "";
+  }
+
+  function loadNews(){
+    if (!PROXY){
+      $("news").innerHTML = '<div class="state">Headlines need the Worker — set FLIGHT_PROXY in config.js.</div>';
+      return;
+    }
+    fetchTimeout(PROXY + "/news?topics=" + TOPICS.join(","), 15000)
+      .then(function(r){ if(!r.ok) throw new Error(r.status); return r.json(); })
+      .then(renderNews)
+      .catch(function(){
+        $("news").innerHTML = '<div class="state err">Couldn\'t load headlines. Try the refresh button.</div>';
+      });
+  }
+
+  $("newsRefresh").addEventListener("click", function(){
+    $("news").innerHTML = '<div class="state">Fetching…</div>';
+    loadNews();
+  });
+  loadNews();
 
 })();
 </script>
