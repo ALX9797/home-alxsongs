@@ -229,6 +229,20 @@
       .then(function(rows){ profile = rows[0] || null; return profile; });
   }
 
+  function saveName(name){
+    if (!session || !session.user) return Promise.resolve();
+    if (profile && profile.display_name === name) return Promise.resolve();
+    return api("/rest/v1/profiles?id=eq." + session.user.id, {
+      method: "PATCH",
+      headers: { Prefer: "return=minimal" },
+      body: { display_name: name }
+    }).then(function(r){
+      if (!r.ok) throw new Error("couldn't save name");
+      if (profile) profile.display_name = name;
+      return true;
+    });
+  }
+
   function savePrefsRemote(p){
     if (!session || !session.user) return Promise.resolve();
     var row = {
@@ -336,6 +350,12 @@
       '<h3>' + titles[mode] + '</h3>' +
       '<div class="tag">invite only</div>' +
 
+      (mode === "signup"
+        ? '<label class="f">Your name</label>' +
+          '<input type="text" id="authName" placeholder="what should the site call you?" ' +
+          'autocomplete="given-name" maxlength="24">'
+        : "") +
+
       '<label class="f">Email address</label>' +
       '<input type="text" id="authEmail" placeholder="you@example.com" autocomplete="email">' +
 
@@ -379,6 +399,7 @@
 
     function creds(){
       return {
+        name: $("authName") ? ($("authName").value || "").trim() : "",
         email: (emailEl.value || "").trim().toLowerCase(),
         pw: $("authPw") ? $("authPw").value : "",
         pw2: $("authPw2") ? $("authPw2").value : ""
@@ -394,9 +415,10 @@
 
       if (!c.pw) return say("Enter your password.", true);
       if (mode === "signup"){
+        if (!c.name) return say("What should the site call you?", true);
         if (c.pw.length < MIN_PW) return say("Password must be at least " + MIN_PW + " characters.", true);
         if (c.pw !== c.pw2) return say("The two passwords don't match.", true);
-        return signUp(c.email, c.pw);
+        return signUp(c.email, c.pw, c.name);
       }
       return passwordSignIn(c.email, c.pw);
     }
@@ -421,12 +443,18 @@
       .catch(function(){ say("Network error. Try again.", true); free(); });
     }
 
-    function signUp(email, pw){
+    function signUp(email, pw, name){
       busy("Creating your account…");
+      /* display_name goes into user metadata, which the handle_new_user
+         trigger copies into the profiles row on sign-up */
       fetch(URL_ + "/auth/v1/signup", {
         method: "POST",
         headers: { apikey: KEY, "Content-Type": "application/json" },
-        body: JSON.stringify({ email: email, password: pw })
+        body: JSON.stringify({
+          email: email,
+          password: pw,
+          data: { display_name: name }
+        })
       })
       .then(function(r){ return r.json().then(function(j){ return { ok:r.ok, j:j }; }); })
       .then(function(res){
@@ -556,6 +584,10 @@
       '<h3>' + esc(nameOf()) + '</h3>' +
       '<div class="tag">' + esc((session && session.user && session.user.email) || "") + '</div>' +
 
+      '<label class="f">Display name</label>' +
+      '<input type="text" id="prefName" maxlength="24" value="' +
+        esc((profile && profile.display_name) || "") + '">' +
+
       '<label class="f">News topics</label>' +
       '<div class="chipbar" id="prefTopics">' + chips(topicNames, p.topics, "topic") + '</div>' +
 
@@ -654,18 +686,25 @@
       closeModal();
     });
 
+    function fail(text){
+      $("prefMsg").className = "state err";
+      $("prefMsg").textContent = text;
+    }
+
     $("prefSave").addEventListener("click", function(){
-      if (!draft.topics.length){
-        $("prefMsg").className = "state err";
-        $("prefMsg").textContent = "Pick at least one news topic.";
-        return;
-      }
+      if (!draft.topics.length) return fail("Pick at least one news topic.");
+      var newName = ($("prefName").value || "").trim();
+      if (!newName) return fail("Give yourself a name.");
+
       $("prefSave").disabled = true;
       $("prefMsg").className = "state";
       $("prefMsg").textContent = "Saving…";
       setPrefs(draft);
-      savePrefsRemote(draft).then(function(){
+
+      Promise.all([savePrefsRemote(draft), saveName(newName)]).then(function(){
         $("prefMsg").textContent = "Saved.";
+        renderChip();
+        publish();
         setTimeout(closeModal, 500);
       }).catch(function(){
         $("prefMsg").className = "state err";
