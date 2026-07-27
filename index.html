@@ -180,6 +180,16 @@
     display:block; text-decoration:none; color:var(--ink);
     padding:9px 0; border-bottom:1px dashed var(--line);
   }
+  .nw.has-img{ display:grid; grid-template-columns:56px 1fr; gap:10px; align-items:start; }
+  .nw-img{
+    width:56px; height:42px; border-radius:2px; overflow:hidden;
+    background:var(--bg-2); border:1px solid var(--line);
+  }
+  .nw-img img{
+    width:100%; height:100%; object-fit:cover; display:block;
+    filter:saturate(.85) contrast(1.05); transition:.18s ease;
+  }
+  .nw:hover .nw-img img{ filter:none; transform:scale(1.05); }
   .news-col .nw:last-child{ border-bottom:0; }
   .nw:hover .nw-t{ color:var(--acid); }
   .nw-t{ font-size:13px; line-height:1.35; letter-spacing:-.005em; transition:color .13s; }
@@ -187,6 +197,49 @@
     font-family:var(--mono); font-size:9px; letter-spacing:.1em; text-transform:uppercase;
     color:var(--ink-faint); margin-top:5px;
   }
+
+  /* ---- esports ---- */
+  .es-grid{ display:grid; grid-template-columns:repeat(2,1fr); gap:22px; }
+  @media (max-width:760px){ .es-grid{ grid-template-columns:1fr; } }
+
+  .es-col h3{
+    font-family:var(--mono); font-size:10px; letter-spacing:.2em; text-transform:uppercase;
+    color:var(--ink-faint); font-weight:400;
+    padding-bottom:8px; margin-bottom:6px; border-bottom:1px solid var(--line);
+    display:flex; justify-content:space-between; align-items:center;
+  }
+  .es-col.lol h3{ color:var(--ice); }
+  .es-col.cs2 h3{ color:var(--amber); }
+
+  .es-sub{
+    font-family:var(--mono); font-size:9px; letter-spacing:.18em; text-transform:uppercase;
+    color:var(--ink-faint); margin:12px 0 4px;
+  }
+  .es-m{
+    display:block; text-decoration:none; color:var(--ink);
+    padding:9px 0; border-bottom:1px dashed var(--line);
+  }
+  .es-m:last-child{ border-bottom:0; }
+  .es-team{ display:flex; align-items:center; gap:8px; padding:2px 0; }
+  .es-team img{ width:17px; height:17px; object-fit:contain; flex:none; }
+  .es-team .nm{ font-size:13px; font-weight:500; flex:1; }
+  .es-team .sc{ font-family:var(--mono); font-size:14px; color:var(--ink-dim); }
+  .es-team.win .nm{ color:var(--acid); }
+  .es-team.win .sc{ color:var(--acid); }
+  .es-meta{
+    font-family:var(--mono); font-size:9px; letter-spacing:.1em; text-transform:uppercase;
+    color:var(--ink-faint); margin-top:5px; display:flex; gap:8px; flex-wrap:wrap;
+  }
+  .es-m:hover .es-team .nm{ color:var(--acid); }
+  .live-dot{
+    display:inline-flex; align-items:center; gap:5px;
+    color:var(--hot); font-family:var(--mono); font-size:9px; letter-spacing:.18em;
+  }
+  .live-dot i{
+    width:6px; height:6px; border-radius:50%; background:var(--hot); display:block;
+    animation:pulse 2s infinite;
+  }
+  .es-when{ color:var(--ice); }
 
   .soon{ color:var(--ink-faint); font-size:13px; }
   .soon ul{ margin:10px 0 0; padding-left:16px; }
@@ -310,9 +363,23 @@
       </div>
     </section>
 
+    <!-- ============ ESPORTS ============ -->
+    <section class="card span-12">
+      <div class="card-head">
+        <h2><span class="idx">04 /</span> Esports</h2>
+        <div class="oh-controls">
+          <span class="tag" id="esMeta"></span>
+          <button class="btn ghost" id="esRefresh" title="Refresh matches">↻</button>
+        </div>
+      </div>
+      <div id="esports">
+        <div class="skel"></div><div class="skel" style="width:70%"></div>
+      </div>
+    </section>
+
     <!-- ============ PLACEHOLDER ============ -->
     <section class="card span-12">
-      <div class="card-head"><h2><span class="idx">04 /</span> Next up</h2><span class="tag">backlog</span></div>
+      <div class="card-head"><h2><span class="idx">05 /</span> Next up</h2><span class="tag">backlog</span></div>
       <div class="soon">
         Slots reserved. Say the word and any of these get built:
         <ul>
@@ -1055,10 +1122,16 @@
       return '<div class="news-col ' + t + '">' +
         '<h3>' + esc(TOPIC_LABEL[t] || t) + '</h3>' +
         topics[t].slice(0, PER_TOPIC).map(function(it){
-          return '<a class="nw" href="' + esc(it.link) + '" target="_blank" rel="noopener">' +
+          /* onerror: if the image 404s, drop the thumb and reflow to text-only */
+          var thumb = it.img
+            ? '<div class="nw-img"><img src="' + esc(it.img) + '" alt="" loading="lazy" ' +
+              'onerror="this.closest(\'.nw\').classList.remove(\'has-img\');this.parentNode.remove();"></div>'
+            : "";
+          return '<a class="nw' + (it.img ? ' has-img' : '') + '" href="' + esc(it.link) +
+            '" target="_blank" rel="noopener">' + thumb + '<div>' +
             '<div class="nw-t">' + esc(it.title) + '</div>' +
             '<div class="nw-m">' + esc(it.source) + (it.ts ? ' · ' + ago(it.ts) : '') + '</div>' +
-          '</a>';
+          '</div></a>';
         }).join("") +
       '</div>';
     }).join("") + '</div>';
@@ -1089,6 +1162,116 @@
     loadNews();
   });
   loadNews();
+
+  /* =====================================================================
+     ESPORTS — PandaScore, via the Worker
+     Live matches now, then the next few fixtures.
+     ===================================================================== */
+
+  var GAMES = ["lol","cs2"];
+
+  function kickoff(iso){
+    if (!iso) return "TBC";
+    var t = new Date(iso).getTime();
+    var mins = Math.round((t - Date.now()) / 60000);
+    if (mins < 0) return "now";
+    if (mins < 60) return "in " + mins + "m";
+    if (mins < 60 * 24){
+      var h = Math.floor(mins/60), m = mins % 60;
+      return "in " + h + "h" + (m ? " " + m + "m" : "");
+    }
+    return new Date(iso).toLocaleDateString([], { weekday:"short" }) + " " +
+           new Date(iso).toLocaleTimeString([], { hour:"2-digit", minute:"2-digit" });
+  }
+
+  function teamRow(t, score, isWinning){
+    return '<div class="es-team' + (isWinning ? ' win' : '') + '">' +
+      (t.logo ? '<img src="' + esc(t.logo) + '" alt="" loading="lazy" ' +
+                'onerror="this.style.visibility=\'hidden\'">' : '<img alt="">') +
+      '<span class="nm">' + esc(t.name) + '</span>' +
+      (score != null ? '<span class="sc">' + score + '</span>' : "") +
+    '</div>';
+  }
+
+  function matchRow(m, isLive){
+    var a = m.teams[0] || { name:"TBD" }, b = m.teams[1] || { name:"TBD" };
+    var sa = m.scores[0], sb = m.scores[1];
+    var meta = [];
+    if (isLive) meta.push('<span class="live-dot"><i></i>LIVE</span>');
+    else meta.push('<span class="es-when">' + esc(kickoff(m.begin_at)) + '</span>');
+    if (m.league) meta.push(esc(m.league));
+    if (m.best_of) meta.push('BO' + m.best_of);
+
+    var open = m.stream || null;
+    var tag = open ? 'a href="' + esc(open) + '" target="_blank" rel="noopener"' : 'div';
+    return '<' + (open ? tag : 'div') + ' class="es-m">' +
+      teamRow(a, sa, sa != null && sb != null && sa > sb) +
+      teamRow(b, sb, sa != null && sb != null && sb > sa) +
+      '<div class="es-meta">' + meta.join("") + '</div>' +
+    '</' + (open ? 'a' : 'div') + '>';
+  }
+
+  function renderEsports(j){
+    var box = $("esports");
+
+    if (j.configured === false){
+      box.innerHTML =
+        '<div class="state">Esports needs a free PandaScore key.</div>' +
+        '<div class="state" style="padding-top:4px;color:var(--ink-dim)">' +
+        'Sign up at pandascore.co, then add it to the Worker as an environment ' +
+        'variable named PANDASCORE_TOKEN — see SETUP.md, "Esports".</div>';
+      $("esMeta").textContent = "not configured";
+      return;
+    }
+
+    var games = j.games || {};
+    var cols = GAMES.filter(function(g){ return games[g]; });
+    var liveCount = 0;
+
+    box.innerHTML = '<div class="es-grid">' + cols.map(function(g){
+      var d = games[g];
+      var live = d.live || [], next = d.next || [];
+      liveCount += live.length;
+
+      var body = "";
+      if (live.length){
+        body += '<div class="es-sub">Live now</div>' +
+                live.map(function(m){ return matchRow(m, true); }).join("");
+      }
+      if (next.length){
+        body += '<div class="es-sub">Next up</div>' +
+                next.map(function(m){ return matchRow(m, false); }).join("");
+      }
+      if (!body) body = '<div class="state">Nothing scheduled.</div>';
+
+      return '<div class="es-col ' + g + '"><h3>' + esc(d.label || g) +
+        (live.length ? '<span class="live-dot"><i></i>' + live.length + ' live</span>' : '') +
+        '</h3>' + body + '</div>';
+    }).join("") + '</div>';
+
+    $("esMeta").textContent = liveCount ? liveCount + " live now" : "no live matches";
+    $("esMeta").title = (j.problems || []).length ? j.problems.join("\n") : "";
+  }
+
+  function loadEsports(){
+    if (!PROXY){
+      $("esports").innerHTML = '<div class="state">Esports needs the Worker — set FLIGHT_PROXY in config.js.</div>';
+      return;
+    }
+    fetchTimeout(PROXY + "/esports?games=" + GAMES.join(","), 15000)
+      .then(function(r){ if(!r.ok) throw new Error(r.status); return r.json(); })
+      .then(renderEsports)
+      .catch(function(){
+        $("esports").innerHTML = '<div class="state err">Couldn\'t load matches. Try the refresh button.</div>';
+      });
+  }
+
+  $("esRefresh").addEventListener("click", function(){
+    $("esports").innerHTML = '<div class="state">Fetching…</div>';
+    loadEsports();
+  });
+  loadEsports();
+  setInterval(loadEsports, 180000);   // live scores tick over every 3 min
 
 })();
 </script>
