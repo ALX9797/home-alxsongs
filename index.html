@@ -9,9 +9,10 @@
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' fill='%2308090b'/><circle cx='50' cy='50' r='26' fill='%23d8ff3e'/></svg>">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&family=Space+Grotesk:wght@400;500;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&family=Press+Start+2P&family=Silkscreen:wght@400;700&family=Space+Grotesk:wght@400;500;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css">
 <link rel="stylesheet" href="core.css">
+<script src="fx.js"></script>
 <style>
   /* =================================================================
      OVERHEAD — map / radar / list / detail
@@ -294,10 +295,23 @@
       </div>
     </section>
 
+    <!-- ============ SKY ============ -->
+    <section class="card span-12" data-card="sky">
+      <div class="card-head">
+        <h2><span class="idx">02 /</span> Sky</h2>
+        <span class="tag" id="skyMeta">—</span>
+      </div>
+      <div id="sky">
+        <div class="skel" style="width:40%;height:24px"></div>
+        <div class="skel" style="width:75%"></div>
+        <div class="skel" style="width:55%"></div>
+      </div>
+    </section>
+
     <!-- ============ OVERHEAD ============ -->
     <section class="card span-12" data-card="overhead">
       <div class="card-head">
-        <h2><span class="idx">02 /</span> Overhead</h2>
+        <h2><span class="idx">03 /</span> Overhead</h2>
         <div class="oh-controls">
           <div class="viewtog" id="viewtog">
             <button class="chip on" data-view="map">Map</button>
@@ -354,7 +368,7 @@
     <!-- ============ NEWS ============ -->
     <section class="card span-12" data-card="feeds">
       <div class="card-head">
-        <h2><span class="idx">03 /</span> Feeds</h2>
+        <h2><span class="idx">04 /</span> Feeds</h2>
         <div class="oh-controls">
           <span class="tag" id="newsMeta"></span>
           <button class="btn ghost" id="newsRefresh" title="Refresh headlines">↻</button>
@@ -368,7 +382,7 @@
     <!-- ============ ESPORTS ============ -->
     <section class="card span-12" data-card="esports">
       <div class="card-head">
-        <h2><span class="idx">04 /</span> Esports</h2>
+        <h2><span class="idx">05 /</span> Esports</h2>
         <div class="oh-controls">
           <span class="tag" id="esMeta"></span>
           <button class="btn ghost" id="esRefresh" title="Refresh matches">↻</button>
@@ -381,7 +395,7 @@
 
     <!-- ============ PLACEHOLDER ============ -->
     <section class="card span-12">
-      <div class="card-head"><h2><span class="idx">05 /</span> Next up</h2><span class="tag">backlog</span></div>
+      <div class="card-head"><h2><span class="idx">06 /</span> Next up</h2><span class="tag">backlog</span></div>
       <div class="soon">
         Slots reserved. Say the word and any of these get built:
         <ul>
@@ -1069,16 +1083,16 @@
     navigator.geolocation.getCurrentPosition(function(p){
       lat = p.coords.latitude; lon = p.coords.longitude;
       startFlights(lat.toFixed(2) + "°, " + lon.toFixed(2) + "°");
-      loadWeather();
+      loadWeather(); loadSky();
     }, function(){
       lat = C.FALLBACK_LAT; lon = C.FALLBACK_LON;
       startFlights(C.FALLBACK_LABEL || "default location");
-      loadWeather();
+      loadWeather(); loadSky();
     }, { enableHighAccuracy:false, timeout:8000, maximumAge:600000 });
   } else {
     lat = C.FALLBACK_LAT; lon = C.FALLBACK_LON;
     startFlights(C.FALLBACK_LABEL || "default location");
-    loadWeather();
+    loadWeather(); loadSky();
   }
 
   /* =====================================================================
@@ -1130,6 +1144,196 @@
         $("wx").hidden = false;
       })
       .catch(function(){ /* weather is a nicety — stay quiet if it fails */ });
+  }
+
+  /* =====================================================================
+     SKY — sunrise / sunset / golden hour / moon phase
+     All computed here in the browser from your location: no key, no feed.
+     Solar + lunar maths are the standard low-precision astronomy routines
+     (accurate to ~1 min for rise/set, plenty for a dashboard).
+     ===================================================================== */
+
+  var SKY = (function(){
+    var rad = Math.PI/180, dayMs = 86400000, J1970 = 2440588, J2000 = 2451545;
+    var e = rad * 23.4397, J0 = 0.0009;
+
+    function toDays(d){ return d.valueOf()/dayMs - 0.5 + J1970 - J2000; }
+    function fromJulian(j){ return new Date((j + 0.5 - J1970) * dayMs); }
+    function solarMeanAnomaly(d){ return rad * (357.5291 + 0.98560028 * d); }
+    function eclipticLongitude(M){
+      var C = rad * (1.9148*Math.sin(M) + 0.02*Math.sin(2*M) + 0.0003*Math.sin(3*M));
+      return M + C + rad*102.9372 + Math.PI;
+    }
+    function dec0(l){ return Math.asin(Math.sin(e) * Math.sin(l)); }
+    function ra0(l){ return Math.atan2(Math.sin(l)*Math.cos(e), Math.cos(l)); }
+    function decB(l,b){ return Math.asin(Math.sin(b)*Math.cos(e) + Math.cos(b)*Math.sin(e)*Math.sin(l)); }
+    function raB(l,b){ return Math.atan2(Math.sin(l)*Math.cos(e) - Math.tan(b)*Math.sin(e), Math.cos(l)); }
+
+    function times(date, lat, lng){
+      var lw = rad * -lng, phi = rad * lat, d = toDays(date);
+      var n = Math.round(d - J0 - lw/(2*Math.PI));
+      var ds = J0 + (0 + lw)/(2*Math.PI) + n;
+      var M = solarMeanAnomaly(ds), L = eclipticLongitude(M), dec = dec0(L);
+      var Jnoon = J2000 + ds + 0.0053*Math.sin(M) - 0.0069*Math.sin(2*L);
+      function ev(angle){
+        var arg = (Math.sin(angle*rad) - Math.sin(phi)*Math.sin(dec)) / (Math.cos(phi)*Math.cos(dec));
+        if (arg <= -1) return { polar:"day" };
+        if (arg >=  1) return { polar:"night" };
+        var w = Math.acos(arg);
+        var a = J0 + (w + lw)/(2*Math.PI) + n;
+        var Jset = J2000 + a + 0.0053*Math.sin(M) - 0.0069*Math.sin(2*L);
+        return { rise: fromJulian(Jnoon - (Jset - Jnoon)), set: fromJulian(Jset) };
+      }
+      var sun = ev(-0.833), gold = ev(6);
+      return {
+        solarNoon: fromJulian(Jnoon),
+        sunrise: sun.rise, sunset: sun.set, polar: sun.polar || null,
+        goldenEnd: gold.rise || null, goldenStart: gold.set || null
+      };
+    }
+
+    function moon(date){
+      var d = toDays(date), sdist = 149598000;
+      var sM = solarMeanAnomaly(d), sL = eclipticLongitude(sM);
+      var sRa = ra0(sL), sDec = dec0(sL);
+      var L = rad*(218.316 + 13.176396*d),
+          M = rad*(134.963 + 13.064993*d),
+          F = rad*(93.272  + 13.229350*d),
+          ml = L + rad*6.289*Math.sin(M),
+          mb = rad*5.128*Math.sin(F),
+          mdist = 385001 - 20905*Math.cos(M);
+      var mRa = raB(ml, mb), mDec = decB(ml, mb);
+      var phi = Math.acos(Math.sin(sDec)*Math.sin(mDec) + Math.cos(sDec)*Math.cos(mDec)*Math.cos(sRa - mRa));
+      var inc = Math.atan2(sdist*Math.sin(phi), mdist - sdist*Math.cos(phi));
+      var angle = Math.atan2(Math.cos(sDec)*Math.sin(sRa - mRa),
+                             Math.sin(sDec)*Math.cos(mDec) - Math.cos(sDec)*Math.sin(mDec)*Math.cos(sRa - mRa));
+      return {
+        fraction: (1 + Math.cos(inc)) / 2,
+        phase: 0.5 + 0.5 * inc * (angle < 0 ? -1 : 1) / Math.PI
+      };
+    }
+
+    function phaseName(p){
+      if (p < 0.02 || p > 0.98) return "New moon";
+      if (p < 0.24) return "Waxing crescent";
+      if (p < 0.26) return "First quarter";
+      if (p < 0.49) return "Waxing gibbous";
+      if (p < 0.51) return "Full moon";
+      if (p < 0.74) return "Waning gibbous";
+      if (p < 0.76) return "Last quarter";
+      return "Waning crescent";
+    }
+
+    return { times: times, moon: moon, phaseName: phaseName };
+  })();
+
+  var skyTimer = null;
+
+  /* pixel moon: tiny image buffer, blown up with image-rendering:pixelated */
+  function drawMoon(canvas, phase){
+    var N = 24, ctx = canvas.getContext("2d");
+    canvas.width = N; canvas.height = N;
+    var a = phase * 2 * Math.PI, sinA = Math.sin(a), cosA = Math.cos(a);
+    var cx = (N-1)/2, cy = (N-1)/2, R = N/2 - 0.5;
+    var img = ctx.createImageData(N, N), data = img.data;
+    var LIT = [236,240,224,255], DARK = [20,26,36,255], RIM = [90,110,120,255];
+    for (var y=0; y<N; y++) for (var x=0; x<N; x++){
+      var nx = (x-cx)/R, ny = (y-cy)/R, r2 = nx*nx + ny*ny, i = (y*N+x)*4, c;
+      if (r2 > 1){ c = [0,0,0,0]; }
+      else {
+        var nz = Math.sqrt(1 - r2);
+        var lit = (nx*sinA - nz*cosA) > 0;
+        c = r2 > 0.86 ? RIM : (lit ? LIT : DARK);
+      }
+      data[i]=c[0]; data[i+1]=c[1]; data[i+2]=c[2]; data[i+3]=c[3];
+    }
+    ctx.putImageData(img, 0, 0);
+  }
+
+  function loadSky(){
+    if (lat == null) return;
+    var now = new Date();
+    var t = SKY.times(now, lat, lon);
+    var mo = SKY.moon(now);
+
+    function pad2(n){ return n < 10 ? "0"+n : ""+n; }
+    function hm(d){ return pad2(d.getHours()) + ":" + pad2(d.getMinutes()); }
+    function dur(ms){ var m = Math.max(0, Math.round(ms/60000)); return Math.floor(m/60) + "h " + pad2(m%60) + "m"; }
+
+    var moonBlock =
+      '<div class="moon-wrap">' +
+        '<canvas class="moon-c" id="moonC"></canvas>' +
+        '<div class="moon-name">' + esc(SKY.phaseName(mo.phase)) + '</div>' +
+        '<div class="moon-pct">' + Math.round(mo.fraction * 100) + '% lit</div>' +
+      '</div>';
+
+    if (t.polar){
+      $("sky").innerHTML =
+        '<div class="sky-body">' + moonBlock +
+        '<div class="sky-right"><div class="state">' +
+          (t.polar === "day" ? "The sun doesn’t set at your latitude right now — endless daylight."
+                             : "The sun doesn’t rise at your latitude right now — polar night.") +
+        '</div></div></div>';
+      $("skyMeta").textContent = t.polar === "day" ? "midnight sun" : "polar night";
+      drawMoon($("moonC"), mo.phase);
+      if (skyTimer) clearInterval(skyTimer);
+      skyTimer = setInterval(loadSky, 60000);
+      return;
+    }
+
+    /* fraction of the way through daylight; <0 or >1 means night */
+    var f = (now - t.sunrise) / (t.sunset - t.sunrise);
+    var isDay = f >= 0 && f <= 1;
+
+    /* sun marker position on a semicircular arc (viewBox 300×90) */
+    var sx = 150 - 140 * Math.cos(Math.PI * Math.min(Math.max(f,0),1));
+    var sy = 80  - 74  * Math.sin(Math.PI * Math.min(Math.max(f,0),1));
+
+    var svg =
+      '<svg viewBox="0 0 300 92" aria-label="Path of the sun today">' +
+        '<path class="track" d="M10 80 A 140 74 0 0 1 290 80"/>' +
+        '<line class="horizon" x1="2" y1="80" x2="298" y2="80"/>' +
+        '<text class="ep" x="6" y="90">' + hm(t.sunrise) + '</text>' +
+        '<text class="ep" x="294" y="90" text-anchor="end">' + hm(t.sunset) + '</text>' +
+        (isDay
+          ? '<circle class="sun" cx="' + sx.toFixed(1) + '" cy="' + sy.toFixed(1) + '" r="5.5"/>'
+          : '<circle class="sun night" cx="150" cy="80" r="4"/>') +
+      '</svg>';
+
+    /* next event + phase-of-day label */
+    var next, label;
+    if (now < t.sunrise){ next = "Sunrise in " + dur(t.sunrise - now); label = "before dawn"; }
+    else if (now < t.sunset){ next = "Sunset in " + dur(t.sunset - now); label = "daytime"; }
+    else {
+      var tmr = SKY.times(new Date(now.getTime() + 86400000), lat, lon);
+      next = tmr.sunrise ? "Sunrise in " + dur(tmr.sunrise - now) : "—";
+      label = "night";
+    }
+
+    var goldenNow =
+      (t.goldenEnd && now > t.sunrise && now < t.goldenEnd) ||
+      (t.goldenStart && now > t.goldenStart && now < t.sunset);
+    if (goldenNow) label = "golden hour";
+
+    var stats =
+      '<div><div class="k">Sunrise</div><div class="v">' + hm(t.sunrise) + '</div></div>' +
+      '<div><div class="k">Sunset</div><div class="v">' + hm(t.sunset) + '</div></div>' +
+      '<div><div class="k">Daylight</div><div class="v">' + dur(t.sunset - t.sunrise) + '</div></div>';
+
+    $("sky").innerHTML =
+      '<div class="sky-body">' + moonBlock +
+        '<div class="sky-right">' +
+          '<div class="tag" style="color:' + (goldenNow ? 'var(--amber)' : 'var(--ice)') + '">' + esc(next) + '</div>' +
+          '<div class="sun-arc">' + svg + '</div>' +
+          '<div class="sky-stats">' + stats + '</div>' +
+        '</div>' +
+      '</div>';
+
+    $("skyMeta").textContent = label;
+    drawMoon($("moonC"), mo.phase);
+
+    if (skyTimer) clearInterval(skyTimer);
+    skyTimer = setInterval(loadSky, 60000);
   }
 
   /* =====================================================================
