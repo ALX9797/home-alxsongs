@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Admin · alxsongs</title>
+<meta name="robots" content="noindex, nofollow">
+<meta name="theme-color" content="#08090b">
+<meta name="color-scheme" content="dark light">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' fill='%2308090b'/><circle cx='50' cy='50' r='26' fill='%234de3ff'/></svg>">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&family=Press+Start+2P&family=Silkscreen:wght@400;700&family=Space+Grotesk:wght@400;500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="core.css">
+<script src="fx.js"></script>
+</head>
+<body>
+<div class="wrap">
+
+  <header class="topbar">
+    <a class="brand" href="index.html"><span class="dot" style="background:var(--ice);color:var(--ice)"></span> ← home</a>
+    <nav class="topnav" aria-label="Primary"><span id="authSlot"></span></nav>
+    <div class="right">
+      <button class="icobtn" id="cmdBtn" title="Command palette — Ctrl K" aria-label="Command palette">⌘K</button>
+    </div>
+  </header>
+
+  <!-- shown only once we know the visitor is an admin -->
+  <div id="adminBody" hidden>
+    <section class="pagehead" style="--accent:var(--ice)">
+      <div class="eyebrow" style="margin-bottom:18px">restricted</div>
+      <h1>ADMIN <em>CENTRE</em></h1>
+      <p>Who can get in, who actually has, and the Dutch Blitz ledger. Everything here is
+         enforced by the database as well — this page is just the friendly way in.</p>
+    </section>
+
+    <main class="grid">
+
+      <section class="card span-12 a-ice">
+        <div class="card-head">
+          <h2><span class="idx">01</span> Overview</h2>
+          <span class="tag">live</span>
+        </div>
+        <div class="statrail" id="adStats"></div>
+      </section>
+
+      <section class="card span-12 a-acid">
+        <div class="card-head">
+          <h2><span class="idx">02</span> Invites</h2>
+          <span class="tag" id="inviteMeta"></span>
+        </div>
+        <div class="danger-note calm">
+          Adding someone here <b>does not email them</b> — it only allows that address to create
+          an account. Send them the link yourself with the button on their row.
+        </div>
+        <div class="addrow">
+          <input type="text" id="newEmail" placeholder="email address" autocomplete="off">
+          <input type="text" id="newNote" placeholder="note (optional)" autocomplete="off">
+          <button class="btn acid" id="addInvite"><span>+ Allow access</span></button>
+        </div>
+        <div id="inviteMsg"></div>
+        <div class="scroll-x"><div id="invites"><div class="skel"></div><div class="skel" style="width:60%"></div></div></div>
+      </section>
+
+      <section class="card span-12 a-hot">
+        <div class="card-head">
+          <h2><span class="idx">03</span> Accounts</h2>
+          <span class="tag" id="userMeta"></span>
+        </div>
+        <div id="userMsg"></div>
+        <div class="scroll-x"><div id="users"><div class="skel"></div><div class="skel" style="width:70%"></div></div></div>
+      </section>
+
+      <section class="card span-12 a-amber">
+        <div class="card-head">
+          <h2><span class="idx">04</span> Dutch Blitz ledger</h2>
+          <span class="tag" id="gameMeta"></span>
+        </div>
+        <div id="gameMsg"></div>
+        <div class="scroll-x"><div id="games"><div class="skel"></div><div class="skel" style="width:50%"></div></div></div>
+      </section>
+
+    </main>
+  </div>
+
+  <!-- shown to everyone else -->
+  <div id="gate" class="gate" hidden></div>
+
+  <footer class="foot">
+    <span>admin · home.alxsongs.com</span>
+    <span id="whoami"></span>
+  </footer>
+</div>
+
+<div class="modal-bg" id="authModalBg"><div class="modal" id="authModal"></div></div>
+
+<script src="config.js"></script>
+<script src="auth.js"></script>
+<script src="util.js"></script>
+<script src="admin.js"></script>
+<script>
+  document.getElementById("cmdBtn").addEventListener("click", function(){
+    if (window.FX) FX.openPalette();
+  });
+</script>
+</body>
+</html>

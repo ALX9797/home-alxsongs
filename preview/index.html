@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>HOME · alxsongs</title>
+<meta name="description" content="A private control room. On this day, the sky overhead, the weather, the news, and the Dutch Blitz ledger.">
+<meta name="theme-color" content="#08090b">
+<meta name="color-scheme" content="dark light">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' fill='%2308090b'/><circle cx='50' cy='50' r='26' fill='%23d8ff3e'/></svg>">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&family=Press+Start+2P&family=Silkscreen:wght@400;700&family=Space+Grotesk:wght@400;500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css">
+<link rel="stylesheet" href="core.css">
+<script src="fx.js"></script>
+</head>
+<body>
+<div class="wrap">
+
+  <header class="topbar">
+    <a class="brand" href="./"><span class="dot"></span> home · alxsongs</a>
+
+    <nav class="topnav" aria-label="Primary">
+      <a class="navchip" href="games.html" title="Dutch Blitz scoreboard"><span>Dutch Blitz</span></a>
+      <a class="navchip" href="word.html" title="Today's word game"><span>Not-Wordle</span></a>
+      <span id="authSlot"></span>
+    </nav>
+
+    <div class="right">
+      <span id="clock">--:--:--</span>
+      <span class="sep">/</span>
+      <span id="datestr">—</span>
+      <span class="wx" id="wx" hidden>
+        <span class="sep">/</span>
+        <span class="wx-icon" id="wxIcon"></span>
+        <b id="wxTemp">—</b>
+        <span class="wx-hilo" id="wxHiLo"></span>
+        <span class="wx-desc" id="wxDesc"></span>
+      </span>
+      <button class="icobtn" id="cmdBtn" title="Command palette — Ctrl K" aria-label="Command palette">⌘K</button>
+    </div>
+  </header>
+
+  <section class="hero">
+    <h1 class="greet"><span id="greeting">Hello</span>, <em id="owner">Alex</em><span class="caret" aria-hidden="true"></span></h1>
+
+    <div class="statrail">
+      <div><div class="k">Today</div><div class="v"><b id="daynum">—</b></div></div>
+      <div><div class="k">Week</div><div class="v"><b id="weeknum">—</b></div></div>
+      <div><div class="k">Year elapsed</div><div class="v"><b id="yearpct">—</b></div></div>
+      <div><div class="k">Position</div><div class="v"><b id="posmeta">locating…</b></div></div>
+      <div><div class="k">Overhead</div><div class="v"><b id="ohmeta">—</b> <small id="ohmetaUnit">AIRCRAFT</small></div></div>
+      <div><div class="k">ISS altitude</div><div class="v"><b id="issmeta">—</b></div></div>
+    </div>
+
+    <div class="scrollcue"><i></i> scroll</div>
+  </section>
+
+  <div class="ticker" id="ticker" aria-label="Latest headlines" hidden></div>
+
+  <main class="grid">
+
+    <!-- ============ 01 · ON THIS DAY ============ -->
+    <section class="card span-7 a-acid" data-card="onthisday">
+      <div class="card-head">
+        <h2><span class="idx">01</span> On This Day</h2>
+        <div class="tools">
+          <span class="tag" id="otdMeta"></span>
+          <button class="btn ghost" id="otdShuffle" title="Another one"><span>↻ another</span></button>
+        </div>
+      </div>
+      <div class="card-body" id="otd">
+        <div class="skel" style="width:30%;height:40px"></div>
+        <div class="skel"></div><div class="skel" style="width:80%"></div>
+      </div>
+    </section>
+
+    <!-- ============ 02 · SKY ============ -->
+    <section class="card span-5 a-ice" data-card="sky">
+      <div class="card-head">
+        <h2><span class="idx">02</span> Sky</h2>
+        <span class="tag" id="skyMeta">—</span>
+      </div>
+      <div class="card-body" id="sky">
+        <div class="skel" style="width:40%;height:24px"></div>
+        <div class="skel" style="width:75%"></div>
+        <div class="skel" style="width:55%"></div>
+      </div>
+    </section>
+
+    <!-- ============ 03 · WEATHER ============ -->
+    <section class="card span-5 a-amber" data-card="weather">
+      <div class="card-head">
+        <h2><span class="idx">03</span> Weather</h2>
+        <span class="tag" id="wxMeta"></span>
+      </div>
+      <div class="card-body" id="weather">
+        <div class="skel" style="width:45%;height:34px"></div>
+        <div class="skel"></div><div class="skel" style="width:70%"></div>
+      </div>
+    </section>
+
+    <!-- ============ 04 · ORBIT ============ -->
+    <section class="card span-4 a-ice" data-card="orbit">
+      <div class="card-head">
+        <h2><span class="idx">04</span> Orbit</h2>
+        <div class="tools">
+          <span class="tag" id="orbitMeta"></span>
+          <button class="icobtn" id="orbitRefresh" title="Refresh" aria-label="Refresh ISS position">↻</button>
+        </div>
+      </div>
+      <div class="card-body" id="orbit"></div>
+    </section>
+
+    <!-- ============ 05 · LAUNCHPAD ============ -->
+    <section class="card span-3 a-hot" data-card="links">
+      <div class="card-head">
+        <h2><span class="idx">05</span> Launchpad</h2>
+        <div class="tools">
+          <span class="tag" id="lpMeta"></span>
+          <button class="icobtn" id="lpReset" title="Reset to defaults" aria-label="Reset shortcuts">⟲</button>
+        </div>
+      </div>
+      <div class="card-body" id="launchpad"></div>
+    </section>
+
+    <!-- ============ 06 · OVERHEAD ============ -->
+    <section class="card span-12 a-acid" data-card="overhead">
+      <div class="card-head">
+        <h2><span class="idx">06</span> Overhead</h2>
+        <div class="oh-controls">
+          <div class="seg" id="viewtog">
+            <button class="on" data-view="map">Map</button>
+            <button data-view="radar">Radar</button>
+          </div>
+          <div class="seg" id="sorttog">
+            <button class="on" data-sort="dst">Near</button>
+            <button data-sort="alt">High</button>
+            <button data-sort="gs">Fast</button>
+          </div>
+          <label class="radius-ctl">
+            <span class="tag">radius</span>
+            <input type="range" id="radiusSlider" min="5" max="100" step="5" value="20" aria-label="Search radius">
+            <b id="radiusVal">20 nm</b>
+          </label>
+          <span class="tag" id="flSource"></span>
+          <button class="icobtn" id="flRefresh" title="Refresh now" aria-label="Refresh aircraft">↻</button>
+        </div>
+      </div>
+
+      <div class="statrail" id="ohStats" style="margin-bottom:16px"></div>
+
+      <div class="oh-body">
+        <div class="oh-view">
+          <div id="map"></div>
+          <div class="radar-view" id="radarView">
+            <svg class="radar" viewBox="0 0 200 200" style="color:var(--acid)" aria-label="Radar of nearby aircraft" role="img">
+              <defs>
+                <linearGradient id="sw" x1="0" y1="0" x2="1" y2="0">
+                  <stop offset="0%" stop-color="currentColor" stop-opacity="0"/>
+                  <stop offset="100%" stop-color="currentColor" stop-opacity=".26"/>
+                </linearGradient>
+              </defs>
+              <g class="sweep">
+                <path d="M100 100 L100 12 A88 88 0 0 1 162 38 Z" fill="url(#sw)"/>
+              </g>
+              <circle class="ring" cx="100" cy="100" r="88"/>
+              <circle class="ring" cx="100" cy="100" r="59" stroke-dasharray="2 4"/>
+              <circle class="ring" cx="100" cy="100" r="30" stroke-dasharray="2 4"/>
+              <line class="cross" x1="100" y1="10" x2="100" y2="190"/>
+              <line class="cross" x1="10" y1="100" x2="190" y2="100"/>
+              <text class="lbl" x="100" y="8" text-anchor="middle">N</text>
+              <text class="lbl" x="196" y="103" text-anchor="end">E</text>
+              <text class="lbl" x="100" y="198" text-anchor="middle">S</text>
+              <text class="lbl" x="4" y="103">W</text>
+              <text class="rng" id="rng1" x="102" y="72">—</text>
+              <text class="rng" id="rng2" x="102" y="14">—</text>
+              <circle class="me" cx="100" cy="100" r="2.5"/>
+              <g id="blips"></g>
+            </svg>
+          </div>
+        </div>
+
+        <div class="oh-side" id="ohSide">
+          <div id="flights">
+            <div class="skel"></div><div class="skel" style="width:70%"></div><div class="skel" style="width:85%"></div>
+          </div>
+          <div class="detail" id="detail"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ 07 · FEEDS ============ -->
+    <section class="card span-8 a-hot" data-card="feeds">
+      <div class="card-head">
+        <h2><span class="idx">07</span> Feeds</h2>
+        <div class="tools">
+          <span class="tag" id="newsMeta"></span>
+          <button class="icobtn" id="newsRefresh" title="Refresh headlines" aria-label="Refresh headlines">↻</button>
+        </div>
+      </div>
+      <div class="card-body" id="news">
+        <div class="skel"></div><div class="skel" style="width:80%"></div><div class="skel" style="width:65%"></div>
+      </div>
+    </section>
+
+    <!-- ============ 08 · ESPORTS ============ -->
+    <section class="card span-4 a-amber" data-card="esports">
+      <div class="card-head">
+        <h2><span class="idx">08</span> Esports</h2>
+        <div class="tools">
+          <span class="tag" id="esMeta"></span>
+          <button class="icobtn" id="esRefresh" title="Refresh matches" aria-label="Refresh matches">↻</button>
+        </div>
+      </div>
+      <div class="card-body" id="esports">
+        <div class="skel"></div><div class="skel" style="width:70%"></div>
+      </div>
+    </section>
+
+    <!-- ============ 09 · NOTES ============ -->
+    <section class="card span-6 a-acid" data-card="notes">
+      <div class="card-head">
+        <h2><span class="idx">09</span> Notes</h2>
+        <div class="tools">
+          <span class="tag" id="notesMeta"></span>
+          <button class="btn ghost" id="notesClear" title="Remove finished notes"><span>clear done</span></button>
+        </div>
+      </div>
+      <div class="card-body">
+        <div class="note-new">
+          <textarea id="noteText" rows="1" placeholder="Anything worth remembering… (Enter to add)"></textarea>
+          <button class="btn acid" id="noteAdd"><span>Add</span></button>
+        </div>
+        <div class="notes-list" id="notesList"></div>
+      </div>
+    </section>
+
+    <!-- ============ 10 · BACKLOG ============ -->
+    <section class="card span-6">
+      <div class="card-head">
+        <h2><span class="idx">10</span> Next up</h2>
+        <span class="tag">backlog</span>
+      </div>
+      <div class="card-body soon">
+        Slots reserved. Say the word and any of these get built:
+        <ul>
+          <li>Now-playing and recently-played from Spotify</li>
+          <li>Notes synced to Supabase so the board is shared, not per-browser</li>
+          <li>More games: darts ladder, FIFA table, pub-quiz score keeper</li>
+          <li>Next visible ISS pass, with a countdown and a compass bearing</li>
+        </ul>
+      </div>
+    </section>
+
+  </main>
+
+  <footer class="foot">
+    <span>home.alxsongs.com</span>
+    <span>
+      flights <a href="https://adsb.lol" target="_blank" rel="noopener">adsb.lol</a> ·
+      <a href="https://adsb.fi" target="_blank" rel="noopener">adsb.fi</a> ·
+      routes adsbdb · photos planespotters · weather
+      <a href="https://open-meteo.com" target="_blank" rel="noopener">open-meteo</a> ·
+      iss <a href="https://wheretheiss.at" target="_blank" rel="noopener">wheretheiss.at</a> ·
+      history wikipedia
+    </span>
+  </footer>
+</div>
+
+<!-- account + preferences (auth.js) -->
+<div class="modal-bg" id="authModalBg"><div class="modal" id="authModal"></div></div>
+<!-- generic dialog (panels.js) -->
+<div class="modal-bg" id="uiModalBg"><div class="modal" id="uiModal"></div></div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
+<script src="config.js"></script>
+<script src="auth.js"></script>
+<script src="util.js"></script>
+<script src="sky.js"></script>
+<script src="weather.js"></script>
+<script src="otd.js"></script>
+<script src="flights.js"></script>
+<script src="feeds.js"></script>
+<script src="orbit.js"></script>
+<script src="panels.js"></script>
+<script src="home.js"></script>
+<script>
+  document.getElementById("cmdBtn").addEventListener("click", function(){
+    if (window.FX) FX.openPalette();
+  });
+</script>
+</body>
+</html>

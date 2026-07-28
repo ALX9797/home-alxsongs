@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Dutch Blitz · alxsongs</title>
+<meta name="description" content="Every round, every blitz pile, every humiliating negative score — recorded permanently.">
+<meta name="theme-color" content="#08090b">
+<meta name="color-scheme" content="dark light">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' fill='%2308090b'/><circle cx='50' cy='50' r='26' fill='%23ff3d7f'/></svg>">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&family=Press+Start+2P&family=Silkscreen:wght@400;700&family=Space+Grotesk:wght@400;500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="core.css">
+<script src="fx.js"></script>
+</head>
+<body>
+<div class="wrap">
+
+  <header class="topbar">
+    <a class="brand" href="index.html"><span class="dot" style="background:var(--hot);color:var(--hot)"></span> ← home</a>
+    <nav class="topnav" aria-label="Primary">
+      <a class="navchip" href="word.html"><span>Not-Wordle</span></a>
+      <span id="authSlot"></span>
+    </nav>
+    <div class="right">
+      <span id="storeMode" class="storepill">…</span>
+      <button class="icobtn" id="cmdBtn" title="Command palette — Ctrl K" aria-label="Command palette">⌘K</button>
+    </div>
+  </header>
+
+  <section class="pagehead a-hot" style="--accent:var(--hot)">
+    <div class="eyebrow" style="margin-bottom:18px">the ledger</div>
+    <h1>DUTCH <em>BLITZ</em></h1>
+    <p>Every round, every blitz pile, every humiliating negative score — recorded permanently.
+       Scoring is cards played to the centre, minus two for each card left in your Blitz pile.</p>
+    <div class="actions">
+      <button class="btn acid lg" id="newGame"><span>+ New game</span></button>
+      <button class="btn lg" id="resumeBtn" style="display:none"><span>↺ Resume game</span></button>
+      <span class="mono-sm"><span class="kbd">N</span> new · <span class="kbd">R</span> round · <span class="kbd">Ctrl K</span> commands</span>
+    </div>
+  </section>
+
+  <main class="grid">
+
+    <!-- ============ LIVE GAME ============ -->
+    <section class="card span-12 a-acid" id="liveCard" style="display:none">
+      <div class="card-head">
+        <h2><span class="idx">live</span> <span id="liveTitle">Game in progress</span></h2>
+        <div class="tools">
+          <button class="btn ghost" id="undoRound"><span>↶ undo round</span></button>
+          <button class="btn ghost hot" id="abandon"><span>✕ abandon</span></button>
+        </div>
+      </div>
+
+      <div id="winBanner"></div>
+
+      <div class="scroll-x">
+        <table id="liveTable" class="gm-live"></table>
+      </div>
+
+      <div id="liveChart" style="margin-top:22px"></div>
+
+      <div style="margin-top:18px;display:flex;gap:10px;flex-wrap:wrap;align-items:center">
+        <button class="btn acid" id="addRound"><span>＋ Add round</span></button>
+        <span class="tag" id="roundHint"></span>
+      </div>
+    </section>
+
+    <!-- ============ ALL-TIME NUMBERS ============ -->
+    <section class="card span-12 a-ice">
+      <div class="card-head">
+        <h2><span class="idx">01</span> The record</h2>
+        <span class="tag">all time</span>
+      </div>
+      <div class="statrail" id="gmStats"></div>
+    </section>
+
+    <!-- ============ TABLES ============ -->
+    <section class="card span-12 a-acid">
+      <div class="card-head">
+        <h2><span class="idx">02</span> <span id="tabTitle">Leaderboard</span></h2>
+        <div class="seg" id="tabs">
+          <button class="on" data-tab="board">Leaderboard</button>
+          <button data-tab="history">History</button>
+          <button data-tab="h2h">Head to head</button>
+        </div>
+      </div>
+      <div id="tabBody"><div class="skel"></div><div class="skel" style="width:70%"></div></div>
+    </section>
+
+  </main>
+
+  <footer class="foot">
+    <span>dutch blitz ledger</span>
+    <span id="footMode">—</span>
+  </footer>
+</div>
+
+<div class="modal-bg" id="modalBg"><div class="modal" id="modal"></div></div>
+<div class="modal-bg" id="authModalBg"><div class="modal" id="authModal"></div></div>
+
+<script src="config.js"></script>
+<script src="auth.js"></script>
+<script src="db.js"></script>
+<script src="util.js"></script>
+<script src="games.js"></script>
+<script>
+  document.getElementById("cmdBtn").addEventListener("click", function(){
+    if (window.FX) FX.openPalette();
+  });
+</script>
+</body>
+</html>

@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Not-Wordle · alxsongs</title>
+<meta name="description" content="An original daily five-letter word game. Six goes, one word, midnight reset.">
+<meta name="theme-color" content="#08090b">
+<meta name="color-scheme" content="dark light">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' fill='%2308090b'/><rect x='24' y='24' width='52' height='52' rx='6' fill='%23d8ff3e'/></svg>">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&family=Press+Start+2P&family=Silkscreen:wght@400;700&family=Space+Grotesk:wght@400;500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="core.css">
+<script src="fx.js"></script>
+</head>
+<body>
+<div class="wrap">
+
+  <header class="topbar">
+    <a class="brand" href="index.html"><span class="dot"></span> ← home</a>
+    <nav class="topnav" aria-label="Primary">
+      <a class="navchip" href="games.html"><span>Dutch Blitz</span></a>
+      <span id="authSlot"></span>
+    </nav>
+    <div class="right">
+      <button class="icobtn" id="cmdBtn" title="Command palette — Ctrl K" aria-label="Command palette">⌘K</button>
+    </div>
+  </header>
+
+  <section class="pagehead" style="text-align:center">
+    <h1>NOT-<em>WORDLE</em></h1>
+    <div class="mono-sm" id="puzzleNo" style="letter-spacing:.22em;text-transform:uppercase;margin-top:14px">—</div>
+  </section>
+
+  <main class="grid">
+
+    <section class="card span-12 a-acid" style="padding-top:26px">
+      <div id="game">
+        <div class="board" id="board"></div>
+        <div class="keys" id="keys"></div>
+      </div>
+      <div id="done" hidden></div>
+    </section>
+
+    <section class="card span-6 a-ice">
+      <div class="card-head">
+        <h2><span class="idx">01</span> Your record</h2>
+        <span class="tag" id="recordMeta"></span>
+      </div>
+      <div class="card-body" id="record">
+        <div class="skel"></div><div class="skel" style="width:60%"></div>
+      </div>
+    </section>
+
+    <section class="card span-6 a-hot">
+      <div class="card-head">
+        <h2><span class="idx">02</span> Leaderboard</h2>
+        <span class="tag" id="lbMeta"></span>
+      </div>
+      <div class="card-body" id="leaderboard">
+        <div class="skel"></div><div class="skel" style="width:60%"></div>
+      </div>
+    </section>
+
+  </main>
+
+  <footer class="foot">
+    <span>not-wordle · home.alxsongs.com</span>
+    <span>an original word game · not affiliated with anyone</span>
+  </footer>
+</div>
+
+<div class="toast-fixed" id="toast"></div>
+<div class="modal-bg" id="authModalBg"><div class="modal" id="authModal"></div></div>
+
+<script src="config.js"></script>
+<script src="auth.js"></script>
+<script src="words.js"></script>
+<script src="util.js"></script>
+<script src="word.js"></script>
+<script>
+  document.getElementById("cmdBtn").addEventListener("click", function(){
+    if (window.FX) FX.openPalette();
+  });
+</script>
+</body>
+</html>
