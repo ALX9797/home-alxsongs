@@ -1820,10 +1820,19 @@
     $("tourBtn").classList.add("on");
     $("geBoot").classList.add("on");
     setTimeout(function(){ $("geBoot").classList.remove("on"); }, reduceMotion() ? 0 : 1100);
-    ge.map.invalidateSize();
-    ge.steps = geSteps();
-    geRefreshMarks();
-    geLoop();
+    /* the overlay flips from display:none in this same tick — if the map
+       measures itself now it gets 0x0 and stays blank. Wait for layout. */
+    function ready(){
+      ge.map.invalidateSize();
+      ge.steps = geSteps();
+      geRefreshMarks();
+      geLoop();
+    }
+    if (window.requestAnimationFrame){
+      window.requestAnimationFrame(function(){ window.requestAnimationFrame(ready); });
+    } else {
+      setTimeout(ready, 80);
+    }
     geTelemetry();
     clearInterval(ge.tick); ge.tick = setInterval(geTelemetry, 1000);
     clearInterval(ge.poll); ge.poll = setInterval(geRefreshMarks, 10000);
