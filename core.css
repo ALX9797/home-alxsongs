@@ -557,3 +557,28 @@ a:focus-visible, button:focus-visible, input:focus-visible{
 @media (prefers-reduced-motion: reduce){
   #geBoot{ animation: none; }
 }
+
+/* ---- godseye command deck: filters + target list ---- */
+.ge-filters{ display:flex; gap:5px; flex-wrap:wrap; margin-top:10px; }
+.ge-filters .cbtn, #geSide .cbtn{
+  font-family: var(--mono); font-size: 9px; letter-spacing: .12em;
+  background: transparent; border: 1px solid var(--line-hot); color: var(--ink-dim);
+  padding: 5px 8px; border-radius: 2px; cursor: pointer; text-transform: uppercase;
+}
+.ge-filters .cbtn:hover, #geSide .cbtn:hover{ color: var(--acid); border-color: var(--acid); }
+.ge-filters .cbtn.on, #geSide .cbtn.on{ color: #0a0a0a; background: var(--acid); border-color: var(--acid); }
+#geSide .cbtn.tour.on{ background: var(--hot); border-color: var(--hot); color: #fff; }
+.ge-list{
+  margin-top: 10px; max-height: 30vh; overflow-y: auto;
+  display: flex; flex-direction: column; gap: 4px;
+}
+.ge-item{
+  display: flex; justify-content: space-between; align-items: baseline; gap: 8px;
+  text-align: left; background: rgba(255,255,255,.03);
+  border: 1px solid var(--line); border-radius: 2px; padding: 7px 9px; cursor: pointer;
+}
+.ge-item:hover{ border-color: var(--acid); }
+.ge-item.sel{ border-color: var(--acid); background: rgba(216,255,62,.08); }
+.ge-nm{ font-family: var(--mono); font-size: 12px; color: var(--acid); white-space: nowrap; }
+.ge-sub{ font-family: var(--mono); font-size: 10px; color: var(--ink-faint); text-align: right; }
+.ge-empty{ font-family: var(--mono); font-size: 11px; color: var(--ink-faint); padding: 6px 0; }

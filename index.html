@@ -1452,8 +1452,19 @@
   <aside id="geSide">
     <div class="ge-title">◉ Godseye</div>
     <div class="ge-clock" id="geClock">--:--:--</div>
+    <div class="ge-filters" id="geFilters">
+      <button class="cbtn on" data-f="all">All</button>
+      <button class="cbtn" data-f="air">Air</button>
+      <button class="cbtn" data-f="ground">Ground</button>
+      <button class="cbtn" data-f="orbit">Orbit</button>
+      <button class="cbtn" data-f="quakes">Shakes</button>
+    </div>
+    <div class="ge-list" id="geList"></div>
     <div class="ge-rows" id="geRows"></div>
-    <div class="ge-hint"><kbd>G</kbd>/<kbd>Esc</kbd> exit · click a contact to track it</div>
+    <div style="margin-top:10px">
+      <button class="cbtn tour" id="geTourBtn" title="Looping flyover">▶ Tour</button>
+    </div>
+    <div class="ge-hint"><kbd>G</kbd>/<kbd>Esc</kbd> exit · pick a target and the globe flies there</div>
   </aside>
   <div id="geCap"><span class="tk" id="geKicker">Godseye</span><span id="geTxt"></span></div>
   <div id="geDots"></div>
@@ -1709,14 +1720,115 @@
     return ((a && a.flight) || "").trim() || (a && (a.r || a.hex)) || "?";
   }
 
+  /* ---------------- command deck: filter, pick, fly ---------------- */
+  var geFilter = "all";
+
+  function geTargets(){
+    var oh = OH();
+    var list = (oh ? oh.aircraft() : []) || [];
+    var air = [], ground = [];
+    list.forEach(function(a){
+      if (typeof a.lat !== "number") return;
+      ((a.alt_baro === "ground") ? ground : air).push(a);
+    });
+    return { air: air, ground: ground };
+  }
+
+  function geFly(p, z){
+    if (reduceMotion()) ge.map.setView(p, z);
+    else ge.map.flyTo(p, z, { duration: 2.4 });
+  }
+
+  function stopTour(){
+    clearTimeout(ge.timer);
+    ge.touring = false;
+    var b = $("geTourBtn");
+    if (b){ b.classList.remove("on"); b.textContent = "▶ Tour"; }
+  }
+
+  function startTourLoop(){
+    ge.steps = geSteps();
+    ge.idx = 0;
+    ge.touring = true;
+    var b = $("geTourBtn");
+    b.classList.add("on"); b.textContent = "■ Stop";
+    geLoop();
+  }
+
+  function selectAircraft(hex){
+    var oh = OH(), a = null, list = oh.aircraft() || [];
+    for (var i = 0; i < list.length; i++) if (list[i].hex === hex){ a = list[i]; break; }
+    if (!a || typeof a.lat !== "number") return;
+    stopTour();
+    ge.tracked = hex;
+    oh.select(hex);
+    geFly([a.lat, a.lon], 11);
+    $("geKicker").textContent = "Tracking";
+    $("geTxt").textContent = geCall(a) + " · " +
+      (typeof a.alt_baro === "number" ? Math.round(a.alt_baro).toLocaleString() + " ft" : "on the ground");
+    geRefreshMarks(); renderList(); geTelemetry();
+  }
+
+  function selectOrbit(){
+    if (!SPACE.iss) return;
+    stopTour();
+    ge.tracked = null;
+    geFly([SPACE.iss.lat, SPACE.iss.lon], 3);
+    $("geKicker").textContent = "Low orbit";
+    $("geTxt").textContent = "space station — " + SPACE.iss.alt + " km up, " +
+      Math.round(SPACE.iss.vel).toLocaleString() + " km/h";
+    geRefreshMarks(); renderList();
+  }
+
+  function selectQuake(q){
+    stopTour();
+    ge.tracked = null;
+    geFly([q.lat, q.lon], 5);
+    $("geKicker").textContent = "Underground";
+    $("geTxt").textContent = "M" + q.mag + ", " + q.place;
+    geRefreshMarks(); renderList();
+  }
+
+  function geRow(kind, label, sub, sel){
+    return '<button class="ge-item' + (sel ? " sel" : "") + '" data-kind="' + kind + '">' +
+      '<span class="ge-nm">' + esc(label) + '</span>' +
+      '<span class="ge-sub">' + esc(sub) + '</span></button>';
+  }
+
+  function renderList(){
+    var box = $("geList");
+    if (!box) return;
+    var t = geTargets(), out = "";
+    function airRows(arr, max){
+      return arr.slice(0, max).map(function(a){
+        var sub = (typeof a.alt_baro === "number"
+            ? (Math.round(a.alt_baro / 100) / 10) + "k ft" : "ground") +
+          (typeof a.dst === "number" ? " · " + a.dst.toFixed(1) + " nm" : "");
+        return geRow("hex:" + a.hex, geCall(a), sub, ge.tracked === a.hex);
+      }).join("");
+    }
+    if (geFilter === "all" || geFilter === "air") out += airRows(t.air, geFilter === "all" ? 5 : 10);
+    if (geFilter === "all" || geFilter === "ground") out += airRows(t.ground, geFilter === "all" ? 3 : 10);
+    if ((geFilter === "all" || geFilter === "orbit") && SPACE.iss){
+      out += geRow("iss", "ISS",
+        SPACE.iss.alt + " km · " + Math.round(SPACE.iss.vel).toLocaleString() + " km/h", false);
+    }
+    ge.quakeRows = (SPACE.quakes || []).slice(0, geFilter === "all" ? 3 : 10);
+    if (geFilter === "all" || geFilter === "quakes"){
+      out += ge.quakeRows.map(function(q, i){
+        return geRow("q:" + i, "M" + q.mag, q.place, false);
+      }).join("");
+    }
+    box.innerHTML = out || '<div class="ge-empty">nothing in this band</div>';
+  }
+
   function geRefreshMarks(){
     var oh = OH();
     if (!ge.open || !oh || !ge.map) return;
     if (ge.marks) ge.map.removeLayer(ge.marks);
-    var list = (oh.aircraft() || []).slice(0, 80);
-    ge.marks = L.layerGroup(list.map(function(a){
-      if (typeof a.lat !== "number") return null;
-      var hot = ge.tracked === a.hex;
+    var t = geTargets();
+    var layers = [];
+    function dot(a, hot){
       var m = L.circleMarker([a.lat, a.lon], {
         radius: hot ? 7 : 3.5,
         color: hot ? "#ff3d7f" : "#d8ff3e",
@@ -1725,13 +1837,44 @@
       m.hex = a.hex;
       m.on("click", function(ev){
         if (ev.originalEvent) ev.originalEvent.stopPropagation();
-        ge.tracked = a.hex;
-        oh.select(a.hex);
-        geTelemetry();
+        selectAircraft(a.hex);
       });
       if (hot) m.bindTooltip(geCall(a), { permanent: true, direction: "top" });
       return m;
-    }).filter(Boolean)).addTo(ge.map);
+    }
+    if (geFilter === "all" || geFilter === "air"){
+      t.air.slice(0, 80).forEach(function(a){ layers.push(dot(a, ge.tracked === a.hex)); });
+    }
+    if (geFilter === "all" || geFilter === "ground"){
+      t.ground.slice(0, 80).forEach(function(a){ layers.push(dot(a, ge.tracked === a.hex)); });
+    }
+    if ((geFilter === "all" || geFilter === "orbit") && SPACE.iss && isFinite(SPACE.iss.lat)){
+      var im = L.marker([SPACE.iss.lat, SPACE.iss.lon], {
+        icon: L.divIcon({ className: "", html: '<div class="iss-ico">🛰</div>', iconSize: [20,20], iconAnchor: [10,10] }),
+        zIndexOffset: 500
+      });
+      im.on("click", function(ev){
+        if (ev.originalEvent) ev.originalEvent.stopPropagation();
+        selectOrbit();
+      });
+      layers.push(im);
+    }
+    if (geFilter === "all" || geFilter === "quakes"){
+      ge.quakeRows = (SPACE.quakes || []).slice(0, 10);
+      ge.quakeRows.forEach(function(q){
+        var qm = L.circleMarker([q.lat, q.lon], {
+          radius: 3 + q.mag * 1.4,
+          color: q.mag >= 6 ? "#ff3d7f" : "#ffb020",
+          weight: 1, opacity: .85, fillOpacity: .18
+        });
+        qm.on("click", function(ev){
+          if (ev.originalEvent) ev.originalEvent.stopPropagation();
+          selectQuake(q);
+        });
+        layers.push(qm);
+      });
+    }
+    ge.marks = L.layerGroup(layers).addTo(ge.map);
   }
 
   function geSteps(){
@@ -1824,13 +1967,17 @@
        measures itself now it gets 0x0 and stays blank. Wait for layout. */
     function ready(){
       ge.map.invalidateSize();
-      ge.steps = geSteps();
       /* a Leaflet map with no view yet must be given one before any flyTo —
          flying from an undefined view leaves tiles and markers projecting
          to NaN, i.e. a blank map. This was the blank screen. */
-      ge.map.setView(ge.steps[0].p, ge.steps[0].z);
+      ge.map.setView([oh.pos().lat, oh.pos().lon], 9);
+      ge.tracked = null;
+      stopTour();
       geRefreshMarks();
-      geLoop();
+      renderList();
+      $("geKicker").textContent = "Stand by";
+      $("geTxt").textContent = "pick a target — or run the tour";
+      $("geDots").innerHTML = "";
     }
     if (window.requestAnimationFrame){
       window.requestAnimationFrame(function(){ window.requestAnimationFrame(ready); });
@@ -1839,13 +1986,16 @@
     }
     geTelemetry();
     clearInterval(ge.tick); ge.tick = setInterval(geTelemetry, 1000);
-    clearInterval(ge.poll); ge.poll = setInterval(geRefreshMarks, 10000);
+    clearInterval(ge.poll); ge.poll = setInterval(function(){
+      geRefreshMarks(); renderList();
+    }, 10000);
     /* viewport takeover only — no browser fullscreen API by request */
   }
 
   function geExit(){
     if (!ge.open) return;
     ge.open = false;
+    stopTour();
     clearTimeout(ge.timer);
     clearInterval(ge.tick);
     clearInterval(ge.poll);
@@ -1858,6 +2008,31 @@
   function geToggle(){ ge.open ? geExit() : geEnter(); }
 
   $("tourBtn").addEventListener("click", geToggle);
+
+  /* command-deck wiring */
+  $("geFilters").addEventListener("click", function(e){
+    var b = e.target.closest("[data-f]");
+    if (!b) return;
+    geFilter = b.getAttribute("data-f");
+    [].forEach.call($("geFilters").querySelectorAll("[data-f]"), function(x){
+      x.classList.toggle("on", x === b);
+    });
+    geRefreshMarks(); renderList();
+  });
+  $("geList").addEventListener("click", function(e){
+    var b = e.target.closest("[data-kind]");
+    if (!b) return;
+    var k = b.getAttribute("data-kind");
+    if (k === "iss") selectOrbit();
+    else if (k.indexOf("q:") === 0){
+      var q = (ge.quakeRows || [])[+k.slice(2)];
+      if (q) selectQuake(q);
+    } else if (k.indexOf("hex:") === 0) selectAircraft(k.slice(4));
+  });
+  $("geTourBtn").addEventListener("click", function(){
+    if (ge.touring) stopTour();
+    else startTourLoop();
+  });
 
   /* ---------------- keyboard ---------------- */
   document.addEventListener("keydown", function(e){
