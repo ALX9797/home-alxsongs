@@ -1825,6 +1825,10 @@
     function ready(){
       ge.map.invalidateSize();
       ge.steps = geSteps();
+      /* a Leaflet map with no view yet must be given one before any flyTo —
+         flying from an undefined view leaves tiles and markers projecting
+         to NaN, i.e. a blank map. This was the blank screen. */
+      ge.map.setView(ge.steps[0].p, ge.steps[0].z);
       geRefreshMarks();
       geLoop();
     }
@@ -1836,9 +1840,7 @@
     geTelemetry();
     clearInterval(ge.tick); ge.tick = setInterval(geTelemetry, 1000);
     clearInterval(ge.poll); ge.poll = setInterval(geRefreshMarks, 10000);
-    try{
-      if (document.documentElement.requestFullscreen) document.documentElement.requestFullscreen();
-    }catch(e){}
+    /* viewport takeover only — no browser fullscreen API by request */
   }
 
   function geExit(){
@@ -1851,9 +1853,6 @@
     var box = $("godseye");
     box.classList.remove("on");
     box.setAttribute("aria-hidden", "true");
-    try{
-      if (document.fullscreenElement && document.exitFullscreen) document.exitFullscreen();
-    }catch(e){}
   }
 
   function geToggle(){ ge.open ? geExit() : geEnter(); }

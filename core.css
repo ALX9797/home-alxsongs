@@ -493,16 +493,19 @@ a:focus-visible, button:focus-visible, input:focus-visible{
   display: none; overflow: hidden;
 }
 #godseye.on{ display: block; }
-#geMap{ position: absolute; inset: 0; background: #000; }
+#geMap{ position: absolute; inset: 0; z-index: 0; background: #000; }
+/* NOTE: Leaflet's internal panes carry z-indexes up to 1000, which escape
+   any wrapper without its own stacking level — hence z-index:0 above, and
+   chrome deliberately parked past 1000 below. Do not "tidy" these numbers. */
 #geMap .leaflet-tile-pane{ filter: saturate(.5) brightness(.72) contrast(1.12); }
 .ge-bar{
   position: absolute; left: 0; right: 0; height: 7vh; min-height: 44px;
-  background: #000; z-index: 210;
+  background: #000; z-index: 1010;
 }
 .ge-bar.top{ top: 0; border-bottom: 1px solid rgba(216,255,62,.25); }
 .ge-bar.bot{ bottom: 0; border-top: 1px solid rgba(216,255,62,.25); }
 #geSide{
-  position: absolute; top: calc(7vh + 14px); right: 14px; z-index: 220;
+  position: absolute; top: calc(7vh + 14px); right: 14px; z-index: 1020;
   width: 250px; background: rgba(5,6,7,.78); border: 1px solid var(--line-hot);
   border-left: 2px solid var(--acid); padding: 12px 14px;
   font-family: var(--mono); backdrop-filter: blur(4px);
@@ -518,7 +521,7 @@ a:focus-visible, button:focus-visible, input:focus-visible{
 .ge-rows .qk{ color: var(--amber); }
 .ge-hint{ margin-top: 10px; font-size: 9px; color: var(--ink-faint); letter-spacing: .06em; }
 #geCap{
-  position: absolute; left: 4vw; bottom: calc(7vh + 18px); z-index: 220;
+  position: absolute; left: 4vw; bottom: calc(7vh + 18px); z-index: 1020;
   max-width: 60vw; font-family: var(--mono);
 }
 #geCap .tk{
@@ -530,7 +533,7 @@ a:focus-visible, button:focus-visible, input:focus-visible{
   text-shadow: 0 2px 18px #000, 0 0 2px #000; letter-spacing: -.01em;
 }
 #geDots{
-  position: absolute; bottom: calc(7vh + 20px); right: 4vw; z-index: 220;
+  position: absolute; bottom: calc(7vh + 20px); right: 4vw; z-index: 1020;
   display: flex; gap: 8px;
 }
 #geDots i{
@@ -538,7 +541,7 @@ a:focus-visible, button:focus-visible, input:focus-visible{
 }
 #geDots i.on{ background: var(--acid); }
 #geBoot{
-  position: absolute; inset: 0; z-index: 230; display: none;
+  position: absolute; inset: 0; z-index: 1030; display: none;
   align-items: center; justify-content: center;
   background: #000; color: var(--acid);
   font-family: var(--mono); font-size: 13px; letter-spacing: .4em; text-transform: uppercase;
