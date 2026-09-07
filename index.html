@@ -1444,6 +1444,22 @@
   <button class="cbtn tour" id="tourBtn" title="Cinematic flyover (G)">▶ Godseye</button>
 </div>
 
+<!-- GODSEYE fullscreen takeover -->
+<div id="godseye" aria-hidden="true">
+  <div id="geMap"></div>
+  <div class="ge-bar top"></div>
+  <div class="ge-bar bot"></div>
+  <aside id="geSide">
+    <div class="ge-title">◉ Godseye</div>
+    <div class="ge-clock" id="geClock">--:--:--</div>
+    <div class="ge-rows" id="geRows"></div>
+    <div class="ge-hint"><kbd>G</kbd>/<kbd>Esc</kbd> exit · click a contact to track it</div>
+  </aside>
+  <div id="geCap"><span class="tk" id="geKicker">Godseye</span><span id="geTxt"></span></div>
+  <div id="geDots"></div>
+  <div id="geBoot">Acquiring signal…</div>
+</div>
+
 <script>
 /* =====================================================================
    GODSEYE — sensor modes, detection overlay, space layers, follow-cam,
@@ -1657,62 +1673,183 @@
     }
   });
 
-  /* ---------------- godseye tour ---------------- */
-  var touring = false, tourTimer = null;
-  function cap(t){
-    $("tourTxt").textContent = t;
-    $("tourCap").classList.add("on");
+  /* ---------------- GODSEYE fullscreen ---------------- */
+  var ge = { open: false, map: null, marks: null, timer: null, tick: null,
+             poll: null, idx: 0, steps: [], tracked: null };
+
+  function geTiles(){
+    var key = ((window.CONFIG || {}).CARTO_KEY || "").trim();
+    if (key){
+      return L.tileLayer("https://basemaps.cartocdn.com/rastertiles/dark_all/{z}/{x}/{y}{r}.png?key=" + encodeURIComponent(key), {
+        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> &copy; <a href="https://carto.com/attributions">CARTO</a>',
+        maxZoom: 20
+      });
+    }
+    return L.tileLayer("https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Dark_Gray_Base/MapServer/tile/{z}/{y}/{x}", {
+      attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> &copy; <a href="https://www.esri.com/">Esri</a>',
+      maxNativeZoom: 16, maxZoom: 18
+    });
   }
-  function endTour(){
-    touring = false;
-    clearTimeout(tourTimer);
-    $("tourBtn").classList.remove("on");
-    $("tourCap").classList.remove("on");
+
+  function geEnsure(){
+    if (ge.map || typeof L === "undefined") return;
+    ge.map = L.map("geMap", {
+      zoomControl: false, attributionControl: true, scrollWheelZoom: false,
+      doubleClickZoom: false, boxZoom: false, keyboard: false
+    });
+    geTiles().addTo(ge.map);
+    ge.map.on("click", function(e){
+      /* click empty space: drop tracking. Markers stop propagation. */
+      ge.tracked = null;
+      geTelemetry();
+    });
   }
-  function flyTo(map, target, zoom){
-    if (reduceMotion()) map.setView(target, zoom);
-    else map.flyTo(target, zoom, { duration: 2.2 });
+
+  function geCall(a){
+    return ((a && a.flight) || "").trim() || (a && (a.r || a.hex)) || "?";
   }
-  function startTour(){
+
+  function geRefreshMarks(){
     var oh = OH();
-    if (!oh || !oh.map() || oh.pos().lat == null){ return; }
-    if (touring){ endTour(); return; }
-    touring = true;
-    $("tourBtn").classList.add("on");
-    if (oh.view() !== "map") oh.setView("map");
+    if (!ge.open || !oh || !ge.map) return;
+    if (ge.marks) ge.map.removeLayer(ge.marks);
+    var list = (oh.aircraft() || []).slice(0, 80);
+    ge.marks = L.layerGroup(list.map(function(a){
+      if (typeof a.lat !== "number") return null;
+      var hot = ge.tracked === a.hex;
+      var m = L.circleMarker([a.lat, a.lon], {
+        radius: hot ? 7 : 3.5,
+        color: hot ? "#ff3d7f" : "#d8ff3e",
+        weight: hot ? 2 : 1, opacity: .95, fillOpacity: hot ? .5 : .25
+      });
+      m.hex = a.hex;
+      m.on("click", function(ev){
+        if (ev.originalEvent) ev.originalEvent.stopPropagation();
+        ge.tracked = a.hex;
+        oh.select(a.hex);
+        geTelemetry();
+      });
+      if (hot) m.bindTooltip(geCall(a), { permanent: true, direction: "top" });
+      return m;
+    }).filter(Boolean)).addTo(ge.map);
+  }
 
+  function geSteps(){
+    var oh = OH();
     var home = [oh.pos().lat, oh.pos().lon];
-    var steps = [{ p: home, z: 9, t: "home ground — " + oh.aircraft().length + " contacts in the wire" }];
-
+    var steps = [{ p: home, z: 9, k: "Home ground",
+      t: oh.aircraft().length + " contacts in the wire" }];
     var near = (oh.aircraft() || [])[0];
     if (near && typeof near.lat === "number"){
-      steps.push({ p: [near.lat, near.lon], z: 10,
-        t: "closest contact — " + (near.flight || near.hex || "").trim() + " · " +
+      steps.push({ p: [near.lat, near.lon], z: 11, k: "Closest contact",
+        t: geCall(near) + " · " +
            (typeof near.alt_baro === "number" ? Math.round(near.alt_baro).toLocaleString() + " ft" : "on the ground") });
     }
     if (SPACE.iss && isFinite(SPACE.iss.lat)){
-      steps.push({ p: [SPACE.iss.lat, SPACE.iss.lon], z: 3,
-        t: "international space station — " + SPACE.iss.alt + " km up, " +
+      steps.push({ p: [SPACE.iss.lat, SPACE.iss.lon], z: 3, k: "Low orbit",
+        t: "space station — " + SPACE.iss.alt + " km up, " +
            Math.round(SPACE.iss.vel).toLocaleString() + " km/h" });
     }
     var q = (SPACE.quakes || [])[0];
     if (q){
-      steps.push({ p: [q.lat, q.lon], z: 5, t: "strongest shake in 24h — M" + q.mag + ", " + q.place });
+      steps.push({ p: [q.lat, q.lon], z: 5, k: "Underground",
+        t: "strongest shake in 24h — M" + q.mag + ", " + q.place });
     }
-    steps.push({ p: home, z: 9, t: "back home — tour over" });
-
-    var i = 0;
-    (function next(){
-      if (!touring) return;
-      if (i >= steps.length){ endTour(); return; }
-      var s = steps[i++];
-      flyTo(oh.map(), s.p, s.z);
-      cap(s.t);
-      tourTimer = setTimeout(next, 4600);
-    })();
+    steps.push({ p: home, z: 9, k: "Home ground", t: "the loop restarts — esc to leave" });
+    return steps;
   }
-  $("tourBtn").addEventListener("click", startTour);
-  $("radarView").addEventListener("click", function(){ if (touring) endTour(); });
+
+  function geShow(){
+    var s = ge.steps[ge.idx % ge.steps.length];
+    if (reduceMotion()) ge.map.setView(s.p, s.z);
+    else ge.map.flyTo(s.p, s.z, { duration: 3 });
+    $("geKicker").textContent = s.k;
+    $("geTxt").textContent = s.t;
+    $("geDots").innerHTML = ge.steps.map(function(_, i){
+      return '<i class="' + (i === ge.idx % ge.steps.length ? "on" : "") + '"></i>';
+    }).join("");
+  }
+
+  function geTelemetry(){
+    var oh = OH();
+    if (!oh) return;
+    var d = new Date();
+    function pad(n){ return n < 10 ? "0" + n : "" + n; }
+    $("geClock").textContent = pad(d.getHours()) + ":" + pad(d.getMinutes()) + ":" + pad(d.getSeconds());
+    var list = oh.aircraft() || [];
+    var near = list[0];
+    var rows = ["contacts <b>" + list.length + "</b>"];
+    if (near){
+      rows.push("nearest <b>" + esc(geCall(near)) + "</b> · " +
+        (typeof near.alt_baro === "number" ? Math.round(near.alt_baro).toLocaleString() + " ft" : "ground"));
+    }
+    if (SPACE.iss){
+      rows.push('<span class="hk">iss</span> <b>' + SPACE.iss.alt + " km · " +
+        Math.round(SPACE.iss.vel).toLocaleString() + " km/h</b>");
+    }
+    var q = (SPACE.quakes || [])[0];
+    if (q) rows.push('<span class="qk">quake</span> <b>M' + q.mag + "</b> · " + esc(q.place));
+    if (ge.tracked){
+      var t = null;
+      for (var i = 0; i < list.length; i++) if (list[i].hex === ge.tracked){ t = list[i]; break; }
+      rows.push("tracking <b>" + esc(t ? geCall(t) : ge.tracked) + "</b>");
+    }
+    $("geRows").innerHTML = rows.join("<br>");
+  }
+
+  function geLoop(){
+    clearTimeout(ge.timer);
+    geShow();
+    ge.timer = setTimeout(function(){
+      if (!ge.open) return;
+      ge.idx++;
+      geLoop();
+    }, 6500);
+  }
+
+  function geEnter(){
+    var oh = OH();
+    if (!oh || oh.pos().lat == null || typeof L === "undefined") return;
+    geEnsure();
+    if (!ge.map) return;
+    ge.open = true;
+    ge.idx = 0;
+    var box = $("godseye");
+    box.classList.add("on");
+    box.setAttribute("aria-hidden", "false");
+    $("tourBtn").classList.add("on");
+    $("geBoot").classList.add("on");
+    setTimeout(function(){ $("geBoot").classList.remove("on"); }, reduceMotion() ? 0 : 1100);
+    ge.map.invalidateSize();
+    ge.steps = geSteps();
+    geRefreshMarks();
+    geLoop();
+    geTelemetry();
+    clearInterval(ge.tick); ge.tick = setInterval(geTelemetry, 1000);
+    clearInterval(ge.poll); ge.poll = setInterval(geRefreshMarks, 10000);
+    try{
+      if (document.documentElement.requestFullscreen) document.documentElement.requestFullscreen();
+    }catch(e){}
+  }
+
+  function geExit(){
+    if (!ge.open) return;
+    ge.open = false;
+    clearTimeout(ge.timer);
+    clearInterval(ge.tick);
+    clearInterval(ge.poll);
+    $("tourBtn").classList.remove("on");
+    var box = $("godseye");
+    box.classList.remove("on");
+    box.setAttribute("aria-hidden", "true");
+    try{
+      if (document.fullscreenElement && document.exitFullscreen) document.exitFullscreen();
+    }catch(e){}
+  }
+
+  function geToggle(){ ge.open ? geExit() : geEnter(); }
+
+  $("tourBtn").addEventListener("click", geToggle);
 
   /* ---------------- keyboard ---------------- */
   document.addEventListener("keydown", function(e){
@@ -1721,7 +1858,7 @@
     if (e.metaKey || e.ctrlKey || e.altKey) return;
     var k = e.key;
     if (k === "Escape"){
-      if (touring){ endTour(); return; }
+      if (ge.open){ geExit(); return; }
       if (followHex){ setFollow(null); return; }
       return; /* modals handle their own Escape */
     }
@@ -1732,7 +1869,7 @@
     else if (k === "0") setSensor("off");
     else if (k === "d" || k === "D") $("detectBtn").click();
     else if (k === "f" || k === "F") toggleFollow();
-    else if (k === "g" || k === "G") startTour();
+    else if (k === "g" || k === "G") geToggle();
   });
 })();
 </script>
