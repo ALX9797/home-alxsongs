@@ -370,3 +370,116 @@ footer.foot{
   .card.span-4, .card.span-8{ grid-column: span 12; }
   .hero{ padding: 30px 0 24px; }
 }
+
+/* =====================================================================
+   GODSEYE LAYER — sensor modes, detection overlay, console, tour
+   Additive only: nothing above this block is touched, so every page keeps
+   its default look unless a mode is explicitly switched on.
+   ===================================================================== */
+
+/* ---- sensor overlay: one fixed veil over the viewport ---- */
+#sensorVeil{
+  position: fixed; inset: 0; z-index: 90; pointer-events: none;
+  opacity: 0; transition: opacity .45s ease;
+}
+body[data-sensor="nvg"] #sensorVeil{
+  opacity: 1;
+  background:
+    repeating-linear-gradient(0deg, rgba(0,0,0,.22) 0 1px, transparent 1px 3px),
+    radial-gradient(ellipse at center, transparent 52%, rgba(0,20,0,.55) 100%),
+    rgba(57,255,20,.10);
+  mix-blend-mode: screen;
+}
+body[data-sensor="nvg"]{ filter: hue-rotate(38deg) saturate(1.15); }
+body[data-sensor="thermal"] #sensorVeil{
+  opacity: 1;
+  background:
+    repeating-linear-gradient(0deg, rgba(0,0,0,.25) 0 2px, transparent 2px 4px),
+    linear-gradient(180deg, rgba(255,60,0,.16), rgba(128,0,255,.20));
+  mix-blend-mode: overlay;
+}
+body[data-sensor="thermal"] .leaflet-tile-pane{ filter: saturate(1.6) contrast(1.25) hue-rotate(-55deg); }
+body[data-sensor="noir"] #sensorVeil{
+  opacity: 1;
+  background: radial-gradient(ellipse at center, transparent 55%, rgba(0,0,0,.6) 100%);
+}
+body[data-sensor="noir"] .wrap{ filter: grayscale(1) contrast(1.08); }
+body[data-sensor="crt"] #sensorVeil{
+  opacity: 1;
+  background:
+    repeating-linear-gradient(0deg, rgba(0,0,0,.3) 0 1px, transparent 1px 3px),
+    radial-gradient(ellipse at center, transparent 60%, rgba(0,0,0,.5) 100%);
+}
+
+/* ---- floating console: sensor / detect / tour, bottom-right ---- */
+#console{
+  position: fixed; right: 14px; bottom: 14px; z-index: 95;
+  display: flex; gap: 6px; align-items: center; flex-wrap: wrap; justify-content: flex-end;
+  background: rgba(8,9,11,.82); border: 1px solid var(--line-hot);
+  border-radius: 2px; padding: 7px 8px; backdrop-filter: blur(6px);
+  font-family: var(--mono); font-size: 9px; letter-spacing: .14em;
+}
+#console .clab{ color: var(--ink-faint); text-transform: uppercase; }
+#console .cbtn{
+  font-family: var(--mono); font-size: 9px; letter-spacing: .12em;
+  background: transparent; border: 1px solid var(--line-hot); color: var(--ink-dim);
+  padding: 5px 8px; border-radius: 2px; cursor: pointer; text-transform: uppercase;
+}
+#console .cbtn:hover{ color: var(--acid); border-color: var(--acid); }
+#console .cbtn.on{ color: #0a0a0a; background: var(--acid); border-color: var(--acid); }
+#console .cbtn.tour.on{ background: var(--hot); border-color: var(--hot); color: #fff; }
+@media (max-width: 720px){
+  #console{ left: 14px; right: 14px; justify-content: center; }
+}
+
+/* ---- detection overlay on the overhead view ---- */
+body[data-detect="on"] .oh-view{
+  outline: 1px solid rgba(216,255,62,.35); outline-offset: -1px;
+}
+body[data-detect="on"] .oh-view::before,
+body[data-detect="on"] .oh-view::after{
+  content: ""; position: absolute; width: 22px; height: 22px; z-index: 500;
+  border: 2px solid var(--acid); pointer-events: none;
+}
+body[data-detect="on"] .oh-view::before{ top: 8px; left: 8px; border-right: 0; border-bottom: 0; }
+body[data-detect="on"] .oh-view::after{ bottom: 8px; right: 8px; border-left: 0; border-top: 0; }
+body[data-detect="on"] .plane-ico path{ stroke: var(--acid); stroke-width: 1; }
+body[data-detect="on"] .plane-ico .tag-lbl{ color: var(--acid); }
+
+/* ---- cinematic tour caption ---- */
+#tourCap{
+  position: absolute; left: 12px; bottom: 12px; z-index: 600; max-width: 70%;
+  display: none; background: rgba(8,9,11,.85); border-left: 2px solid var(--hot);
+  padding: 8px 12px; font-family: var(--mono); font-size: 11px; letter-spacing: .04em;
+  color: var(--ink);
+}
+#tourCap.on{ display: block; }
+#tourCap .tk{ color: var(--hot); font-size: 9px; letter-spacing: .2em; display: block; margin-bottom: 3px; }
+
+/* ---- ISS + quake markers ---- */
+.iss-ico{
+  font-size: 15px; line-height: 1; text-shadow: 0 0 6px #000;
+  animation: issPulse 2.4s ease-in-out infinite;
+}
+@keyframes issPulse{ 0%,100%{ opacity: 1; } 50%{ opacity: .45; } }
+
+/* ---- kbd hints ---- */
+kbd{
+  font-family: var(--mono); font-size: 9px; color: var(--ink-dim);
+  border: 1px solid var(--line-hot); border-radius: 2px; padding: 1px 5px;
+}
+
+/* ---- focus visibility (a11y) ---- */
+a:focus-visible, button:focus-visible, input:focus-visible{
+  outline: 2px solid var(--acid); outline-offset: 2px;
+}
+
+/* ---- reduced motion: the room goes still ---- */
+@media (prefers-reduced-motion: reduce){
+  .sweep{ animation: none; }
+  .live-dot i{ animation: none; }
+  .iss-ico{ animation: none; }
+  .bar i{ transition: none; }
+  #sensorVeil{ transition: none; }
+  *{ scroll-behavior: auto !important; }
+}

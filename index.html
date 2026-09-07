@@ -282,22 +282,38 @@
 
   <main class="grid">
 
-    <!-- ============ ON THIS DAY ============ -->
-    <section class="card span-12" data-card="onthisday">
+    <!-- ============ NEWS ============ -->
+    <section class="card span-12" data-card="feeds">
       <div class="card-head">
-        <h2><span class="idx">01 /</span> On This Day</h2>
-        <button class="btn ghost" id="otdShuffle" title="Another one">↻ another</button>
+        <h2><span class="idx">01 /</span> Feeds</h2>
+        <div class="oh-controls">
+          <span class="tag" id="newsMeta"></span>
+          <button class="btn ghost" id="newsRefresh" title="Refresh headlines">↻</button>
+        </div>
       </div>
-      <div id="otd">
-        <div class="skel" style="width:30%;height:40px"></div>
-        <div class="skel"></div><div class="skel" style="width:80%"></div>
+      <div id="news">
+        <div class="skel"></div><div class="skel" style="width:80%"></div><div class="skel" style="width:65%"></div>
+      </div>
+    </section>
+
+    <!-- ============ ESPORTS ============ -->
+    <section class="card span-12" data-card="esports">
+      <div class="card-head">
+        <h2><span class="idx">02 /</span> Esports</h2>
+        <div class="oh-controls">
+          <span class="tag" id="esMeta"></span>
+          <button class="btn ghost" id="esRefresh" title="Refresh matches">↻</button>
+        </div>
+      </div>
+      <div id="esports">
+        <div class="skel"></div><div class="skel" style="width:70%"></div>
       </div>
     </section>
 
     <!-- ============ OVERHEAD ============ -->
     <section class="card span-12" data-card="overhead">
       <div class="card-head">
-        <h2><span class="idx">02 /</span> Overhead</h2>
+        <h2><span class="idx">03 /</span> Overhead</h2>
         <div class="oh-controls">
           <div class="viewtog" id="viewtog">
             <button class="chip on" data-view="map">Map</button>
@@ -309,6 +325,9 @@
             <b id="radiusVal">20 nm</b>
           </label>
           <span class="tag" id="flSource"></span>
+          <span class="tag" id="spaceMeta" title="Live from orbit and underground"></span>
+          <button class="chip" id="followChip" title="Follow the selected aircraft (F)">Follow</button>
+          <button class="chip" id="shareChip" title="Copy a link to this exact view">Share</button>
           <button class="btn ghost" id="flRefresh" title="Refresh now">↻</button>
         </div>
       </div>
@@ -340,6 +359,7 @@
               <g id="blips"></g>
             </svg>
           </div>
+          <div id="tourCap"><span class="tk">◉ Godseye tour</span><span id="tourTxt"></span></div>
         </div>
 
         <div class="oh-side" id="ohSide">
@@ -351,31 +371,15 @@
       </div>
     </section>
 
-    <!-- ============ NEWS ============ -->
-    <section class="card span-12" data-card="feeds">
+    <!-- ============ ON THIS DAY ============ -->
+    <section class="card span-12" data-card="onthisday">
       <div class="card-head">
-        <h2><span class="idx">03 /</span> Feeds</h2>
-        <div class="oh-controls">
-          <span class="tag" id="newsMeta"></span>
-          <button class="btn ghost" id="newsRefresh" title="Refresh headlines">↻</button>
-        </div>
+        <h2><span class="idx">04 /</span> On This Day</h2>
+        <button class="btn ghost" id="otdShuffle" title="Another one">↻ another</button>
       </div>
-      <div id="news">
-        <div class="skel"></div><div class="skel" style="width:80%"></div><div class="skel" style="width:65%"></div>
-      </div>
-    </section>
-
-    <!-- ============ ESPORTS ============ -->
-    <section class="card span-12" data-card="esports">
-      <div class="card-head">
-        <h2><span class="idx">04 /</span> Esports</h2>
-        <div class="oh-controls">
-          <span class="tag" id="esMeta"></span>
-          <button class="btn ghost" id="esRefresh" title="Refresh matches">↻</button>
-        </div>
-      </div>
-      <div id="esports">
-        <div class="skel"></div><div class="skel" style="width:70%"></div>
+      <div id="otd">
+        <div class="skel" style="width:30%;height:40px"></div>
+        <div class="skel"></div><div class="skel" style="width:80%"></div>
       </div>
     </section>
 
@@ -1090,6 +1094,33 @@
     pollTimer = setInterval(loadFlights, 30000);
   }
 
+  /* GODSEYE hook: state + actions for the console script below. Second
+     script, same page — keeps the big flight logic untouched. */
+  window.OVERHEAD = {
+    map: function(){ return map; },
+    aircraft: function(){ return aircraft; },
+    selected: function(){ return selected; },
+    pos: function(){ return { lat: lat, lon: lon }; },
+    radius: function(){ return radius; },
+    view: function(){ return view; },
+    select: function(hex){ select(hex); },
+    deselect: function(){ deselect(); },
+    setView: function(v){
+      var btn = document.querySelector('#viewtog [data-view="' + v + '"]');
+      if (btn) btn.click();
+    },
+    setRadius: function(r){
+      r = Math.max(5, Math.min(100, Math.round(r)));
+      radius = r;
+      $("radiusSlider").value = r;
+      $("radiusVal").textContent = r + " nm";
+      $("rng1").textContent = Math.round(r * 0.67) + "nm";
+      $("rng2").textContent = r + "nm";
+      try{ localStorage.setItem("home.flightRadius", r); }catch(e){}
+      fitToRadius(); loadFlights();
+    }
+  };
+
   if (navigator.geolocation){
     $("posmeta").textContent = "locating…";
     navigator.geolocation.getCurrentPosition(function(p){
@@ -1400,5 +1431,311 @@
 
 })();
 </script>
+<script>
+/* =====================================================================
+   GODSEYE — sensor modes, detection overlay, space layers, follow-cam,
+   share-links and the cinematic tour. Reads the main flight script
+   through window.OVERHEAD; never touches its internals.
+   ===================================================================== */
+(function(){
+  "use strict";
+
+  function $(id){ return document.getElementById(id); }
+  function esc(s){
+    return String(s == null ? "" : s).replace(/[&<>"]/g, function(c){
+      return ({ "&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;" })[c];
+    });
+  }
+  function OH(){ return window.OVERHEAD || null; }
+  function reduceMotion(){
+    return window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  }
+
+  var PROXY = ((window.CONFIG || {}).FLIGHT_PROXY || "").replace(/\/+$/, "");
+
+  /* ---------------- sensors ---------------- */
+  var SKEY = "home.sensor.v1";
+  var SENSORS = ["off","nvg","thermal","noir","crt"];
+
+  function paintSensor(){
+    var btns = document.querySelectorAll("#console [data-sensor]");
+    [].forEach.call(btns, function(b){
+      b.classList.toggle("on", (document.body.getAttribute("data-sensor") || "off") === b.getAttribute("data-sensor"));
+    });
+  }
+  function setSensor(s){
+    if (SENSORS.indexOf(s) === -1) s = "off";
+    if (s === "off") document.body.removeAttribute("data-sensor");
+    else document.body.setAttribute("data-sensor", s);
+    try{ localStorage.setItem(SKEY, s); }catch(e){}
+    paintSensor();
+  }
+  document.querySelector("#console").addEventListener("click", function(e){
+    var b = e.target.closest("[data-sensor]");
+    if (b) setSensor(b.getAttribute("data-sensor"));
+  });
+  try{
+    var savedS = localStorage.getItem(SKEY);
+    if (savedS) setSensor(savedS);
+  }catch(e){}
+  paintSensor();
+
+  /* ---------------- detection overlay ---------------- */
+  var DKEY = "home.detect.v1";
+  function setDetect(on){
+    if (on) document.body.setAttribute("data-detect", "on");
+    else document.body.removeAttribute("data-detect");
+    $("detectBtn").classList.toggle("on", !!on);
+    try{ localStorage.setItem(DKEY, on ? "1" : "0"); }catch(e){}
+  }
+  $("detectBtn").addEventListener("click", function(){
+    setDetect(!document.body.hasAttribute("data-detect"));
+  });
+  try{ if (localStorage.getItem(DKEY) === "1") setDetect(true); }catch(e){}
+
+  /* ---------------- space layers: ISS + quakes ---------------- */
+  var SPACE = { iss: null, quakes: [] };
+  var issMarker = null, quakeLayer = null;
+
+  function drawSpace(){
+    var oh = OH();
+    if (!oh || !oh.map() || typeof L === "undefined") return;
+    var map = oh.map();
+
+    if (SPACE.iss && isFinite(SPACE.iss.lat)){
+      var html = '<div class="iss-ico" title="ISS · ' +
+        (SPACE.iss.alt != null ? SPACE.iss.alt + " km · " : "") +
+        (SPACE.iss.vel != null ? Math.round(SPACE.iss.vel).toLocaleString() + " km/h" : "") +
+        '">🛰</div>';
+      if (!issMarker){
+        issMarker = L.marker([SPACE.iss.lat, SPACE.iss.lon], {
+          icon: L.divIcon({ className: "", html: html, iconSize: [20,20], iconAnchor: [10,10] }),
+          zIndexOffset: 500
+        }).addTo(map);
+      } else {
+        issMarker.setLatLng([SPACE.iss.lat, SPACE.iss.lon]);
+        issMarker.setIcon(L.divIcon({ className: "", html: html, iconSize: [20,20], iconAnchor: [10,10] }));
+      }
+    }
+    if (quakeLayer) map.removeLayer(quakeLayer);
+    quakeLayer = L.layerGroup((SPACE.quakes || []).map(function(q){
+      return L.circleMarker([q.lat, q.lon], {
+        radius: 3 + q.mag * 1.4,
+        color: q.mag >= 6 ? "#ff3d7f" : "#ffb020",
+        weight: 1, opacity: .85, fillOpacity: .18
+      }).bindTooltip("M" + q.mag + " · " + q.place, { direction: "top" });
+    })).addTo(map);
+
+    var bits = [];
+    if (SPACE.iss) bits.push("ISS");
+    if (SPACE.quakes.length) bits.push(SPACE.quakes.length + " quakes");
+    var el = $("spaceMeta");
+    if (el){ el.textContent = bits.join(" · "); el.title = bits.length ? "Live: ISS + USGS earthquakes" : ""; }
+  }
+
+  function loadSpace(){
+    if (!PROXY) return;
+    fetch(PROXY + "/space")
+      .then(function(r){ if (!r.ok) throw new Error(r.status); return r.json(); })
+      .then(function(j){
+        SPACE.iss = j.iss || null;
+        SPACE.quakes = j.quakes || [];
+        window.SPACE = SPACE;
+        drawSpace();
+      })
+      .catch(function(){ /* space layers are garnish — stay quiet */ });
+  }
+  loadSpace();
+  setInterval(loadSpace, 120000);
+  setInterval(function(){ if ((SPACE.iss || SPACE.quakes.length) && !issMarker) drawSpace(); }, 5000);
+
+  /* ---------------- follow-cam + trail ---------------- */
+  var followHex = null, trail = null, trailPts = [];
+  function paintFollow(){
+    var c = $("followChip");
+    if (c) c.classList.toggle("on", !!followHex);
+  }
+  function setFollow(hex){
+    followHex = hex || null;
+    trailPts = [];
+    var oh = OH();
+    if (trail && oh && oh.map()){ oh.map().removeLayer(trail); trail = null; }
+    paintFollow();
+  }
+  function toggleFollow(){
+    var oh = OH();
+    if (!oh) return;
+    if (followHex){ setFollow(null); return; }
+    var sel = oh.selected();
+    if (!sel){
+      var hint = $("roundHint");
+      if (hint){ hint.textContent = "select an aircraft first, then follow"; }
+      return;
+    }
+    setFollow(sel);
+  }
+  $("followChip").addEventListener("click", toggleFollow);
+  setInterval(function(){
+    var oh = OH();
+    if (!oh || !followHex || !oh.map() || typeof L === "undefined") return;
+    var list = oh.aircraft() || [];
+    var a = null;
+    for (var i = 0; i < list.length; i++) if (list[i].hex === followHex){ a = list[i]; break; }
+    if (!a){
+      /* reselection keeps the trail on the same contact */
+      if (oh.selected() && oh.selected() !== followHex) setFollow(oh.selected());
+      return;
+    }
+    if (typeof a.lat !== "number") return;
+    oh.map().panTo([a.lat, a.lon], { animate: !reduceMotion() });
+    trailPts.push([a.lat, a.lon]);
+    if (trailPts.length > 25) trailPts.shift();
+    if (!trail){
+      trail = L.polyline(trailPts, { color: "#d8ff3e", weight: 1.5, opacity: .8 }).addTo(oh.map());
+    } else {
+      trail.setLatLngs(trailPts);
+    }
+  }, 5000);
+
+  /* ---------------- share-link: this exact view ---------------- */
+  function stateToHash(){
+    var oh = OH();
+    var h = "r=" + (oh ? oh.radius() : 20);
+    if (oh && oh.selected()) h += "&s=" + encodeURIComponent(oh.selected());
+    return h;
+  }
+  var pendingSelect = null;
+  (function bootHash(){
+    var h = (window.location.hash || "").replace(/^#/, "");
+    if (!h) return;
+    var p = {};
+    h.split("&").forEach(function(kv){
+      var k = kv.split("=");
+      p[decodeURIComponent(k[0])] = decodeURIComponent(k.slice(1).join("="));
+    });
+    var oh = OH();
+    if (p.r && oh){
+      var r = parseInt(p.r, 10);
+      if (r >= 5 && r <= 100) oh.setRadius(r);
+    }
+    if (p.s) pendingSelect = p.s;
+  })();
+  setInterval(function(){
+    if (!pendingSelect) return;
+    var oh = OH();
+    if (!oh) return;
+    var list = oh.aircraft() || [];
+    for (var i = 0; i < list.length; i++){
+      if (list[i].hex === pendingSelect){ oh.select(pendingSelect); pendingSelect = null; return; }
+    }
+  }, 2000);
+  $("shareChip").addEventListener("click", function(){
+    var url = window.location.origin + window.location.pathname + "#" + stateToHash();
+    try{ window.history.replaceState(null, "", "#" + stateToHash()); }catch(e){}
+    var done = function(){
+      var c = $("shareChip"), old = c.textContent;
+      c.textContent = "Copied";
+      setTimeout(function(){ c.textContent = old; }, 1600);
+    };
+    if (navigator.clipboard && navigator.clipboard.writeText){
+      navigator.clipboard.writeText(url).then(done, function(){ window.prompt("Copy this:", url); });
+    } else {
+      window.prompt("Copy this:", url);
+    }
+  });
+
+  /* ---------------- godseye tour ---------------- */
+  var touring = false, tourTimer = null;
+  function cap(t){
+    $("tourTxt").textContent = t;
+    $("tourCap").classList.add("on");
+  }
+  function endTour(){
+    touring = false;
+    clearTimeout(tourTimer);
+    $("tourBtn").classList.remove("on");
+    $("tourCap").classList.remove("on");
+  }
+  function flyTo(map, target, zoom){
+    if (reduceMotion()) map.setView(target, zoom);
+    else map.flyTo(target, zoom, { duration: 2.2 });
+  }
+  function startTour(){
+    var oh = OH();
+    if (!oh || !oh.map() || oh.pos().lat == null){ return; }
+    if (touring){ endTour(); return; }
+    touring = true;
+    $("tourBtn").classList.add("on");
+    if (oh.view() !== "map") oh.setView("map");
+
+    var home = [oh.pos().lat, oh.pos().lon];
+    var steps = [{ p: home, z: 9, t: "home ground — " + oh.aircraft().length + " contacts in the wire" }];
+
+    var near = (oh.aircraft() || [])[0];
+    if (near && typeof near.lat === "number"){
+      steps.push({ p: [near.lat, near.lon], z: 10,
+        t: "closest contact — " + (near.flight || near.hex || "").trim() + " · " +
+           (typeof near.alt_baro === "number" ? Math.round(near.alt_baro).toLocaleString() + " ft" : "on the ground") });
+    }
+    if (SPACE.iss && isFinite(SPACE.iss.lat)){
+      steps.push({ p: [SPACE.iss.lat, SPACE.iss.lon], z: 3,
+        t: "international space station — " + SPACE.iss.alt + " km up, " +
+           Math.round(SPACE.iss.vel).toLocaleString() + " km/h" });
+    }
+    var q = (SPACE.quakes || [])[0];
+    if (q){
+      steps.push({ p: [q.lat, q.lon], z: 5, t: "strongest shake in 24h — M" + q.mag + ", " + q.place });
+    }
+    steps.push({ p: home, z: 9, t: "back home — tour over" });
+
+    var i = 0;
+    (function next(){
+      if (!touring) return;
+      if (i >= steps.length){ endTour(); return; }
+      var s = steps[i++];
+      flyTo(oh.map(), s.p, s.z);
+      cap(s.t);
+      tourTimer = setTimeout(next, 4600);
+    })();
+  }
+  $("tourBtn").addEventListener("click", startTour);
+  $("radarView").addEventListener("click", function(){ if (touring) endTour(); });
+
+  /* ---------------- keyboard ---------------- */
+  document.addEventListener("keydown", function(e){
+    var t = (e.target && e.target.tagName) || "";
+    if (t === "INPUT" || t === "TEXTAREA") return;
+    if (e.metaKey || e.ctrlKey || e.altKey) return;
+    var k = e.key;
+    if (k === "Escape"){
+      if (touring){ endTour(); return; }
+      if (followHex){ setFollow(null); return; }
+      return; /* modals handle their own Escape */
+    }
+    if (k === "1") setSensor("nvg");
+    else if (k === "2") setSensor("thermal");
+    else if (k === "3") setSensor("noir");
+    else if (k === "4") setSensor("crt");
+    else if (k === "0") setSensor("off");
+    else if (k === "d" || k === "D") $("detectBtn").click();
+    else if (k === "f" || k === "F") toggleFollow();
+    else if (k === "g" || k === "G") startTour();
+  });
+})();
+</script>
+
+<!-- sensor veil + spy console -->
+<div id="sensorVeil"></div>
+<div id="console" role="toolbar" aria-label="Display console">
+  <span class="clab">Sensor</span>
+  <button class="cbtn on" data-sensor="off" title="Normal (0)">Off</button>
+  <button class="cbtn" data-sensor="nvg" title="Night vision (1)">NVG</button>
+  <button class="cbtn" data-sensor="thermal" title="Thermal (2)">Thm</button>
+  <button class="cbtn" data-sensor="noir" title="Noir (3)">Noir</button>
+  <button class="cbtn" data-sensor="crt" title="CRT (4)">CRT</button>
+  <button class="cbtn" id="detectBtn" title="Detection overlay (D)">Detect</button>
+  <button class="cbtn tour" id="tourBtn" title="Cinematic flyover (G)">▶ Godseye</button>
+</div>
+
 </body>
 </html>
