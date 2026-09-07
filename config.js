@@ -10,8 +10,8 @@
    ===================================================================== */
 
 window.CONFIG = {
-  SUPABASE_URL: "https://aysqksqikhsmbouoxved.supabase.co",   // e.g. "https://abcdefgh.supabase.co"
-  SUPABASE_KEY: "sb_publishable_SvfAJkozhcEo8Vr3YGFwDQ_IfhurIru",   // the long "anon public" key
+  SUPABASE_URL: "",   // e.g. "https://abcdefgh.supabase.co"
+  SUPABASE_KEY: "",   // the long "anon public" key
 
   // Table name created by supabase-schema.sql
   GAMES_TABLE: "dutch_blitz_games",
@@ -21,6 +21,12 @@ window.CONFIG = {
 
   // How far around you to look for aircraft, in nautical miles (max 250)
   FLIGHT_RADIUS_NM: 20,
+
+  // Map tiles: a free CARTO key keeps the pretty dark basemap. Request one at
+  // https://carto.com/basemaps/apikey (free, no account — give them this
+  // site's domain). Leave empty and the map falls back to Esri's keyless
+  // dark canvas instead of CARTO's "API KEY REQUIRED" watermark.
+  CARTO_KEY: "cb1_2zx3_1_0b22c6a44b4acdd4085168c8",
 
   // Your Cloudflare Worker URL (see SETUP.md -> "Flight proxy").
   // The ADS-B feeds don't send CORS headers, so the browser can't read them

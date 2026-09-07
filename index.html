@@ -725,13 +725,21 @@
       center: [lat, lon], zoom: 9, zoomControl: true,
       attributionControl: true, scrollWheelZoom: true
     });
-    /* Esri's dark-grey canvas: free, no key, dark enough to match the theme.
-       (CARTO's raster tiles now print an "API KEY REQUIRED" watermark on
-       every keyless request, which is what used to sit under the planes.) */
-    L.tileLayer("https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Dark_Gray_Base/MapServer/tile/{z}/{y}/{x}", {
-      attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> &copy; <a href="https://www.esri.com/">Esri</a>',
-      maxNativeZoom: 16, maxZoom: 18
-    }).addTo(map);
+    /* Pretty CARTO dark when a key is set (config.js), Esri's keyless dark
+       canvas otherwise — CARTO prints an "API KEY REQUIRED" watermark on
+       keyless requests, so never call it without one. */
+    var cartoKey = (C.CARTO_KEY || "").trim();
+    if (cartoKey){
+      L.tileLayer("https://basemaps.cartocdn.com/rastertiles/dark_all/{z}/{x}/{y}{r}.png?key=" + encodeURIComponent(cartoKey), {
+        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> &copy; <a href="https://carto.com/attributions">CARTO</a>',
+        maxZoom: 20
+      }).addTo(map);
+    } else {
+      L.tileLayer("https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Dark_Gray_Base/MapServer/tile/{z}/{y}/{x}", {
+        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> &copy; <a href="https://www.esri.com/">Esri</a>',
+        maxNativeZoom: 16, maxZoom: 18
+      }).addTo(map);
+    }
 
     meMarker = L.circleMarker([lat, lon], {
       radius: 4, color: "#d8ff3e", fillColor: "#d8ff3e", fillOpacity: 1, weight: 0
