@@ -68,7 +68,7 @@
 
   <header class="topbar">
     <a class="brand" href="index.html"><span class="dot" style="background:var(--hot)"></span> ← home</a>
-    <div class="right"><span id="storeMode" class="storepill">…</span></div>
+    <div class="right"><span id="authSlot"></span> <span id="storeMode" class="storepill">…</span></div>
   </header>
 
   <section class="pagehead">
@@ -126,7 +126,11 @@
   <div class="modal" id="modal"></div>
 </div>
 
+<!-- account modal (sign-in lives here, so delete rights are known) -->
+<div class="modal-bg" id="authModalBg"><div class="modal" id="authModal"></div></div>
+
 <script src="config.js"></script>
+<script src="auth.js"></script>
 <script src="db.js"></script>
 <script>
 (function(){
@@ -136,6 +140,18 @@
   var live = null;      // {players:[], target:int, rounds:[[..]], mode:'detail'|'simple', started:iso}
   var games = [];       // finished games
   var tab = "board";
+
+  /* Deletes require being signed in (the database refuses anonymous deletes,
+     silently deleting nothing). Track it so the buttons only appear for
+     people whose tap will actually work. auth.js publishes window.AUTH a
+     tick after it loads, and re-announces on sign-in/out. */
+  var signedIn = !!(window.AUTH && window.AUTH.signedIn);
+  window.addEventListener("auth:changed", function(e){
+    var now = !!(e.detail && e.detail.signedIn);
+    if (now === signedIn) return;
+    signedIn = now;
+    if (tab === "history") renderTab();
+  });
 
   function $(id){ return document.getElementById(id); }
   function esc(s){
@@ -519,7 +535,9 @@
     if (!games.length){
       return '<div class="state">Nothing in the ledger yet.</div>';
     }
-    return games.map(function(g){
+    var note = signedIn ? "" :
+      '<div class="state" style="padding-bottom:10px">Sign in (top right) to delete entries.</div>';
+    return note + games.map(function(g){
       var d = new Date(g.played_at);
       var fs = g.final_scores || {};
       var line = (g.players || []).map(function(p){
@@ -530,7 +548,9 @@
           '<div class="sc">' + line + '</div>' +
           '<div class="d">' + d.toLocaleDateString() + ' ' + d.toLocaleTimeString([], {hour:"2-digit",minute:"2-digit"}) +
             ' · ' + ((g.rounds||[]).length) + ' rounds</div></div>' +
-        '<button class="btn ghost hot" data-del="' + esc(g.id) + '">✕</button>' +
+        (signedIn
+          ? '<button class="btn ghost hot" data-del="' + esc(g.id) + '">✕</button>'
+          : '') +
       '</div>';
     }).join("");
   }
@@ -577,7 +597,16 @@
     renderTab();
     if (live) renderLive();
   }).catch(function(err){
-    $("tabBody").innerHTML = '<div class="state err">Could not load the ledger: ' + esc(err.message) + '</div>';
+    /* the pill would otherwise keep promising "cloud sync" while the cloud
+       is unreachable — say so plainly, and offer a way back */
+    if (cloud){
+      $("storeMode").textContent = "cloud unreachable";
+      $("storeMode").classList.remove("cloud");
+    }
+    $("tabBody").innerHTML =
+      '<div class="state err">Could not load the ledger: ' + esc(err.message) + '</div>' +
+      '<div style="margin-top:10px"><button class="btn" id="ledgerRetry">↻ retry</button></div>';
+    $("ledgerRetry").addEventListener("click", function(){ window.location.reload(); });
     if (live) renderLive();
   });
 

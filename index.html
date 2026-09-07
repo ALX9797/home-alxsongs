@@ -923,11 +923,14 @@
   }
 
   /* A fetch that rejects with no HTTP status is almost always CORS, an
-     offline network, or a blocking extension — worth saying so plainly. */
+     offline network, or a blocking extension — worth saying so plainly.
+     When the Worker refuses (HTTP 502) it tells us which upstream said no
+     in the body, so carry that through instead of a bare status code. */
   function describeErr(e){
-    if (e && e.name === "AbortError") return "timed out";
-    if (e && e.status) return "HTTP " + e.status;
-    return "blocked or unreachable (CORS / network)";
+    var extra = e && e.triedDetail ? " — " + e.triedDetail.join("; ") : "";
+    if (e && e.name === "AbortError") return "timed out" + extra;
+    if (e && e.status) return "HTTP " + e.status + extra;
+    return "blocked or unreachable (CORS / network)" + extra;
   }
 
   function applyFlights(j){
@@ -999,7 +1002,19 @@
       var p = PROVIDERS[i];
       fetchTimeout(p.url(la, lo, radius))
         .then(function(r){
-          if (!r.ok){ var e = new Error("http"); e.status = r.status; throw e; }
+          if (!r.ok){
+            /* the Worker names the upstream that refused in its 502 body
+               (e.g. "api.adsb.lol: HTTP 429") — keep it for the message */
+            return r.text().then(function(t){
+              var e = new Error("http");
+              e.status = r.status;
+              try {
+                var j = JSON.parse(t);
+                if (j && j.tried && j.tried.length) e.triedDetail = j.tried;
+              } catch (ign) {}
+              throw e;
+            });
+          }
           /* the Worker tells us which upstream served it, and how old it is */
           var upstream = null, cacheState = null, fetchedAt = null;
           try {
