@@ -725,9 +725,12 @@
       center: [lat, lon], zoom: 9, zoomControl: true,
       attributionControl: true, scrollWheelZoom: true
     });
-    L.tileLayer("https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png", {
-      attribution: '&copy; OpenStreetMap &copy; CARTO',
-      subdomains: "abcd", maxZoom: 18
+    /* Esri's dark-grey canvas: free, no key, dark enough to match the theme.
+       (CARTO's raster tiles now print an "API KEY REQUIRED" watermark on
+       every keyless request, which is what used to sit under the planes.) */
+    L.tileLayer("https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Dark_Gray_Base/MapServer/tile/{z}/{y}/{x}", {
+      attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> &copy; <a href="https://www.esri.com/">Esri</a>',
+      maxNativeZoom: 16, maxZoom: 18
     }).addTo(map);
 
     meMarker = L.circleMarker([lat, lon], {
