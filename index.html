@@ -1431,6 +1431,19 @@
 
 })();
 </script>
+<!-- sensor veil + spy console (before the script: it binds on parse) -->
+<div id="sensorVeil"></div>
+<div id="console" role="toolbar" aria-label="Display console">
+  <span class="clab">Sensor</span>
+  <button class="cbtn on" data-sensor="off" title="Normal (0)">Off</button>
+  <button class="cbtn" data-sensor="nvg" title="Night vision (1)">NVG</button>
+  <button class="cbtn" data-sensor="thermal" title="Thermal (2)">Thm</button>
+  <button class="cbtn" data-sensor="noir" title="Noir (3)">Noir</button>
+  <button class="cbtn" data-sensor="crt" title="CRT (4)">CRT</button>
+  <button class="cbtn" id="detectBtn" title="Detection overlay (D)">Detect</button>
+  <button class="cbtn tour" id="tourBtn" title="Cinematic flyover (G)">▶ Godseye</button>
+</div>
+
 <script>
 /* =====================================================================
    GODSEYE — sensor modes, detection overlay, space layers, follow-cam,
@@ -1723,19 +1736,6 @@
   });
 })();
 </script>
-
-<!-- sensor veil + spy console -->
-<div id="sensorVeil"></div>
-<div id="console" role="toolbar" aria-label="Display console">
-  <span class="clab">Sensor</span>
-  <button class="cbtn on" data-sensor="off" title="Normal (0)">Off</button>
-  <button class="cbtn" data-sensor="nvg" title="Night vision (1)">NVG</button>
-  <button class="cbtn" data-sensor="thermal" title="Thermal (2)">Thm</button>
-  <button class="cbtn" data-sensor="noir" title="Noir (3)">Noir</button>
-  <button class="cbtn" data-sensor="crt" title="CRT (4)">CRT</button>
-  <button class="cbtn" id="detectBtn" title="Detection overlay (D)">Detect</button>
-  <button class="cbtn tour" id="tourBtn" title="Cinematic flyover (G)">▶ Godseye</button>
-</div>
 
 </body>
 </html>
