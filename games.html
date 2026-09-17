@@ -162,7 +162,7 @@
 
   /* ---------------- storage mode indicator ---------------- */
   var cloud = DB.isCloud();
-  $("storeMode").textContent = cloud ? "cloud sync" : "this device only";
+  $("storeMode").textContent = cloud ? "sheet sync" : "this device only";
   if (cloud) $("storeMode").classList.add("cloud");
   $("footMode").textContent = cloud ? "supabase" : "local storage";
 
@@ -535,8 +535,12 @@
     if (!games.length){
       return '<div class="state">Nothing in the ledger yet.</div>';
     }
-    var note = signedIn ? "" :
-      '<div class="state" style="padding-bottom:10px">Sign in (top right) to delete entries.</div>';
+    /* with the ledger in a sheet there is nothing to sign in to: anyone
+       holding the link can add a game, so anyone can remove one too.
+       The sheet's version history is the undo. */
+    var canDelete = signedIn || DB.isCloud();
+    var note = canDelete ? "" :
+      '<div class="state" style="padding-bottom:10px">Deleting is off while games are kept in this browser.</div>';
     return note + games.map(function(g){
       var d = new Date(g.played_at);
       var fs = g.final_scores || {};
@@ -548,7 +552,7 @@
           '<div class="sc">' + line + '</div>' +
           '<div class="d">' + d.toLocaleDateString() + ' ' + d.toLocaleTimeString([], {hour:"2-digit",minute:"2-digit"}) +
             ' · ' + ((g.rounds||[]).length) + ' rounds</div></div>' +
-        (signedIn
+        (canDelete
           ? '<button class="btn ghost hot" data-del="' + esc(g.id) + '">✕</button>'
           : '') +
       '</div>';
@@ -600,7 +604,7 @@
     /* the pill would otherwise keep promising "cloud sync" while the cloud
        is unreachable — say so plainly, and offer a way back */
     if (cloud){
-      $("storeMode").textContent = "cloud unreachable";
+      $("storeMode").textContent = "sheet unreachable";
       $("storeMode").classList.remove("cloud");
     }
     $("tabBody").innerHTML =

@@ -13,8 +13,13 @@ window.CONFIG = {
   SUPABASE_URL: "",   // e.g. "https://abcdefgh.supabase.co"
   SUPABASE_KEY: "",   // the long "anon public" key
 
-  // Table name created by supabase-schema.sql
+  // Table name created by supabase-schema.sql (only used by the word game now)
   GAMES_TABLE: "dutch_blitz_games",
+
+  // Where the Dutch Blitz ledger lives: the /exec URL of the Apps Script
+  // deployed from your Google Sheet. See SETUP.md, "Where the games live".
+  // Leave it empty and games are kept in this browser only.
+  SHEET_API: "https://script.google.com/macros/s/AKfycbzMJ41jchoA9Iz7nTzGUeuvHXbowpOdW8hh-OPzTfhUcf3u3iA5xCL4NjLAiS7dBk6c/exec",
 
   // Home page personalisation
   OWNER_NAME: "Alex",
