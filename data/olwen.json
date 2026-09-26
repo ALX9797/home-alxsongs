@@ -1,12 +1,12 @@
 {
   "version": 1,
-  "updated_at": "2026-09-26T11:05:34+01:00",
+  "updated_at": "2026-09-26T11:08:34+01:00",
   "items": [
     {
       "id": "3addcc24b497faf6",
       "topic": "Manchester United · Premier League",
       "summary": "",
-      "updated_at": "2026-09-26T11:05:33+01:00",
+      "updated_at": "2026-09-26T11:08:11+01:00",
       "status": "provider-data",
       "sources": [
         {
@@ -21,7 +21,7 @@
           "when": "Sat 10 Oct 2026 17:30 BST",
           "status": "Scheduled",
           "detail": "",
-          "competition": "2026-27 English Premier League",
+          "competition": "English Premier League",
           "source_url": "https://www.espn.com/soccer/match/_/gameId/401878773",
           "starts_at": "2026-10-10T16:30Z",
           "completed": false
@@ -32,7 +32,7 @@
           "when": "Sun 18 Oct 2026 14:00 BST",
           "status": "Scheduled",
           "detail": "",
-          "competition": "2026-27 English Premier League",
+          "competition": "English Premier League",
           "source_url": "https://www.espn.com/soccer/match/_/gameId/401879260",
           "starts_at": "2026-10-18T13:00Z",
           "completed": false
@@ -43,7 +43,7 @@
           "when": "Sun 25 Oct 2026 14:00 GMT",
           "status": "Scheduled",
           "detail": "",
-          "competition": "2026-27 English Premier League",
+          "competition": "English Premier League",
           "source_url": "https://www.espn.com/soccer/match/_/gameId/401879252",
           "starts_at": "2026-10-25T14:00Z",
           "completed": false
@@ -54,7 +54,7 @@
           "when": "Sun 20 Sep 2026 16:30 BST",
           "status": "Full Time",
           "detail": "Fulham 1 — 1 Manchester United",
-          "competition": "2026-27 English Premier League",
+          "competition": "English Premier League",
           "source_url": "https://www.espn.com/soccer/match/_/gameId/401878777",
           "starts_at": "2026-09-20T15:30Z",
           "completed": true
@@ -65,7 +65,7 @@
           "when": "Sun 13 Sep 2026 16:30 BST",
           "status": "Full Time",
           "detail": "Manchester United 0 — 1 Manchester City",
-          "competition": "2026-27 English Premier League",
+          "competition": "English Premier League",
           "source_url": "https://www.espn.com/soccer/match/_/gameId/401879278",
           "starts_at": "2026-09-13T15:30Z",
           "completed": true
@@ -76,7 +76,7 @@
           "when": "Sun 06 Sep 2026 14:00 BST",
           "status": "Full Time",
           "detail": "Everton 2 — 2 Manchester United",
-          "competition": "2026-27 English Premier League",
+          "competition": "English Premier League",
           "source_url": "https://www.espn.com/soccer/match/_/gameId/401879291",
           "starts_at": "2026-09-06T13:00Z",
           "completed": true
@@ -87,7 +87,7 @@
       "id": "359bde922ce0d9f2",
       "topic": "LoL · 2026-09-25 to 2026-10-03 (UTC window)",
       "summary": "",
-      "updated_at": "2026-09-26T11:05:34+01:00",
+      "updated_at": "2026-09-26T11:08:12+01:00",
       "status": "provider-data",
       "sources": [
         {
@@ -146,7 +146,7 @@
       "id": "385c7d7fbe7d8716",
       "topic": "Formula 1 · schedule and classification",
       "summary": "",
-      "updated_at": "2026-09-26T11:05:34+01:00",
+      "updated_at": "2026-09-26T11:08:12+01:00",
       "status": "provider-data",
       "sources": [
         {
@@ -172,6 +172,87 @@
           "detail": "1. Andrea Kimi Antonelli · Mercedes · 25 points · Finished\n2. Max Verstappen · Red Bull · 18 points · Finished\n3. Lando Norris · McLaren · 15 points · Finished\n4. Charles Leclerc · Ferrari · 12 points · Finished\n5. George Russell · Mercedes · 10 points · Finished",
           "competition": "Formula 1 · round 14",
           "source_url": "https://api.jolpi.ca/ergast/f1/current/last/results.json"
+        }
+      ]
+    },
+    {
+      "id": "b08bc42d1737ca5e",
+      "topic": "Wales men · international football",
+      "summary": "",
+      "updated_at": "2026-09-26T11:08:12+01:00",
+      "status": "provider-data",
+      "sources": [
+        {
+          "title": "ESPN fixtures and results",
+          "url": "https://www.espn.com/soccer/team/fixtures/_/id/578/wales"
+        }
+      ],
+      "facts": [
+        {
+          "id": "401861070",
+          "title": "Denmark vs Wales",
+          "when": "Sun 27 Sep 2026 17:00 BST",
+          "status": "Scheduled",
+          "detail": "",
+          "competition": "UEFA Nations League",
+          "source_url": "https://www.espn.com/soccer/match/_/gameId/401861070",
+          "starts_at": "2026-09-27T16:00Z",
+          "completed": false
+        },
+        {
+          "id": "401861100",
+          "title": "Wales vs Norway",
+          "when": "Thu 01 Oct 2026 19:45 BST",
+          "status": "Scheduled",
+          "detail": "",
+          "competition": "UEFA Nations League",
+          "source_url": "https://www.espn.com/soccer/match/_/gameId/401861100",
+          "starts_at": "2026-10-01T18:45Z",
+          "completed": false
+        },
+        {
+          "id": "401861125",
+          "title": "Wales vs Denmark",
+          "when": "Sun 04 Oct 2026 19:45 BST",
+          "status": "Scheduled",
+          "detail": "",
+          "competition": "UEFA Nations League",
+          "source_url": "https://www.espn.com/soccer/match/_/gameId/401861125",
+          "starts_at": "2026-10-04T18:45Z",
+          "completed": false
+        },
+        {
+          "id": "401861044",
+          "title": "Portugal vs Wales",
+          "when": "Thu 24 Sep 2026 19:45 BST",
+          "status": "Full Time",
+          "detail": "Portugal 1 — 0 Wales",
+          "competition": "UEFA Nations League",
+          "source_url": "https://www.espn.com/soccer/match/_/gameId/401861044",
+          "starts_at": "2026-09-24T18:45Z",
+          "completed": true
+        },
+        {
+          "id": "401869206",
+          "title": "Romania vs Wales",
+          "when": "Sat 06 Jun 2026 18:45 BST",
+          "status": "Full Time",
+          "detail": "Romania 2 — 1 Wales",
+          "competition": "International Friendly",
+          "source_url": "https://www.espn.com/soccer/match/_/gameId/401869206",
+          "starts_at": "2026-06-06T17:45Z",
+          "completed": true
+        },
+        {
+          "id": "401863573",
+          "title": "Wales vs Ghana",
+          "when": "Tue 02 Jun 2026 19:45 BST",
+          "status": "Full Time",
+          "detail": "Wales 1 — 1 Ghana",
+          "competition": "International Friendly",
+          "source_url": "https://www.espn.com/soccer/match/_/gameId/401863573",
+          "starts_at": "2026-06-02T18:45Z",
+          "completed": true
         }
       ]
     }
