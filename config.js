@@ -27,6 +27,9 @@ window.CONFIG = {
   // How far around you to look for aircraft, in nautical miles (max 250)
   FLIGHT_RADIUS_NM: 20,
 
+  // Godseye (the 3D planet) looks wider than the homepage map. Max 250.
+  GODSEYE_RADIUS_NM: 150,
+
   // Map tiles: a free CARTO key keeps the pretty dark basemap. Request one at
   // https://carto.com/basemaps/apikey (free, no account — give them this
   // site's domain). Leave empty and the map falls back to Esri's keyless
