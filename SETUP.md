@@ -425,3 +425,21 @@ python3 -m http.server 8000
 ```
 Then open http://localhost:8000 — geolocation works on localhost, so you'll get
 real flights.
+
+## Olwen's notes
+
+The home page reads `data/olwen.json` and renders the morning notes with `olwen.js`.
+This is a public file. The server-side Olwen harness publishes only topics Alex
+explicitly adds through `/publish add <topic>`; its default publishing list is empty.
+Private memory, conversations and API credentials never belong in this repository.
+
+The local `olwen-publish.service` runs after the 6am UK briefing job. It uses the
+server's GitHub CLI login to update only this JSON file on main; GitHub Pages
+then redeploys normally. The site needs no connection to the home server and
+has no write credentials. Notes show their original timestamps, source links
+and an older-note label after 36 hours. AI summaries should be checked against
+the linked sources.
+
+Use `/publish list`, `/publish remove <number>`, and `/publish now` in Olwen to
+manage topics. The independent script is `/home/alex/olwen/publishing.py` on the
+home server, with service logs available through the user service manager.

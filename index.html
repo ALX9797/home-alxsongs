@@ -693,6 +693,17 @@ a:focus-visible, button:focus-visible{ outline:2px solid var(--acid); outline-of
   .greet .ch{ opacity:1 !important; transform:none !important; }
   html{ scroll-behavior:auto; }
 }
+
+.olwen-intro,.olwen-empty{color:var(--ink-dim);font-size:14px;line-height:1.7;max-width:70ch}
+.olwen-notes{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,280px),1fr));gap:18px;margin-top:24px}
+.olwen-note{border:1px solid var(--line-hot);border-radius:14px;padding:24px;background:var(--panel);min-width:0}
+.olwen-kicker{font-family:var(--mono);color:var(--acid);font-size:10px;letter-spacing:.16em;text-transform:uppercase}
+.olwen-note h3{font-family:var(--display);font-size:25px;margin:14px 0;line-height:1.15;overflow-wrap:anywhere}
+.olwen-note p{color:var(--ink-dim);font-size:14px;line-height:1.7;white-space:pre-line;overflow-wrap:anywhere}
+.olwen-note .olwen-date{font-family:var(--mono);font-size:10px;color:var(--ink-faint)}
+.olwen-sources{display:flex;flex-direction:column;gap:9px;margin-top:18px}
+.olwen-sources a{font-size:12px;color:var(--ice);text-decoration:underline;text-underline-offset:3px;overflow-wrap:anywhere}
+.olwen-sources a:focus-visible{outline:2px solid var(--acid);outline-offset:4px}
 </style>
 </head>
 <body data-sensor="off" data-stars="on" class="booting">
@@ -712,6 +723,7 @@ a:focus-visible, button:focus-visible{ outline:2px solid var(--acid); outline-of
 <header class="bar">
   <a class="brand" href="./"><span class="dot"></span>alxsongs</a>
   <nav class="nav">
+    <a href="#olwen">Olwen</a>
     <a href="games.html">Dutch Blitz</a>
     <a href="word.html">Not-Wordle</a>
     <span id="authSlot"></span>
@@ -796,6 +808,16 @@ a:focus-visible, button:focus-visible{ outline:2px solid var(--acid); outline-of
       <div class="track"><div class="run" id="tapeRun"></div></div>
     </div>
     <div class="wall" id="wall"></div>
+  </section>
+
+  <section id="olwen" aria-labelledby="olwenHeading">
+    <div class="head">
+      <span class="n">O</span>
+      <h2 id="olwenHeading">Olwen’s notes</h2>
+      <span class="meta" id="olwenMeta">loading…</span>
+    </div>
+    <p class="olwen-intro">A morning read, gathered by my local assistant. Summaries are AI-written; follow the sources for the full story.</p>
+    <div id="olwenNotes" class="olwen-notes" aria-live="polite"></div>
   </section>
 
   <!-- ============ 02 / WHAT'S OVERHEAD ============ -->
@@ -897,6 +919,7 @@ a:focus-visible, button:focus-visible{ outline:2px solid var(--acid); outline-of
 <script src="config.js"></script>
 <script src="auth.js"></script>
 <script src="db.js"></script>
+<script src="olwen.js" defer></script>
 <script>
 (function(){
 "use strict";
