@@ -694,6 +694,12 @@ a:focus-visible, button:focus-visible{ outline:2px solid var(--acid); outline-of
   html{ scroll-behavior:auto; }
 }
 
+.olwen-disclosure > summary{cursor:pointer;list-style:none;margin-bottom:0}
+.olwen-disclosure > summary::-webkit-details-marker{display:none}
+.olwen-disclosure > summary::after{content:"Show +";font-family:var(--mono);font-size:11px;color:var(--acid);white-space:nowrap}
+.olwen-disclosure[open] > summary{margin-bottom:clamp(16px,1.8vw,26px)}
+.olwen-disclosure[open] > summary::after{content:"Hide −"}
+.olwen-disclosure > summary:focus-visible{outline:2px solid var(--acid);outline-offset:8px;border-radius:2px}
 .olwen-intro,.olwen-empty{color:var(--ink-dim);font-size:14px;line-height:1.7;max-width:70ch}
 .olwen-notes{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,280px),1fr));gap:18px;margin-top:24px}
 .olwen-note{border:1px solid var(--line-hot);border-radius:14px;padding:24px;background:var(--panel);min-width:0}
@@ -815,13 +821,15 @@ a:focus-visible, button:focus-visible{ outline:2px solid var(--acid); outline-of
   </section>
 
   <section id="olwen" aria-labelledby="olwenHeading">
-    <div class="head">
+    <details id="olwenDisclosure" class="olwen-disclosure" open>
+    <summary class="head">
       <span class="n">O</span>
       <h2 id="olwenHeading">Olwen’s notes</h2>
       <span class="meta" id="olwenMeta">loading…</span>
-    </div>
+    </summary>
     <p class="olwen-intro">Fixtures, scores and race classifications copied from sports-provider records. Times are UK time where supplied. These are dated snapshots, not a live feed.</p>
     <div id="olwenNotes" class="olwen-notes" aria-live="polite"></div>
+    </details>
   </section>
 
   <!-- ============ 02 / WHAT'S OVERHEAD ============ -->

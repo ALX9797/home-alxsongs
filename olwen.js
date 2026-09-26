@@ -1,5 +1,16 @@
 (function () {
   'use strict';
+  var disclosure = document.getElementById('olwenDisclosure');
+  var expandedKey = 'home.olwen.expanded.v1';
+  if (disclosure) {
+    try {
+      var saved = localStorage.getItem(expandedKey);
+      if (saved === 'true' || saved === 'false') disclosure.open = saved === 'true';
+    } catch (_) {}
+    disclosure.addEventListener('toggle', function () {
+      try { localStorage.setItem(expandedKey, String(disclosure.open)); } catch (_) {}
+    });
+  }
   var grid = document.getElementById('olwenNotes');
   var meta = document.getElementById('olwenMeta');
   function node(tag, text, cls) {
