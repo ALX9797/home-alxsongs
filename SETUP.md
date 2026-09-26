@@ -428,18 +428,16 @@ real flights.
 
 ## Olwen's notes
 
-The home page reads `data/olwen.json` and renders the morning notes with `olwen.js`.
-This is a public file. The server-side Olwen harness publishes only topics Alex
-explicitly adds through `/publish add <topic>`; its default publishing list is empty.
-Private memory, conversations and API credentials never belong in this repository.
+The section renders data/olwen.json through olwen.js. Only status=provider-data
+records with structured facts are displayed; older AI-summary records are rejected.
 
-The local `olwen-publish.service` runs after the 6am UK briefing job. It uses the
-server's GitHub CLI login to update only this JSON file on main; GitHub Pages
-then redeploys normally. The site needs no connection to the home server and
-has no write credentials. Notes show their original timestamps, source links
-and an older-note label after 36 hours. AI summaries should be checked against
-the linked sources.
+The local Olwen publisher uses direct ESPN football, PandaScore LoL and Jolpica
+F1 responses. It does not call a language model or search engine. Fields are
+formatted deterministically, with source links, dates and status. These are
+provider snapshots and may be delayed or incomplete.
 
-Use `/publish list`, `/publish remove <number>`, and `/publish now` in Olwen to
-manage topics. The independent script is `/home/alex/olwen/publishing.py` on the
-home server, with service logs available through the user service manager.
+Only topics explicitly added through /publish add are included. Unsupported
+topics need a new data connector; they are not sent to a generative fallback.
+The local olwen-publish.service runs after the morning briefing and updates
+only this JSON file through the server's gh login. No private memory, chat
+history or API tokens belong in this public repository.

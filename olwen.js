@@ -16,7 +16,7 @@
   }
   function render(data) {
     grid.replaceChildren();
-    var items = Array.isArray(data.items) ? data.items : [];
+    var items = Array.isArray(data.items) ? data.items.filter(function (item) { return item.status === 'provider-data' && Array.isArray(item.facts); }) : [];
     meta.textContent = data.updated_at ? 'updated ' + date(data.updated_at) : 'morning notes';
     if (!items.length) {
       grid.appendChild(node('p', 'A quiet corner for the things I ask Olwen to follow. New notes will appear here in the morning.', 'olwen-empty'));
@@ -24,9 +24,17 @@
     }
     items.forEach(function (item) {
       var card = node('article', '', 'olwen-note');
-      card.appendChild(node('span', item.status === 'sources-only' ? 'Reading list' : 'Olwen’s summary', 'olwen-kicker'));
+      card.appendChild(node('span', 'Provider data', 'olwen-kicker'));
       card.appendChild(node('h3', String(item.topic || 'Note')));
-      card.appendChild(node('p', String(item.summary || '')));
+      if (!item.facts.length) card.appendChild(node('p', 'No records returned in this provider query. This does not establish that no events are scheduled.'));
+      item.facts.forEach(function (fact) {
+        var row = node('div', '', 'olwen-fact');
+        row.appendChild(node('span', String(fact.competition || ''), 'olwen-kicker'));
+        row.appendChild(node('h4', String(fact.title || 'Record')));
+        row.appendChild(node('p', String(fact.when || '') + ' · ' + String(fact.status || '')));
+        if (fact.detail) row.appendChild(node('p', String(fact.detail), 'olwen-result'));
+        card.appendChild(row);
+      });
       var stamp = date(item.updated_at);
       var stale = Date.now() - new Date(item.updated_at).getTime() > 36 * 3600000;
       card.appendChild(node('p', (stale ? 'Older note · ' : '') + stamp, 'olwen-date'));
