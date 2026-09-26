@@ -1,48 +1,5 @@
 {
   "version": 1,
-  "updated_at": "2026-09-26T10:39:09+01:00",
-  "items": [
-    {
-      "id": "3addcc24b497faf6",
-      "topic": "manchest united news",
-      "summary": "Manchester United faces a seventh consecutive annual loss, with reports suggesting fans are being charged £125 for grass clumps. Despite financial struggles and the sacking of manager Carrick, the club is actively pursuing transfers, including a £30m striker previously targeted by Erik ten Hag. Recent highlights include Scott McTominay's success and new academy signings like Eze. The team remains focused on resolving its financial losses while navigating these transfer plots.",
-      "updated_at": "2026-09-26T10:38:55+01:00",
-      "status": "summary",
-      "sources": [
-        {
-          "title": "How to use Google Docs",
-          "url": "https://support.google.com/docs/answer/7068618?hl=en&co=GENIE.Platform%3DDesktop"
-        },
-        {
-          "title": "Man United News, MUFC Transfer News & Rumours",
-          "url": "https://www.newsnow.co.uk/h/Sport/Football/Premier+League/Manchester+United"
-        },
-        {
-          "title": "Manchester United - The Guardian",
-          "url": "https://www.theguardian.com/football/manchester-united"
-        }
-      ]
-    },
-    {
-      "id": "359bde922ce0d9f2",
-      "topic": "league of legends games and results",
-      "summary": "Good morning! Today, September 26, 2026, is a big day for League of Legends esports. The LCS Summer split features matches like 9Gaming versus CyberCore Esports starting at 9:00 AM. Later, JSK Esports plays Barça eSports in the VCS Finals. While the game itself remains a popular 5v5 MOBA where teams fight to destroy the Nexus, today's focus is on these competitive events and their results.",
-      "updated_at": "2026-09-26T10:39:09+01:00",
-      "status": "summary",
-      "sources": [
-        {
-          "title": "LoL Live Score & Game Stats - Schedule, Matches today & League ...",
-          "url": "https://bo3.gg/lol/matches/current"
-        },
-        {
-          "title": "League of Legends",
-          "url": "https://www.leagueoflegends.com/en-gb/"
-        },
-        {
-          "title": "Dhankesari 1PM Dear Result for 25-09-2026",
-          "url": "https://files.dhankesari.net/dhanpdf/1PM/MD250926.pdf"
-        }
-      ]
-    }
-  ]
+  "updated_at": "2026-09-26T09:44:10.563644+00:00",
+  "items": []
 }
