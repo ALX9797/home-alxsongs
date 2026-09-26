@@ -422,13 +422,30 @@ Lives in `godseye/` and loads nothing heavy until it's opened.
 - **Seismic** — USGS, magnitude 2.5+, past 24 h.
 - **Click anything** to lock on: dossier, route progress, photo, follow-cam.
   Radar scope bottom-left; click a blip to lock it.
-- **Tour** (`T`) — a director that picks shots from live data (highest, fastest,
-  longest route, ISS, biggest quake, where sunrise is right now) and loops.
-  Leave Godseye alone for 45 s and it starts by itself.
+- **Tour** (`T`) — the sky around you: highest, fastest, longest route, ISS,
+  biggest quake, where sunrise is right now. Loops.
+- **World tour** (`W`, or the **24h** button) — the last 24 hours on Earth, as a
+  ~2-minute flight with a timeline: the biggest quake, storms with their tracks
+  (NASA EONET), volcanoes, the largest wildfire (every fire shows as an orange
+  dot), rocket launches in the last day and the next one due (Launch Library 2),
+  today's news that has a place on the map and the most-read place on Wikipedia,
+  the hottest / coldest / windiest spot right now (Open-Meteo, 50 places), the
+  geomagnetic storm level and biggest solar flare (NOAA SWPC), the ISS's laps,
+  and wherever it's midnight. Every source is optional — whatever doesn't answer
+  is left out. The **24h** filter chip lists the same events.
+- **Aurora** — the auroral ovals glow on the night side, sized and brightened
+  by the live Kp index.
+- Leave Godseye alone for 45 s and it alternates between the two tours.
 - `Space`/`N` next target · `H` home · `O` orbit · `F` follow · `M` sound
   (synthesised, remembered) · `?` help · `Esc`/`G` exit. The ⎘ button copies a
   link to the exact target (`#godseye/ac:<hex>`).
 - The Konami code does something. Try it at the pub.
+
+**Performance.** Satellites are one object updated in place; ring and path
+shaders are kept alive rather than recompiled; render resolution adapts to the
+frame rate (the top bar shows FPS and scale); phones and ≤4 GB devices get 2K
+textures. Launch Library results are cached for an hour (their free limit is
+15 calls/hour) and CelesTrak's for six.
 
 Vendored in `godseye/vendor/` (MIT, see `LICENSES.txt`): globe.gl 2.46.2 (bundles
 three.js) and satellite.js 5.0.0. Textures are NASA public-domain imagery via

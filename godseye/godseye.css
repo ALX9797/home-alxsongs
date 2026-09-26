@@ -102,6 +102,24 @@ html.ge-open, html.ge-open body{ overflow:hidden !important; }
 .ge-tag.sun span{ color:#ffd98a; font-size:9px; letter-spacing:.22em; text-transform:uppercase; text-shadow:0 0 6px #000; }
 .ge-tag.sel span{ text-decoration:underline; text-underline-offset:3px; }
 
+/* the day's events: a glyph in a pill, the name when there's room */
+.ge-tag.ev{ margin:-12px 0 0 -12px; --k:#ffd166; }
+.ge-tag.ev i{
+  width:24px; height:24px; border-radius:50%; display:flex; align-items:center; justify-content:center;
+  font-style:normal; font-size:13px; line-height:1;
+  background:rgba(4,8,12,.78); border:1.5px solid var(--k); box-shadow:0 0 14px var(--k);
+}
+.ge-tag.ev span{
+  display:none; color:var(--ge-ink); background:rgba(4,8,12,.8); border:1px solid rgba(255,255,255,.14);
+  padding:2px 7px; border-radius:100px; font-size:10px; letter-spacing:.04em; text-shadow:none;
+}
+.ge-tag.ev.lab span, .ge-tag.ev:hover span{ display:block; }
+.ge-tag.ev.sel i{ border-color:var(--ge-hot); box-shadow:0 0 18px var(--ge-hot); animation:gePulse 1.4s ease-in-out infinite; }
+.ge-tag.ev.k-storm{ --k:#4de3ff; } .ge-tag.ev.k-fire{ --k:#ff7a28; } .ge-tag.ev.k-volcano{ --k:#ff3d3d; }
+.ge-tag.ev.k-launch{ --k:#d8ff3e; } .ge-tag.ev.k-news, .ge-tag.ev.k-read{ --k:#eef3f7; }
+.ge-tag.ev.k-hot{ --k:#ffb020; } .ge-tag.ev.k-cold, .ge-tag.ev.k-ice, .ge-tag.ev.k-snow{ --k:#9fe8ff; }
+.ge-tag.ev.k-aurora{ --k:#39ff8a; } .ge-tag.ev.k-flare{ --k:#ffd166; } .ge-tag.ev.k-flood{ --k:#3d8bff; }
+
 /* ---------- lock-on reticle ---------- */
 .ge-reticle{
   position:absolute; left:0; top:0; width:0; height:0; pointer-events:none;
@@ -211,7 +229,7 @@ html.ge-open, html.ge-open body{ overflow:hidden !important; }
 .ge-ph b{ color:var(--ge-acc); font-weight:400; }
 .ge-filters{ display:flex; gap:4px; padding:0 10px 10px; border-bottom:1px solid var(--ge-line); }
 .ge-filters button{
-  flex:1; background:transparent; border:1px solid var(--ge-line); border-radius:100px; cursor:pointer;
+  flex:1; min-width:0; font-size:9px !important; letter-spacing:.08em !important; background:transparent; border:1px solid var(--ge-line); border-radius:100px; cursor:pointer;
   padding:5px 0; font-size:9.5px; letter-spacing:.12em; text-transform:uppercase; color:var(--ge-dim);
   transition:.15s var(--ge-ease);
 }
@@ -325,7 +343,23 @@ html.ge-open, html.ge-open body{ overflow:hidden !important; }
 .ge-dock button:hover{ color:var(--ge-acc); border-color:rgba(255,255,255,.2); }
 .ge-dock button.on{ background:var(--ge-acc); color:#07090b; border-color:var(--ge-acc); }
 .ge-dock button.on kbd{ color:#07090b; border-color:rgba(0,0,0,.25); }
-#geTourBtn.on{ background:var(--ge-hot); border-color:var(--ge-hot); color:#fff; }
+#geTourBtn.on, #geWorldBtn.on{ background:var(--ge-hot); border-color:var(--ge-hot); color:#fff; }
+
+/* the world tour's timeline: where each chapter sits in the last day */
+.ge-tl{
+  position:absolute; left:50%; bottom:196px; transform:translateX(-50%); width:min(560px, calc(100% - 640px)); min-width:300px;
+  display:flex; align-items:center; gap:10px; pointer-events:none;
+  font-size:8.5px; letter-spacing:.2em; text-transform:uppercase; color:var(--ge-faint);
+  opacity:0; transition:opacity .5s ease;
+}
+.ge-tl.on{ opacity:1; }
+.ge-tl-bar{ position:relative; flex:1; height:1px; background:linear-gradient(90deg, rgba(255,255,255,.08), rgba(255,255,255,.3)); }
+.ge-tl-bar i{
+  position:absolute; top:-3px; width:7px; height:7px; margin-left:-3.5px; border-radius:50%;
+  background:rgba(255,255,255,.35); transition:transform .3s var(--ge-ease), background .3s;
+}
+.ge-tl-bar i.past{ background:rgba(255,255,255,.6); }
+.ge-tl-bar i.on{ background:var(--ge-hot); transform:scale(1.9); box-shadow:0 0 10px var(--ge-hot); }
 .ge-modes{ display:flex; gap:2px; }
 .ge-sep{ width:1px; height:18px; background:var(--ge-line2); margin:0 4px; }
 .ge-only-s{ display:none !important; }
@@ -380,6 +414,7 @@ html.ge-open, html.ge-open body{ overflow:hidden !important; }
 /* ---------- small screens: the planet first, chrome on demand ---------- */
 @media (max-width: 1100px){
   .ge-cap{ width:calc(100% - 40px); min-width:0; }
+  .ge-tl{ width:calc(100% - 80px); }
   .ge-right{ top:auto; bottom:84px; right:12px; left:12px; width:auto; max-height:44vh; }
   .ge-right.on ~ .ge-cap{ opacity:0; }
 }
@@ -396,7 +431,8 @@ html.ge-open, html.ge-open body{ overflow:hidden !important; }
   .ge-dock button{ padding:7px 8px; min-width:30px; }
   .ge-dock kbd{ display:none; }
   .ge-only-s{ display:inline-flex !important; }
-  .ge-dock [data-act="space"], .ge-dock [data-act="help"], .ge-dock [data-act="share"]{ display:none; }
+  .ge-dock [data-act="space"], .ge-dock [data-act="help"], .ge-dock [data-act="share"], .ge-dock [data-act="home"]{ display:none; }
+  .ge-tl{ bottom:190px; width:calc(100% - 40px); min-width:0; }
   .ge-sep{ display:none; }
   .ge-cap{ bottom:84px; }
   .ge-frame i:nth-child(3), .ge-frame i:nth-child(4){ bottom:76px; }

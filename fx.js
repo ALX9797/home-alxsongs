@@ -21,7 +21,8 @@ function ge(opts){ if (window.GODSEYE) window.GODSEYE.open(opts); }
 /* ---------------------------------------------------------------- palette */
 var CMDS = [
   { i:"◉", t:"Enter Godseye", s:"G", k:"globe planet 3d world map live", run:function(){ ge(); } },
-  { i:"▶", t:"Godseye: cinematic tour", s:"planet", k:"tour show demo screensaver", run:function(){ ge({ tour:true }); } },
+  { i:"◍", t:"Godseye: the last 24 hours", s:"W", k:"world tour news storms fires launches earthquakes today", run:function(){ ge({ world:true }); } },
+  { i:"▶", t:"Godseye: tour the sky above you", s:"T", k:"tour show demo screensaver local planes", run:function(){ ge({ tour:true }); } },
   { i:"✦", t:"Hyperspace", s:"secret", k:"warp konami party overdrive fun", run:function(){ warp(); } },
   { i:"↓", t:"On this day", s:"jump", k:"fact history wikipedia", run:function(){ jump("fact"); } },
   { i:"↓", t:"The wire", s:"jump", k:"news headlines", run:function(){ jump("wire"); } },
