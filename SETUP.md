@@ -396,23 +396,43 @@ both cases — leave it in place. Leaflet itself comes from cdnjs.
 slider (5–100 nm) is remembered between visits. Click any aircraft — on the map, the
 dial, or in the list — for the full detail panel.
 
-**Godseye extras** (bottom-right console, all keyless, all remembered between visits):
+**Sensors** (bottom-right console, remembered between visits): NVG / thermal /
+noir / CRT washes over the whole homepage. Keys `1`–`4`, `0` for off.
 
-- **Sensor modes** — NVG / thermal / noir / CRT washes over the whole site.
-  Keys `1`–`4`, `0` for off.
-- **Detect** (`D`) — targeting corners, acid traces and callsigns on the map.
-- **▶ Godseye** (`G`) — fullscreen takeover: letterboxed cinema map, live
-  telemetry wall (clock, contacts, nearest, ISS, quake), and a command deck:
-  filter chips (All / Air / Ground / Orbit / Shakes) plus a target list.
-  Pick anything and the globe flies there with a caption. **▶ Tour** loops
-  the cinematic flyover for hands-free showing off; picking a target stops
-  it. Clicking contacts on the map tracks them too. `G`/`Esc` exits.
-- **Follow** (`F`) — locks the map onto the selected aircraft and draws its
-  trail. Re-tapping follows a newly selected contact.
-- **Share** — copies a link that re-opens the exact radius + selected aircraft.
-- **Space layers** — the ISS (🛰, live position/altitude/speed) and the day's
-  biggest earthquakes plot on the same map, counts in the Overhead header.
-  Served by the Worker's `/space` route; needs a Worker redeploy to appear.
+**Command palette:** `⌘K` / `Ctrl+K` / `/` — jump to any section, switch the sky
+or sensor, open Godseye, or start its tour.
+
+## Godseye (the 3D planet)
+
+`G`, the **Enter Godseye** button in the hero, or `home.alxsongs.com/#godseye`.
+Lives in `godseye/` and loads nothing heavy until it's opened.
+
+- **The globe** — NASA Blue Marble + Black Marble, lit by where the sun actually
+  is this second (the terminator, city lights on the night side, a glint on the
+  oceans). Four sensor modes are shaders: `1` optic, `2` holo (dot-matrix
+  hologram), `3` night vision, `4` thermal.
+- **Aircraft** — live ADS-B within 150 nm via the same Worker (set
+  `GODSEYE_RADIUS_NM` in `config.js` to change, max 250), dead-reckoned between
+  polls so they move smoothly, with arcs from each flight's origin to its real
+  destination (adsbdb).
+- **Orbit** — ~150 naked-eye satellites from CelesTrak (cached 6 h), propagated
+  with SGP4; the ISS gets its orbit drawn and the time of its **next pass over
+  you**. If CelesTrak is unreachable it falls back to the ISS alone
+  (wheretheiss.at), then to the Worker's `/space`.
+- **Seismic** — USGS, magnitude 2.5+, past 24 h.
+- **Click anything** to lock on: dossier, route progress, photo, follow-cam.
+  Radar scope bottom-left; click a blip to lock it.
+- **Tour** (`T`) — a director that picks shots from live data (highest, fastest,
+  longest route, ISS, biggest quake, where sunrise is right now) and loops.
+  Leave Godseye alone for 45 s and it starts by itself.
+- `Space`/`N` next target · `H` home · `O` orbit · `F` follow · `M` sound
+  (synthesised, remembered) · `?` help · `Esc`/`G` exit. The ⎘ button copies a
+  link to the exact target (`#godseye/ac:<hex>`).
+- The Konami code does something. Try it at the pub.
+
+Vendored in `godseye/vendor/` (MIT, see `LICENSES.txt`): globe.gl 2.46.2 (bundles
+three.js) and satellite.js 5.0.0. Textures are NASA public-domain imagery via
+three-globe's examples.
 
 Both need HTTPS to work, so test on the live domain rather than by double-clicking
 the file — geolocation in particular is blocked on `file://`.

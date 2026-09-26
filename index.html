@@ -4,11 +4,11 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>HOME · alxsongs</title>
-<meta name="description" content="A small private dashboard. On this day, aircraft overhead, and the Dutch Blitz ledger.">
+<meta name="description" content="Alex's corner of the internet: the live sky over the house, what's flying overhead, the wire, and Godseye — the whole planet, live.">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="home · alxsongs">
 <meta property="og:title" content="HOME · alxsongs">
-<meta property="og:description" content="A small private dashboard. On this day, aircraft overhead, and the Dutch Blitz ledger.">
+<meta property="og:description" content="The live sky over the house, what's flying overhead, and Godseye — the whole planet, live.">
 <meta property="og:url" content="https://home.alxsongs.com/">
 <meta property="og:image" content="https://home.alxsongs.com/og.jpg">
 <meta property="og:image:type" content="image/jpeg">
@@ -21,9 +21,10 @@
 <link rel="preload" href="fonts/geist-latin-wght-normal.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="fonts/jetbrains-mono-latin-wght-normal.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css">
+<link rel="stylesheet" href="godseye/godseye.css">
 <style>
 /* =====================================================================
-   THE MORNING TRANSMISSION — a concept, not the live site.
+   THE MORNING TRANSMISSION
    One idea, pushed: the page is the sky at the actual moment you open
    it. Real solar altitude and azimuth for your coordinates decide the
    palette, where the glow sits on the horizon, whether the stars are
@@ -689,10 +690,100 @@ a:focus-visible, button:focus-visible{ outline:2px solid var(--acid); outline-of
 @media (prefers-reduced-motion: reduce){
   .sky{ animation:none !important; }
   *{ animation-duration:.001ms !important; animation-iteration-count:1 !important; }
-  .ticker .run, .scrollcue i, .shoot, .stars circle.tw{ animation:none !important; }
+  .ticker .run, .scrollcue i, .shoot, .stars circle.tw, .ge-cta::before, .ge-cta-orb::after{ animation:none !important; }
+  .reveal{ opacity:1 !important; transform:none !important; }
   .greet .ch{ opacity:1 !important; transform:none !important; }
   html{ scroll-behavior:auto; }
 }
+
+/* =====================================================================
+   GODSEYE ENTRY — a planet-sized button in the hero rail
+   ===================================================================== */
+.ge-cta{
+  position:relative; display:flex; align-items:center; gap:14px; width:100%;
+  padding:12px 16px 12px 12px; cursor:pointer; text-align:left; color:var(--ink);
+  background:linear-gradient(100deg, rgba(216,255,62,.10), rgba(77,227,255,.06) 60%, rgba(255,61,127,.06));
+  border:1px solid rgba(216,255,62,.38); border-radius:16px; overflow:hidden;
+  font:inherit; transition:border-color .2s var(--ease), transform .25s var(--ease), box-shadow .25s var(--ease);
+}
+.ge-cta::before{
+  content:""; position:absolute; inset:0; pointer-events:none;
+  background:linear-gradient(100deg, transparent 30%, rgba(255,255,255,.14) 50%, transparent 70%);
+  transform:translateX(-120%); animation:ctaSheen 5.5s var(--ease) 2s infinite;
+}
+@keyframes ctaSheen{ 0%{ transform:translateX(-120%); } 22%,100%{ transform:translateX(120%); } }
+.ge-cta:hover{ border-color:var(--acid); transform:translateY(-2px); box-shadow:0 14px 40px rgba(216,255,62,.14), 0 0 0 1px rgba(216,255,62,.2) inset; }
+.ge-cta-orb{
+  position:relative; flex:none; width:44px; height:44px; border-radius:50%;
+  background:radial-gradient(circle at 34% 30%, #bfefff 0%, #2a7fb8 26%, #0b2340 58%, #02060d 80%);
+  box-shadow:0 0 22px rgba(77,227,255,.45), inset -8px -6px 14px rgba(0,0,0,.7);
+  overflow:hidden;
+}
+.ge-cta-orb::after{
+  content:""; position:absolute; inset:0; border-radius:50%;
+  background:repeating-linear-gradient(90deg, transparent 0 5px, rgba(216,255,62,.16) 5px 6px);
+  animation:orbSpin 6s linear infinite;
+}
+@keyframes orbSpin{ to{ background-position:44px 0; } }
+.ge-cta-orb i{
+  position:absolute; left:-6px; right:-6px; top:50%; height:1px; background:var(--acid);
+  box-shadow:0 0 8px var(--acid); transform:rotate(-22deg); opacity:.8;
+}
+.ge-cta-t{ display:flex; flex-direction:column; gap:2px; min-width:0; }
+.ge-cta-t b{
+  font-family:var(--display); font-weight:800; font-size:clamp(16px,1.5vw,20px); letter-spacing:-.01em;
+  text-transform:uppercase; font-variation-settings:"opsz" 72, "wdth" 86; line-height:1;
+}
+.ge-cta-t span{ font-family:var(--mono); font-size:10px; letter-spacing:.14em; text-transform:uppercase; color:var(--ink-dim); }
+.ge-cta-go{ margin-left:auto; font-family:var(--mono); font-size:20px; color:var(--acid); transition:transform .25s var(--ease); }
+.ge-cta:hover .ge-cta-go{ transform:translateX(5px); }
+kbd{
+  font-family:var(--mono); font-size:9px; letter-spacing:0; color:var(--ink-dim);
+  border:1px solid var(--line-hot); border-radius:4px; padding:1px 5px; text-transform:none;
+}
+#console .ge-open{ color:var(--acid); border-color:rgba(216,255,62,.45); }
+#console .ge-open:hover{ background:var(--acid); color:#0a0a0a; }
+
+/* the clock's minute rolls over rather than blinking */
+#hm.roll{ animation:tick .5s var(--ease); display:inline-block; }
+
+/* sections arrive as you reach them (fx.js adds .reveal/.seen) */
+.reveal{ opacity:0; transform:translateY(22px); transition:opacity .8s var(--ease), transform .9s var(--ease); }
+.reveal.seen{ opacity:1; transform:none; }
+
+/* =====================================================================
+   COMMAND PALETTE (⌘K) — fx.js
+   ===================================================================== */
+.cmdk{ position:fixed; inset:0; z-index:900; display:none; align-items:flex-start; justify-content:center;
+  padding-top:min(18vh,160px); background:rgba(2,4,8,.55); backdrop-filter:blur(6px); -webkit-backdrop-filter:blur(6px); }
+.cmdk.on{ display:flex; animation:cmdIn .2s var(--ease); }
+@keyframes cmdIn{ from{ opacity:0; } }
+.cmdk-box{
+  width:min(560px, calc(100% - 32px)); background:rgba(8,11,16,.96); border:1px solid var(--line-hot);
+  border-top:2px solid var(--acid); border-radius:16px; overflow:hidden;
+  box-shadow:0 30px 80px rgba(0,0,0,.6); animation:up .3s var(--ease);
+}
+.cmdk-in{ display:flex; align-items:center; gap:12px; padding:14px 16px; border-bottom:1px solid var(--line); }
+.cmdk-in span{ font-family:var(--mono); color:var(--acid); }
+.cmdk-in input{
+  flex:1; background:transparent; border:0; outline:0; color:var(--ink);
+  font-family:var(--sans); font-size:17px; letter-spacing:-.01em;
+}
+.cmdk-in input::placeholder{ color:var(--ink-faint); }
+.cmdk-list{ max-height:min(52vh,420px); overflow-y:auto; padding:6px; }
+.cmdk-it{
+  display:flex; align-items:center; gap:12px; width:100%; padding:10px 12px; border-radius:10px;
+  background:transparent; border:0; color:var(--ink-dim); cursor:pointer; text-align:left; font:inherit; font-size:14px;
+}
+.cmdk-it i{ font-style:normal; width:20px; text-align:center; color:var(--ink-faint); font-family:var(--mono); }
+.cmdk-it small{ margin-left:auto; font-family:var(--mono); font-size:10px; letter-spacing:.14em; text-transform:uppercase; color:var(--ink-faint); }
+.cmdk-it.on{ background:rgba(216,255,62,.10); color:var(--ink); }
+.cmdk-it.on i{ color:var(--acid); }
+.cmdk-empty{ padding:16px; font-family:var(--mono); font-size:11px; color:var(--ink-faint); }
+.cmdk-foot{ display:flex; gap:16px; padding:9px 14px; border-top:1px solid var(--line); font-family:var(--mono); font-size:9.5px; letter-spacing:.12em; text-transform:uppercase; color:var(--ink-faint); }
+
+/* the warp: konami code, full-screen hyperspace for three seconds */
+.warp{ position:fixed; inset:0; z-index:950; pointer-events:none; }
 
 .olwen-disclosure > summary{cursor:pointer;list-style:none;margin-bottom:0}
 .olwen-disclosure > summary::-webkit-details-marker{display:none}
@@ -753,14 +844,14 @@ a:focus-visible, button:focus-visible{ outline:2px solid var(--acid); outline-of
 
   <div class="mast-grid"><div class="hero-copy">
     <div class="phase">
-      <i></i><span id="phaseName">First light</span>
-      <span>·</span><span id="phaseClock">06:12</span><span id="phaseWx"></span>
-      <span>·</span><b id="phaseDate">Thursday 17 September</b>
+      <i></i><span id="phaseName">Reading the sky</span>
+      <span>·</span><span id="phaseClock">--:--</span><span id="phaseWx"></span>
+      <span>·</span><b id="phaseDate">&nbsp;</b>
     </div>
     <h1 class="greet" id="greet" aria-label="Morning, Alex"></h1>
     <div class="clock">
-      <span id="hm">06:12</span>
-      <span class="sec" id="sec">47</span>
+      <span id="hm">--:--</span>
+      <span class="sec" id="sec">--</span>
     </div>
   </div>
 
@@ -773,18 +864,24 @@ a:focus-visible, button:focus-visible{ outline:2px solid var(--acid); outline-of
       <div class="arc-sun" id="arcSun" style="left:0"></div>
     </div>
     <div class="arc-labels">
-      <span>Sunrise <b id="tRise">06:41</b></span>
-      <span class="mid">Daylight <b id="tDay">12h 37m</b></span>
-      <span>Sunset <b id="tSet">19:16</b></span>
+      <span>Sunrise <b id="tRise">--:--</b></span>
+      <span class="mid">Daylight <b id="tDay">—</b></span>
+      <span>Sunset <b id="tSet">--:--</b></span>
     </div>
   </div>
 
   <div class="status">
-    <div><span class="k">position</span><b id="posLine">51.51° / −0.13°</b></div>
-    <div><span class="k">overhead</span><b class="acid" id="ohLine">14 aircraft</b></div>
-    <div><span class="k">wire</span><b class="ice" id="wireLine">36 stories</b></div>
-    <div><span class="k">ledger</span><b class="hot" id="ledLine">Sam leads</b></div>
+    <div><span class="k">position</span><b id="posLine">locating…</b></div>
+    <div><span class="k">overhead</span><b class="acid" id="ohLine">scanning…</b></div>
+    <div><span class="k">wire</span><b class="ice" id="wireLine">—</b></div>
+    <div><span class="k">ledger</span><b class="hot" id="ledLine">—</b></div>
   </div>
+
+  <button class="ge-cta" id="geCta" type="button" aria-label="Open Godseye, the live 3D planet">
+    <span class="ge-cta-orb" aria-hidden="true"><i></i></span>
+    <span class="ge-cta-t"><b>Enter Godseye</b><span>the whole planet, live · <kbd>G</kbd></span></span>
+    <span class="ge-cta-go" aria-hidden="true">→</span>
+  </button>
 
   </div>
   </div>
@@ -794,10 +891,10 @@ a:focus-visible, button:focus-visible{ outline:2px solid var(--acid); outline-of
 
   <!-- ============ 01 / THE FACT ============ -->
   <section id="fact">
-    <div class="year" id="otdYear" tabindex="0" title="Hover me">1953</div>
+    <div class="year" id="otdYear" tabindex="0" title="On this day">····</div>
     <div>
-      <span class="badge sci" id="otdBadge"><i></i>science &amp; discovery</span>
-      <p class="fact-text" id="otdText">Franklin's Photo 51 and the Watson–Crick model gave biology the double helix, and with it the language of heredity.</p>
+      <span class="badge sci" id="otdBadge"><i></i>on this day</span>
+      <p class="fact-text" id="otdText">Looking up what happened on this date…</p>
       <div class="fact-foot">
         <button class="btn acid" id="otdNext">↻ another</button>
         <a class="btn" href="#" id="otdLink" target="_blank" rel="noopener">read more ↗</a>
@@ -805,7 +902,7 @@ a:focus-visible, button:focus-visible{ outline:2px solid var(--acid); outline-of
     </div>
   </section>
 
-  <!-- ============ 01 / THE WIRE ============ -->
+  <!-- ============ THE WIRE ============ -->
   <section id="wire">
     <div class="head">
       <span class="n">01</span>
@@ -838,6 +935,7 @@ a:focus-visible, button:focus-visible{ outline:2px solid var(--acid); outline-of
       <span class="n">02</span>
       <h2>What's overhead</h2>
       <span class="meta">live ADS-B <b style="color:var(--ice)" id="ohMetaCount">—</b> · <span id="ohMetaNm">20 nm</span></span>
+      <button class="btn acid" id="ohGodseye" type="button" title="Open the 3D planet (G)">◉ Godseye</button>
     </div>
     <div class="mapwrap">
       <div id="map"></div>
@@ -899,19 +997,22 @@ a:focus-visible, button:focus-visible{ outline:2px solid var(--acid); outline-of
 
   <footer class="colophon">
     <div class="srcs">
-      sky computed from your coordinates · no API · flights <a href="https://adsb.lol">adsb.lol</a> /
+      sky computed from your coordinates · flights <a href="https://adsb.lol">adsb.lol</a> /
       <a href="https://adsb.fi">adsb.fi</a> · routes adsbdb · photos planespotters · history wikipedia ·
-      weather open-meteo · esports pandascore
+      weather open-meteo · esports pandascore · satellites <a href="https://celestrak.org">celestrak</a> ·
+      quakes <a href="https://earthquake.usgs.gov">usgs</a> · earth imagery nasa
     </div>
     <div class="stamp">
       <b>home.alxsongs.com</b>
-      concept “the morning transmission” · for review
+      <kbd>G</kbd> godseye · <kbd>⌘K</kbd> commands · <kbd>0</kbd>–<kbd>4</kbd> sensors
     </div>
   </footer>
 
 </main>
 
 <div id="console" role="toolbar" aria-label="Display console">
+  <button class="ge-open" id="consoleGe" title="Godseye (G)">◉ Godseye</button>
+  <span class="sep"></span>
   <span class="lab">Sky</span>
   <button data-sky="auto" class="on">Auto</button>
   <button data-sky="dawn">Dawn</button>
@@ -932,6 +1033,8 @@ a:focus-visible, button:focus-visible{ outline:2px solid var(--acid); outline-of
 <script src="auth.js"></script>
 <script src="db.js"></script>
 <script src="olwen.js" defer></script>
+<script src="godseye/godseye.js" defer></script>
+<script src="fx.js" defer></script>
 <script>
 (function(){
 "use strict";
@@ -1059,12 +1162,15 @@ function phaseName(alt, rising){
 
 /* =====================================================================
    WHERE YOU ARE
-   The live site asks for geolocation; here we do the same and fall
-   back to config's London if it is refused. ?lat=&lon= overrides.
+   Ask for geolocation; if it's refused, fall back to config.js's
+   FALLBACK_LAT/LON. ?lat=&lon= overrides both.
    ===================================================================== */
+var CFG = window.CONFIG || {};
 var qs = new URLSearchParams(location.search);
-var LAT = parseFloat(qs.get("lat") || "51.5072");
-var LON = parseFloat(qs.get("lon") || "-0.1276");
+var LAT = parseFloat(qs.get("lat") || CFG.FALLBACK_LAT || "51.5072");
+var LON = parseFloat(qs.get("lon") || CFG.FALLBACK_LON || "-0.1276");
+var FALLBACK_LABEL = CFG.FALLBACK_LABEL || "London · default";
+var POS_LABEL = "";
 var skyOverride = qs.get("sky") || "auto";
 
 /* =====================================================================
@@ -1270,30 +1376,40 @@ function loadWeather(){
 /* =====================================================================
    PAINT THE SKY
    ===================================================================== */
-var HERO_PLANES = [
-  { call:"BAW2LJ",  x:8,  y:22, dir:1,  spd:52, lead:true },
-  { call:"EZY417",  x:64, y:14, dir:-1, spd:74, lead:false },
-  { call:"TOM118",  x:34, y:38, dir:1,  spd:38, lead:false },
-  { call:"LOG23VR", x:78, y:30, dir:-1, spd:64, lead:false }
-];
-(function heroSky(){
+/* The hero's drifting callsigns are the real nearest aircraft: east- or
+   westbound as they actually are, faster the faster they fly. Empty until
+   the first poll lands, then rebuilt only when the cast changes. */
+var HERO_PLANES = [], heroKey = "", heroEls = [], heroT0 = performance.now();
+var HERO_SLOTS = [ { x:8, y:22 }, { x:64, y:14 }, { x:34, y:38 }, { x:78, y:30 } ];
+function paintHeroSky(list){
+  var cast = list.filter(function(a){ return (a.flight || "").trim() && typeof a.gs === "number"; }).slice(0, 4);
+  var key = cast.map(function(a){ return a.hex; }).join(",");
+  if (key === heroKey) return;
+  heroKey = key;
+  HERO_PLANES = cast.map(function(a, i){
+    var trk = typeof a.track === "number" ? a.track : 90;
+    return { call:(a.flight || "").trim(), x:HERO_SLOTS[i].x, y:HERO_SLOTS[i].y,
+             dir: Math.sin(trk * RAD) >= 0 ? 1 : -1, spd: Math.max(30, Math.min(90, a.gs / 6)), lead: i === 0 };
+  });
   var box = $("heroSky");
   box.innerHTML = HERO_PLANES.map(function(p, i){
     return '<span class="hero-plane' + (p.lead ? " lead" : "") + '" data-i="' + i + '" ' +
       'style="left:' + p.x + '%;top:' + p.y + '%">' +
-      '<span class="trail"></span>' +
+      '<span class="trail"' + (p.dir < 0 ? ' style="right:auto;left:calc(100% + 6px);transform:scaleX(-1)"' : "") + '></span>' +
       '<svg viewBox="-11 -11 22 22" style="transform:rotate(' + (p.dir > 0 ? 90 : 270) + 'deg)"><path d="M0 -9 L2.9 2.5 L0 0.9 L-2.9 2.5 Z"/></svg>' +
-      p.call + '</span>';
+      esc(p.call) + '</span>';
   }).join("");
+  heroEls = box.querySelectorAll(".hero-plane");
+}
+(function heroSky(){
   if (reduce) return;
-  var els = box.querySelectorAll(".hero-plane"), t0 = performance.now();
   function frame(now){
-    var t = (now - t0) / 1000;
-    [].forEach.call(els, function(el, i){
-      var p = HERO_PLANES[i];
+    var t = (now - heroT0) / 1000;
+    for (var i = 0; i < heroEls.length; i++){
+      var p = HERO_PLANES[i]; if (!p) continue;
       var travel = (t * p.spd * 0.06) % 130;
-      el.style.transform = "translateX(" + (p.dir > 0 ? travel : -travel) + "vw)";
-    });
+      heroEls[i].style.transform = "translateX(" + (p.dir > 0 ? travel : -travel) + "vw)";
+    }
     requestAnimationFrame(frame);
   }
   requestAnimationFrame(frame);
@@ -1744,9 +1860,16 @@ function initMap(){
     scrollWheelZoom:false, keyboard:false, dragging:!L.Browser.mobile
   });
   L.control.attribution({ position:"bottomleft", prefix:false }).addTo(map);
-  L.tileLayer("https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Dark_Gray_Base/MapServer/tile/{z}/{y}/{x}", {
-    attribution:"&copy; OpenStreetMap &copy; Esri", maxNativeZoom:16, maxZoom:18
-  }).addTo(map);
+  var cartoKey = (CFG.CARTO_KEY || "").trim();
+  if (cartoKey){
+    L.tileLayer("https://basemaps.cartocdn.com/rastertiles/dark_all/{z}/{x}/{y}{r}.png?key=" + encodeURIComponent(cartoKey), {
+      attribution:"&copy; OpenStreetMap &copy; CARTO", maxZoom:20
+    }).addTo(map);
+  } else {
+    L.tileLayer("https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Dark_Gray_Base/MapServer/tile/{z}/{y}/{x}", {
+      attribution:"&copy; OpenStreetMap &copy; Esri", maxNativeZoom:16, maxZoom:18
+    }).addTo(map);
+  }
   L.circleMarker(CENTER, { radius:5, color:"#d8ff3e", fillColor:"#d8ff3e", fillOpacity:1, weight:0 }).addTo(map);
   fitToRadius();
 }
@@ -1800,8 +1923,13 @@ function operatorOf(a){ var rt = routeFor(a); return (rt && rt.airline) || clean
 function altOf(a){ return typeof a.alt_baro === "number" ? Math.round(a.alt_baro).toLocaleString() + " ft" : "—"; }
 function byHex(h){ for (var i = 0; i < aircraft.length; i++) if (aircraft[i].hex === h) return aircraft[i]; return null; }
 
-function fetchRoutes(list){
-  var todo = list.slice(0, 12).map(function(a){ return (a.flight || "").trim(); })
+function airport(ap){
+  return ap ? { code: ap.iata_code || ap.icao_code, city: ap.municipality, country: ap.country_name,
+                lat: ap.latitude, lon: ap.longitude } : null;
+}
+var routeEvt = null;
+function fetchRoutes(list, max){
+  var todo = list.slice(0, max || 12).map(function(a){ return (a.flight || "").trim(); })
     .filter(function(cs){ return cs && !(cs in routes); });
   if (!todo.length) return;
   todo.forEach(function(cs){
@@ -1813,11 +1941,14 @@ function fetchRoutes(list){
         routes[cs] = fr ? {
           airline: fr.airline ? fr.airline.name : null,
           radio: fr.airline ? fr.airline.callsign : null,
-          from: fr.origin ? { code: fr.origin.iata_code || fr.origin.icao_code, city: fr.origin.municipality, country: fr.origin.country_name } : null,
-          to: fr.destination ? { code: fr.destination.iata_code || fr.destination.icao_code, city: fr.destination.municipality, country: fr.destination.country_name } : null
+          from: airport(fr.origin),
+          to: airport(fr.destination)
         } : null;
         paintRail();
         if (selected) paintSheet();
+        /* batched: a burst of lookups is one redraw for whoever listens */
+        clearTimeout(routeEvt);
+        routeEvt = setTimeout(function(){ window.dispatchEvent(new CustomEvent("overhead:routes")); }, 250);
       })
       .catch(function(){ routes[cs] = null; });
   });
@@ -1943,6 +2074,7 @@ function applyFlights(j){
   }).sort(function(a, b){ return a.dst - b.dst; });
   fetchRoutes(aircraft);
   paintRail(); syncMarkers();
+  paintHeroSky(aircraft);
   if (selected) paintSheet();
 }
 function loadFlights(attemptNo){
@@ -2187,13 +2319,50 @@ $("console").addEventListener("click", function(e){
     paintSky(true);
     return;
   }
-  if (b.hasAttribute("data-sensor")){
-    [].forEach.call(this.querySelectorAll("[data-sensor]"), function(x){ x.classList.toggle("on", x === b); });
-    var v = b.getAttribute("data-sensor");
-    if (v === "off") document.body.removeAttribute("data-sensor");
-    else document.body.setAttribute("data-sensor", v);
-  }
+  if (b.hasAttribute("data-sensor")) setSensor(b.getAttribute("data-sensor"));
 });
+var SENSORS = ["off","nvg","thermal","noir","crt"];
+function setSensor(v){
+  if (SENSORS.indexOf(v) === -1) v = "off";
+  [].forEach.call($("console").querySelectorAll("[data-sensor]"), function(x){ x.classList.toggle("on", x.getAttribute("data-sensor") === v); });
+  if (v === "off") document.body.removeAttribute("data-sensor");
+  else document.body.setAttribute("data-sensor", v);
+  try{ localStorage.setItem("home.sensor.v1", v); }catch(e){}
+}
+try{ var savedSensor = localStorage.getItem("home.sensor.v1"); if (savedSensor) setSensor(savedSensor); }catch(e){}
+document.addEventListener("keydown", function(e){
+  var t = (e.target && e.target.tagName) || "";
+  if (t === "INPUT" || t === "TEXTAREA" || t === "SELECT" || e.metaKey || e.ctrlKey || e.altKey) return;
+  if (window.GODSEYE && window.GODSEYE.isOpen()) return;       /* its number keys are its own */
+  if (document.querySelector(".cmdk.on")) return;
+  var i = "01234".indexOf(e.key);
+  if (i !== -1) setSensor(SENSORS[i]);
+});
+
+/* =====================================================================
+   GODSEYE — the doors in. The engine lives in godseye/godseye.js and
+   reads this page's flight state through window.OVERHEAD.
+   ===================================================================== */
+function openGodseye(){ if (window.GODSEYE) window.GODSEYE.open(); }
+function warmGodseye(){ if (window.GODSEYE) window.GODSEYE.preload(); }
+["geCta","ohGodseye","consoleGe"].forEach(function(id){
+  var el = $(id); if (!el) return;
+  el.addEventListener("click", openGodseye);
+  el.addEventListener("pointerenter", warmGodseye, { once:true });
+  el.addEventListener("focus", warmGodseye, { once:true });
+});
+window.OVERHEAD = {
+  pos: function(){ return { lat: LAT, lon: LON, label: POS_LABEL }; },
+  aircraft: function(){ return aircraft; },
+  routes: function(){ return routes; },
+  photos: function(){ return photos; },
+  radius: function(){ return radius; },
+  selected: function(){ return selected; },
+  select: function(hex){ select(hex); },
+  typeName: typeName,
+  fetchRoutes: fetchRoutes,
+  fetchPhoto: fetchPhoto
+};
 
 /* =====================================================================
    BOOT
@@ -2206,6 +2375,7 @@ setRadius(prefs().flight_radius, true);
 
 function startEverything(lat, lon, label){
   LAT = lat; LON = lon; CENTER = [LAT, LON];
+  POS_LABEL = label;
   $("posLine").textContent = label;
   if (!map) initMap();
   else map.setView(CENTER, 10);
@@ -2218,16 +2388,16 @@ function startEverything(lat, lon, label){
 }
 
 /* geolocation, the same contract as the original dashboard: ask, fall back
-   to London, and never leave the sky unpainted while we wait. */
+   to config's default, and never leave the sky unpainted while we wait. */
 if (navigator.geolocation && !qs.get("lat")){
   navigator.geolocation.getCurrentPosition(function(g){
     startEverything(+g.coords.latitude.toFixed(4), +g.coords.longitude.toFixed(4),
       g.coords.latitude.toFixed(2) + "°, " + g.coords.longitude.toFixed(2) + "°");
   }, function(){
-    startEverything(LAT, LON, "London · default");
+    startEverything(LAT, LON, FALLBACK_LABEL);
   }, { enableHighAccuracy:false, timeout:8000, maximumAge:600000 });
 } else {
-  startEverything(LAT, LON, qs.get("lat") ? LAT.toFixed(2) + "°, " + LON.toFixed(2) + "°" : "London · default");
+  startEverything(LAT, LON, qs.get("lat") ? LAT.toFixed(2) + "°, " + LON.toFixed(2) + "°" : FALLBACK_LABEL);
 }
 
 window.addEventListener("load", function(){ if (map) map.invalidateSize(); });

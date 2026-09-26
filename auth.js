@@ -304,7 +304,10 @@
     $("authModal").innerHTML = html;
     bg.classList.add("open");
   }
-  function closeModal(){ $("authModalBg").classList.remove("open"); }
+  function closeModal(){
+    var bg = $("authModalBg");       /* never built when Supabase isn't configured */
+    if (bg) bg.classList.remove("open");
+  }
 
   var MIN_PW = 8;
 
