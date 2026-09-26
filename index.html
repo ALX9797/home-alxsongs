@@ -811,6 +811,35 @@ kbd{
 .olwen-viewing{border-top:1px solid var(--line);padding-top:14px;margin-top:18px}
 .olwen-viewing a{display:block;color:var(--ice);text-decoration:underline;text-underline-offset:3px;font-size:14px;margin:8px 0;overflow-wrap:anywhere}
 .olwen-viewing a:focus-visible{outline:2px solid var(--acid);outline-offset:4px}
+
+/* Olwen's ASCII terminal: semantic text and real links beneath the decoration. */
+#olwen{--terminal-green:#aadbaa;--terminal-blue:#9fcef5;--terminal-amber:#efd28a}
+#olwen .olwen-terminal-banner{padding:20px 0 6px;color:var(--terminal-green)}
+#olwen .olwen-terminal-banner pre{font-family:var(--mono);font-size:clamp(10px,2.5vw,17px);line-height:1.25;margin:0 0 16px;white-space:pre}
+#olwen .olwen-terminal-banner>span{font-family:var(--mono);font-size:10px;line-height:1.8;letter-spacing:.04em;color:var(--ink-dim);display:block}
+#olwen .olwen-note{position:relative;border:1px dashed #526c5b;border-radius:0;background:rgba(8,18,13,.88);padding:24px;font-family:var(--mono);box-shadow:inset 0 0 35px rgba(130,190,130,.025)}
+#olwen .olwen-corners{position:absolute;left:-5px;right:-5px;display:flex;justify-content:space-between;color:var(--terminal-green);font:16px/10px var(--mono);pointer-events:none}
+#olwen .olwen-corners-top{top:-5px}#olwen .olwen-corners-bottom{bottom:-5px}
+#olwen .olwen-note h3{font:600 clamp(17px,2vw,21px)/1.5 var(--mono);color:var(--terminal-green);letter-spacing:-.03em}
+#olwen .olwen-note h3::before{content:'> ';color:var(--ink-faint)}
+#olwen .olwen-kicker{letter-spacing:.06em;color:var(--terminal-green)}
+#olwen .olwen-note p{font-size:12px;line-height:1.8}
+#olwen .olwen-start{color:var(--terminal-blue)!important;font-size:14px!important}
+#olwen .olwen-viewing{border-top:1px dashed #3d5144}
+#olwen .olwen-viewing .olwen-kicker::before{content:'[ ';}#olwen .olwen-viewing .olwen-kicker::after{content:' ]';}
+#olwen .olwen-viewing a,#olwen .olwen-sources a{font-family:var(--mono);font-size:11px;color:var(--terminal-blue)}
+#olwen .olwen-viewing a::before,#olwen .olwen-sources a::before{content:'-> '}
+#olwen .olwen-fact{border-bottom:1px dashed #3d5144}
+#olwen .olwen-fact h4{font:500 14px/1.6 var(--mono)}
+#olwen .olwen-date{font-size:10px!important;color:#98ac9d}
+#olwen .olwen-more{border-top:1px dashed #526c5b}
+#olwen .olwen-more summary h3{font:500 clamp(13px,2vw,17px)/1.6 var(--mono)}
+#olwen .olwen-disclosure>summary::after{content:'[ + ]'}
+#olwen .olwen-disclosure[open]>summary::after{content:'[ - ]'}
+#olwen .olwen-outcome-win .olwen-result{color:var(--terminal-green)}
+#olwen .olwen-outcome-loss .olwen-result{color:#f2a6a0}
+#olwen .olwen-outcome-draw .olwen-result{color:var(--terminal-amber)}
+@media(max-width:520px){#olwen .olwen-note{padding:20px 16px}#olwen .olwen-more summary{flex-wrap:wrap;gap:12px}#olwen .olwen-more summary .meta{font-size:9px}}
 </style>
 </head>
 <body data-sensor="off" data-stars="on" class="booting">
@@ -930,6 +959,14 @@ kbd{
       <span class="meta" id="olwenTodayMeta">loading…</span>
     </div>
     <p class="olwen-intro">Today's followed matches, UK start times and where to watch. Researched each morning at 6am; schedules can change.</p>
+    <div class="olwen-terminal-banner" aria-hidden="true">
+<pre>  ___  _ __      _____ _ __
+ / _ \| |\ \ /\ / / _ \ '_ \
+| (_) | | \ V  V /  __/ | | |
+ \___/|_|  \_/\_/ \___|_| |_|
++---- YOUR DAILY MATCH TERMINAL ----+</pre>
+      <span>[ UK TIME ] &nbsp; [ MATCHDAY ] &nbsp; [ 06:00 RESEARCH ]</span>
+    </div>
     <div id="olwenToday" class="olwen-notes" aria-live="polite"></div>
     <details id="olwenDisclosure" class="olwen-disclosure olwen-more">
       <summary class="head">

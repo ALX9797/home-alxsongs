@@ -17,6 +17,17 @@
     var el = document.createElement(tag);
     el.textContent = text;
     if (cls) el.className = cls;
+    if (cls === 'olwen-note') {
+      ['top','bottom'].forEach(function (edge) {
+        var corners = document.createElement('span');
+        corners.className = 'olwen-corners olwen-corners-' + edge;
+        corners.setAttribute('aria-hidden', 'true');
+        ['+','+'].forEach(function (symbol) {
+          var corner = document.createElement('span'); corner.textContent = symbol; corners.appendChild(corner);
+        });
+        el.appendChild(corners);
+      });
+    }
     return el;
   }
   function date(value) {
@@ -95,6 +106,7 @@
       if (!item.facts.length) card.appendChild(node('p', 'No records returned in this provider query. This does not establish that no events are scheduled.'));
       item.facts.forEach(function (fact) {
         var row = node('div', '', 'olwen-fact');
+        if (['win','loss','draw'].includes(fact.outcome)) row.classList.add('olwen-outcome-' + fact.outcome);
         row.appendChild(node('span', String(fact.competition || ''), 'olwen-kicker'));
         row.appendChild(node('h4', String(fact.title || 'Record')));
         row.appendChild(node('p', String(fact.when || '') + ' · ' + String(fact.status || '')));
