@@ -332,7 +332,8 @@ function build(){
         '<dt><kbd>M</kbd></dt><dd>sound on / off</dd>' +
         '<dt><kbd>esc</kbd> / <kbd>G</kbd></dt><dd>back to the homepage</dd>' +
       '</dl>' +
-      '<p>Aircraft: live ADS-B within ' + RANGE_NM + ' nm, dead-reckoned between polls, altitude ×' + ALT_X + '. ' +
+      '<p>Aircraft: live ADS-B within ' + RANGE_NM + ' nm, plus every airborne aircraft worldwide from OpenSky (blue dots; amber = heavy jets). ' +
+      'Zoom in and the nearest become icons you can click. Positions are dead-reckoned between polls, altitude ×' + ALT_X + '. Satellites are violet. ' +
       'Satellites: CelesTrak elements, SGP4. Quakes: USGS, past 24 h. Terminator and city lights: computed for this second. ' +
       'World tour: NASA EONET, Launch Library 2, Wikipedia, Open-Meteo, NOAA SWPC. The aurora follows the live Kp index. ' +
       'Leave it alone for 45 s and a tour starts by itself.</p>' +
@@ -469,9 +470,13 @@ function boot(){
   var pCore = loadScript(BASE + "vendor/globe.gl.min.js").then(initGlobe);
   var pSgp = loadScript(BASE + "vendor/satellite.min.js");
   var pAir = loadAircraft();
+  var pGlobal = loadGlobal();
   var pOrb = pSgp.then(loadOrbits);
   var pQk = loadQuakes();
   var pWorld = pQk.catch(function(){}).then(loadWorld);
+  /* each is reported by its log line later; until then, a quick failure
+     must not count as unhandled */
+  [pCore, pSgp, pAir, pGlobal, pOrb, pQk, pWorld].forEach(function(p){ p.catch(function(){}); });
   var gap = function(ms){ return new Promise(function(r){ setTimeout(r, reduce ? 0 : ms); }); };
 
   gap(220)
@@ -481,6 +486,7 @@ function boot(){
       return gap(140).then(function(){ return logLine("uplink", Promise.resolve(fmtLL(h.lat, h.lng) + (h.label && h.label.indexOf("°") < 0 ? " · " + h.label : ""))); });
     })
     .then(function(){ return gap(140).then(function(){ return logLine("ads-b transponders", pAir, 2600); }); })
+    .then(function(){ return gap(120).then(function(){ return logLine("world air traffic", pGlobal, 3000); }); })
     .then(function(){ return gap(120).then(function(){ return logLine("orbital elements", pOrb, 2200); }); })
     .then(function(){ return gap(120).then(function(){ return logLine("seismic network", pQk, 1800); }); })
     .then(function(){ return gap(120).then(function(){ return logLine("world · last 24 h", pWorld, 2400); }); })
@@ -760,7 +766,11 @@ function setupLayers(){
     .particleLat("lat").particleLng("lng").particleAltitude("alt")
     .particlesSize(function(set){ return set.size || 2.2; }).particlesSizeAttenuation(false)
     .particlesColor(function(set){ return set.color || "rgba(170,236,255,.9)"; })
-    .onParticleClick(function(p){ stopTour(); select(p.ev ? { kind:"ev", id:p.ev } : { kind:"sat", id:p.id }, { fly:true }); });
+    .onParticleClick(function(p){
+      stopTour();
+      if (p.g != null && S.G) return select({ kind:"ac", id:S.G.hex[p.g] }, { fly:true });
+      select(p.ev ? { kind:"ev", id:p.ev } : { kind:"sat", id:p.id }, { fly:true });
+    });
 
   /* the ISS's orbit */
   G.pathPoints("pts").pathPointLat(function(p){ return p[0]; }).pathPointLng(function(p){ return p[1]; })
@@ -881,7 +891,7 @@ function ingest(j, seeded){
 
 /* dead reckoning: where it is now, not where it was at the last poll */
 function acPos(a, now){
-  var dt = Math.min(90, Math.max(0, ((now || Date.now()) - a.t0) / 1000));
+  var dt = Math.min(a.global ? 600 : 90, Math.max(0, ((now || Date.now()) - a.t0) / 1000));
   if (a.ground || !a.gs) return { lat: a.lat0, lng: a.lon0 };
   var dNm = a.gs * dt / 3600;
   var lat = a.lat0 + (dNm * Math.cos(a.trk * RAD)) / 60;
@@ -889,6 +899,205 @@ function acPos(a, now){
   return { lat: lat, lng: wrapLng(lng) };
 }
 function acAlt(a){ return a.ground ? 0.0015 : 0.002 + (a.altFt * 0.0003048 / R_KM) * ALT_X; }
+/* =====================================================================
+   DATA — worldwide traffic (OpenSky, straight from the browser)
+   About 10,000 aircraft in one request. The JSON (3–4 MB) is fetched and
+   parsed on a background thread and arrives as flat Float32Arrays; it is
+   drawn as three particle clouds whose buffers are rewritten in place,
+   once a second. Only when you zoom in do the nearest ~120 become real
+   icons with callsigns. Anonymous OpenSky allows ~100 of these a day per
+   visitor, so it polls every two minutes and dead-reckons in between.
+   ===================================================================== */
+var GLOBAL_URL = C.GODSEYE_GLOBAL_URL === "" ? "" : (C.GODSEYE_GLOBAL_URL || "https://opensky-network.org/api/states/all?extended=1");
+var GF = 8;                /* floats per aircraft: lat, lon, alt m, speed m/s, track°, climb m/s, age s, category */
+var G_POLL = 120000, G_TAGS = LITE ? 60 : 120;
+S.G = null; S.gObj = {}; S.gCand = [];
+
+/* Runs in the worker too, so it must stand alone: no outside references. */
+function parseStates(j){
+  var s = (j && j.states) || [], T = (j && j.time) || Date.now() / 1000, D = Math.PI / 180;
+  var f = new Float32Array(s.length * 8), u = new Float32Array(s.length * 3);
+  var hex = [], cs = [], ctry = [], sq = [], n = 0;
+  for (var i = 0; i < s.length; i++){
+    var a = s[i];
+    if (!a || a[8] || a[5] == null || a[6] == null) continue;       /* on the ground, or no fix */
+    var lat = a[6], lon = a[5], o = n * 8, p = (90 - lat) * D, t = (90 - lon) * D;
+    f[o] = lat; f[o + 1] = lon; f[o + 2] = a[7] != null ? a[7] : (a[13] || 0);
+    f[o + 3] = a[9] || 0; f[o + 4] = a[10] || 0; f[o + 5] = a[11] || 0;
+    f[o + 6] = (a[3] || a[4] || T) - T; f[o + 7] = a[17] || 0;
+    u[n * 3] = Math.sin(p) * Math.cos(t); u[n * 3 + 1] = Math.cos(p); u[n * 3 + 2] = Math.sin(p) * Math.sin(t);
+    hex.push(a[0]); cs.push((a[1] || "").trim()); ctry.push(a[2] || ""); sq.push(a[14] || "");
+    n++;
+  }
+  return { n: n, time: T, f: f.slice(0, n * 8), u: u.slice(0, n * 3), hex: hex, cs: cs, ctry: ctry, sq: sq };
+}
+
+var gWorker = null, gPending = null;
+function loadGlobal(){
+  if (!GLOBAL_URL) return Promise.reject(new Error("switched off in config.js"));
+  if (S.gBackoff && Date.now() < S.gBackoff) return Promise.reject(new Error("resting after a rate limit"));
+  if (gPending) return gPending;
+  var raw = new Promise(function(ok, no){
+    function done(d){ if (d && d.ok) ok(d); else no(new Error((d && d.error) || "no answer")); }
+    function mainThread(){
+      getJSON(GLOBAL_URL, 30000).then(function(j){ var d = parseStates(j); d.ok = true; done(d); }, function(e){ done({ ok: false, error: e.message }); });
+    }
+    if (typeof Worker === "undefined" || typeof Blob === "undefined") return mainThread();
+    try{
+      if (!gWorker){
+        var src = "var parseStates=" + parseStates.toString() + ";onmessage=function(e){fetch(e.data).then(function(r){" +
+          "if(!r.ok)throw new Error('HTTP '+r.status);return r.json();}).then(function(j){var d=parseStates(j);d.ok=true;" +
+          "postMessage(d,[d.f.buffer,d.u.buffer]);}).catch(function(err){postMessage({ok:false,error:String((err&&err.message)||err)});});};";
+        gWorker = new Worker(URL.createObjectURL(new Blob([src], { type: "text/javascript" })));
+      }
+      var t = setTimeout(function(){ done({ ok: false, error: "timed out" }); }, 30000);
+      gWorker.onmessage = function(e){ clearTimeout(t); done(e.data); };
+      gWorker.onerror = function(){ clearTimeout(t); gWorker = null; mainThread(); };
+      gWorker.postMessage(GLOBAL_URL);
+    }catch(e){ gWorker = null; mainThread(); }
+  });
+  gPending = raw.then(function(d){
+    gPending = null;
+    ingestGlobal(d);
+    return fmt(d.n) + " airborne worldwide · OpenSky";
+  }, function(e){
+    gPending = null;
+    /* a refusal means the day's allowance is spent: back off instead of hammering */
+    if (/HTTP 4\d\d/.test(e.message)) S.gBackoff = Date.now() + 15 * 60000;
+    throw e;
+  });
+  return gPending;
+}
+
+function ingestGlobal(d){
+  var byHex = {}, i, top = [];
+  for (i = 0; i < d.n; i++){
+    byHex[d.hex[i]] = i;
+    /* fastest over the ground, cruising only: usually a jet-stream ride */
+    var k = i * GF, v = d.f[k + 3];
+    if (d.f[k + 2] < 6000 || !d.cs[i]) continue;
+    if (top.length < 6 || v > d.f[top[top.length - 1] * GF + 3]){
+      top.push(i);
+      top.sort(function(a, b){ return d.f[b * GF + 3] - d.f[a * GF + 3]; });
+      if (top.length > 6) top.pop();
+    }
+  }
+  d.byHex = byHex; d.top = top; d.at = Date.now();
+  S.G = d;
+  Object.keys(S.gObj).forEach(function(h){ if (byHex[h] != null) fillG(S.gObj[h], byHex[h]); });
+  buildGlobalSets();
+  S.gCandAt = 0;
+  S.dirtyList = true;
+}
+
+/* an aircraft object shaped like the local ones, made only when needed */
+function fillG(o, i){
+  var G = S.G, f = G.f, k = i * GF, h = home();
+  o.hex = G.hex[i]; o.call = G.cs[i]; o.label = o.call || o.hex.toUpperCase();
+  o.lat0 = f[k]; o.lon0 = f[k + 1]; o.t0 = (G.time + f[k + 6]) * 1000;
+  o.altFt = f[k + 2] * 3.28084; o.gs = f[k + 3] * 1.943844; o.trk = f[k + 4]; o.vs = Math.round(f[k + 5] * 196.85);
+  o.sq = G.sq[i] || null; o.country = G.ctry[i]; o.ground = false; o.global = true; o.heavy = f[k + 7] === 6;
+  o.emerg = /^(7500|7600|7700)$/.test(o.sq || "");
+  if (o.type == null) o.type = "";
+  if (!o.trail) o.trail = [];
+  o.dist = distKm(h.lat, h.lng, o.lat0, o.lon0) / 1.852;
+  return o;
+}
+function gObjFor(hex){
+  var o = S.gObj[hex], i = S.G ? S.G.byHex[hex] : null;
+  if (i == null) return o || null;
+  if (!o){ o = S.gObj[hex] = {}; fillG(o, i); }
+  return o;
+}
+/* type, registration and owner: one adsbdb call, only for what you click */
+function lookupAircraft(o){
+  if (!o || o.looked) return;
+  o.looked = true;
+  getJSON("https://api.adsbdb.com/v0/aircraft/" + encodeURIComponent(o.hex), 9000).then(function(j){
+    var a = j && j.response && j.response.aircraft;
+    if (!a) return;
+    o.type = [a.manufacturer, a.type].filter(Boolean).join(" ") || a.icao_type || "";
+    o.reg = a.registration || o.reg;
+    if (!o.op) o.op = a.registered_owner || null;
+    refreshDossier("ac:" + o.hex);
+  }).catch(function(){});
+}
+function refreshDossier(key){
+  if (!S.target || tkey(S.target) !== key) return;
+  $("geDossier").removeAttribute("data-k");           /* rebuild the static parts too */
+  renderDossier(false);
+}
+
+function buildGlobalSets(){
+  var G = S.G; if (!G || !S.globe) return;
+  var low = [], cruise = [], heavy = [];
+  for (var i = 0; i < G.n; i++){
+    var k = i * GF;
+    var stub = { lat: G.f[k], lng: G.f[k + 1], alt: 0.002 + G.f[k + 2] / 1000 / R_KM * ALT_X, g: i };
+    (G.f[k + 7] === 6 ? heavy : G.f[k + 2] > 7000 ? cruise : low).push(stub);
+  }
+  low.color = "rgba(110,170,235,.5)"; low.size = 1.2;
+  cruise.color = "rgba(190,235,255,.85)"; cruise.size = 1.6;
+  heavy.color = "rgba(255,196,90,1)"; heavy.size = 2.2;
+  S.gSets = [low, cruise, heavy];
+  S.gTick = 0;
+  paintParticles();
+}
+
+/* dead reckoning for ten thousand dots, straight into the GPU buffers */
+function updateGlobal(now){
+  if (!S.G || !S.gSets || !show("air") || now - (S.gTick || 0) < 1000) return;
+  S.gTick = now;
+  var G = S.G, f = G.f, tNow = Date.now() / 1000;
+  S.gSets.forEach(function(set){
+    var obj = set.__threeObjParticles; if (!obj) return;
+    var attr = obj.geometry.attributes.position, arr = attr.array;
+    if (!arr || arr.length !== set.length * 3) return;
+    for (var j = 0; j < set.length; j++){
+      var k = set[j].g * GF;
+      var dt = Math.min(600, Math.max(0, tNow - (G.time + f[k + 6])));
+      var dNm = f[k + 3] * 1.943844 * dt / 3600, tr = f[k + 4] * RAD;
+      var lat = f[k] + dNm * Math.cos(tr) / 60;
+      var lng = f[k + 1] + dNm * Math.sin(tr) / (60 * Math.max(0.2, Math.cos(f[k] * RAD)));
+      var phi = (90 - lat) * RAD, th = (90 - lng) * RAD, sp = Math.sin(phi);
+      var r = GR * (1.002 + f[k + 2] / 1000 / R_KM * ALT_X);
+      arr[j * 3] = r * sp * Math.cos(th); arr[j * 3 + 1] = r * Math.cos(phi); arr[j * 3 + 2] = r * sp * Math.sin(th);
+    }
+    attr.needsUpdate = true;
+  });
+}
+
+/* zooming in: which dots become icons. A dot product per aircraft against
+   precomputed unit vectors, four times a second — no trig. */
+function updateGlobalCands(now, pov){
+  if (now - (S.gCandAt || 0) < 250) return;
+  S.gCandAt = now;
+  var G = S.G, A = pov.altitude, prev = S.gCand, next = [];
+  if (G && show("air") && A < 0.9){
+    var c = xyz(pov.lat, pov.lng), lim = Math.min(Math.acos(1 / (1 + A)), 0.8 * A + 0.03), cl = Math.cos(lim);
+    var u = G.u, ids = [], dots = [];
+    for (var i = 0; i < G.n; i++){
+      var d = u[i * 3] * c[0] + u[i * 3 + 1] * c[1] + u[i * 3 + 2] * c[2];
+      if (d > cl && !S.acIndex[G.hex[i]]){ ids.push(i); dots.push(d); }
+    }
+    var order = ids.map(function(_, j){ return j; }).sort(function(a, b){ return dots[b] - dots[a]; }).slice(0, G_TAGS);
+    order.forEach(function(j){ next.push(gObjFor(G.hex[ids[j]])); });
+  }
+  var keep = {}, selHex = S.target && S.target.kind === "ac" ? S.target.id : null;
+  next.forEach(function(o){ keep[o.hex] = 1; });
+  prev.forEach(function(o){
+    if (!keep[o.hex] && o.hex !== selHex){ var t = S.tags["ac:" + o.hex]; if (t) place(t, 0, 0, false); }
+  });
+  S.gCand = next;
+  /* forget icons nobody has looked at for a while */
+  if (now - (S.gGc || 0) > 15000){
+    S.gGc = now;
+    Object.keys(S.gObj).forEach(function(h){
+      if (!keep[h] && h !== selHex && !S.acIndex[h]){ dropTag("ac:" + h); delete S.gObj[h]; }
+    });
+  }
+}
+
 
 /* =====================================================================
    DATA — orbit (CelesTrak → wheretheiss → the Worker's /space)
@@ -1122,6 +1331,12 @@ function updateArcs(){
     a.arc.sel = a.hex === selHex;
     arcs.push(a.arc);
   });
+  var g = selHex && !S.acIndex[selHex] ? S.gObj[selHex] : null, gr = g && g.call ? rt[g.call] : null;
+  if (gr && gr.from && gr.to && isFinite(gr.from.lat) && isFinite(gr.to.lat)){
+    if (!g.arc) g.arc = { hex: g.hex, gap: 0 };
+    g.arc.sLat = gr.from.lat; g.arc.sLng = gr.from.lon; g.arc.eLat = gr.to.lat; g.arc.eLng = gr.to.lon; g.arc.sel = true;
+    arcs.push(g.arc);
+  }
   S.globe.arcsData(arcs);
 }
 var satTick = 0;
@@ -1141,7 +1356,7 @@ function updateSats(force){
   if (force || !set || set.length !== pts.length || !obj){
     if (!set || set.length !== pts.length){
       set = S.satSet = pts.slice();
-      set.color = "rgba(170,236,255,.9)"; set.size = 2.2;
+      set.color = "rgba(206,160,255,.95)"; set.size = 2.2;
     }
     paintParticles();
     return;
@@ -1158,6 +1373,7 @@ function updateSats(force){
 function paintParticles(){
   var sets = [];
   if (S.satSet && S.satSet.length) sets.push(S.satSet);
+  if (S.gSets && show("air")) S.gSets.forEach(function(g){ if (g.length) sets.push(g); });
   if (S.fireSet && S.fireSet.length && (show("world") || (S.tour && S.tour.world))) sets.push(S.fireSet);
   S.globe.particlesData(sets);
 }
@@ -1220,11 +1436,16 @@ function drawTags(now){
   /* aircraft: place every icon, then hand out labels greedily (locked
      target first, then nearest to home) so no label lands on another */
   var showAir = show("air"), cand = [];
-  S.aircraft.forEach(function(a, i){
+  var planes = S.gCand.length ? S.aircraft.concat(S.gCand) : S.aircraft.slice();
+  if (selKey && selKey.indexOf("ac:") === 0){
+    var sa = resolve(S.target);
+    if (sa && sa.global && planes.indexOf(sa) < 0) planes.push(sa);
+  }
+  planes.forEach(function(a, i){
     var key = "ac:" + a.hex;
     var t = S.tags[key];
     var isSel = key === selKey;
-    var want = showAir && (isSel || A < 2.6);
+    var want = showAir && (isSel || A < (a.global ? 0.95 : 1.6));
     if (!want){ if (t) place(t, 0, 0, false); return; }
     if (!t){
       t = tagFor(key, "ac", PLANE + "<span></span>");
@@ -1244,6 +1465,7 @@ function drawTags(now){
     setClass(t, "sel", isSel);
     setClass(t, "gnd", a.ground);
     setClass(t, "emerg", a.emerg);
+    setClass(t, "heavy", !!a.heavy);
     if (t.lbl !== a.label){ t.el.querySelector("span").textContent = a.label; t.lbl = a.label; }
     cand.push({ t: t, a: a, x: s.x, y: s.y, sel: isSel, i: i });
     n++;
@@ -1333,7 +1555,7 @@ function parseT(k){
 }
 function resolve(t){
   if (!t) return null;
-  if (t.kind === "ac") return S.acIndex[t.id] || null;
+  if (t.kind === "ac") return S.acIndex[t.id] || gObjFor(t.id);
   if (t.kind === "sat"){ for (var i = 0; i < S.sats.length; i++) if (S.sats[i].id === t.id) return S.sats[i]; return null; }
   if (t.kind === "quake"){ for (var j = 0; j < S.quakes.length; j++) if (S.quakes[j].id === t.id) return S.quakes[j]; return null; }
   if (t.kind === "home") return home();
@@ -1373,7 +1595,11 @@ function select(t, opt){
     flyTo(p, alt, opt.ms, function(){ if (follows) S.follow = t; });
   }
   if (t.kind === "ac"){
-    var oh = OH();
+    var oh = OH(), ga = resolve(t);
+    if (ga && ga.global){
+      if (oh && oh.fetchRoutes && ga.call) oh.fetchRoutes([{ flight: ga.call }], 1);
+      lookupAircraft(ga);
+    }
     if (oh && oh.fetchPhoto) oh.fetchPhoto(t.id).then(function(){ if (S.target && tkey(S.target) === tkey(t)) renderDossier(false); });
   }
   writeHash();
@@ -1418,7 +1644,7 @@ function renderList(){
   S.dirtyList = false;
   var out = "", rt = routes();
   var air = S.aircraft.filter(function(a){ return !a.ground; });
-  $("geCount").textContent = (show("air") ? air.length : 0) + (show("orbit") ? S.sats.length : 0) + (show("seismic") ? S.quakes.length : 0) + (show("world") ? S.world.events.length : 0);
+  $("geCount").textContent = (show("air") ? air.length + (S.G ? S.G.n : 0) : 0) + (show("orbit") ? S.sats.length : 0) + (show("seismic") ? S.quakes.length : 0) + (show("world") ? S.world.events.length : 0);
   if (show("air")){
     out += '<div class="ge-grp"><span>Aircraft</span><b>' + air.length + '</b></div>';
     var lim = S.filter === "air" ? 60 : 14;
@@ -1428,6 +1654,14 @@ function renderList(){
         (Math.round(a.altFt / 100) * 100).toLocaleString("en-GB") + " ft · " + a.dist.toFixed(0) + " nm";
       return row("ac:" + a.hex, a.label, sub, a.emerg ? "emerg" : "");
     }).join("") || '<div class="ge-empty">quiet skies</div>';
+  }
+  if (show("air") && S.G){
+    out += '<div class="ge-grp"><span>Worldwide · fastest now</span><b>' + fmt(S.G.n) + '</b></div>';
+    out += S.G.top.map(function(i){
+      var k = i * GF;
+      return row("ac:" + S.G.hex[i], S.G.cs[i] || S.G.hex[i].toUpperCase(),
+        fmt(S.G.f[k + 3] * 1.943844) + " kt · " + fmt(S.G.f[k + 2] * 3.28084) + " ft");
+    }).join("");
   }
   if (show("orbit")){
     out += '<div class="ge-grp"><span>Orbit</span><b>' + S.sats.length + '</b></div>';
@@ -1470,7 +1704,7 @@ function renderDossier(fresh){
   if (kind === "ac"){
     var p = acPos(o), r = routeOf(o), oh = OH();
     var op = (r && r.airline) || o.op;
-    html += head(o.ground ? "Aircraft · on the ground" : "Aircraft", o.label, esc(op || "Private or unlisted operator") + (r && r.radio ? ' · radio <i>' + esc(r.radio) + '</i>' : ""));
+    html += head(o.ground ? "Aircraft · on the ground" : o.global ? "Aircraft · worldwide" + (o.country ? " · " + esc(o.country) : "") : "Aircraft", o.label, esc(op || "Private or unlisted operator") + (r && r.radio ? ' · radio <i>' + esc(r.radio) + '</i>' : ""));
     if (r && r.from && r.to){
       var total = distKm(r.from.lat, r.from.lon, r.to.lat, r.to.lon), done = distKm(r.from.lat, r.from.lon, p.lat, p.lng);
       var pct = clamp(done / Math.max(1, total), 0, 1);
@@ -1485,9 +1719,9 @@ function renderDossier(fresh){
       stat("Speed", o.gs ? fmt(o.gs) + " kt" : "—") +
       stat("Track", fmt(o.trk) + "° " + compass(o.trk)) +
       stat("Vertical", o.vs == null ? "—" : (o.vs > 0 ? "+" : "") + fmt(o.vs) + " fpm", o.vs > 300 ? "up" : o.vs < -300 ? "down" : "") +
-      stat("From you", d.toFixed(1) + " nm " + compass(b)) +
+      stat("From you", d > 400 ? fmt(d * 1.852) + " km " + compass(b) : d.toFixed(1) + " nm " + compass(b)) +
       stat("Squawk", esc(o.sq || "—"), o.emerg ? "emerg" : "") +
-      stat("Type", esc(o.type)) +
+      stat("Type", esc(o.type || (o.global ? "looking up…" : "—"))) +
       stat("Reg", esc(o.reg || "—")) +
       '</div>';
     var ph = oh && oh.photos ? oh.photos()[o.hex] : null;
@@ -1997,6 +2231,12 @@ function worldSteps(){
       E.length ? "NASA" : null, S.quakes.length ? "the USGS" : null, of("launch", 1).length ? "the launch pads" : null, of("news", 1).length ? "the news" : null
     ].filter(Boolean).join(", ") + ". Sit back.",
     go: function(){ deselect(); flyTo({ lat: 20, lng: wrapLng(sun.lng - 30) }, 3.2, 3000); setTimeout(function(){ if (S.tour) setAutoRotate(true); }, 3100); }, ms: 7000 });
+  if (S.G && S.G.n > 100 && S.G.top.length){
+    var fi = S.G.top[0], fx = S.G.hex[fi], kt = S.G.f[fi * GF + 3] * 1.943844;
+    steps.push({ k: "Air traffic", t: fmt(S.G.n) + " aircraft are in the air right now — every dot is one. Fastest over the ground: " +
+      (S.G.cs[fi] || fx.toUpperCase()) + " at " + fmt(kt) + " knots" + (kt > 560 ? ", riding the jet stream." : "."),
+      go: function(){ select({ kind: "ac", id: fx }, { fly: true, alt: 0.45 }); } });
+  }
   var q = S.quakes[0];
   if (q) steps.push({ k: "Quake", t: "The Earth shook " + S.quakes.length + " times hard enough to count (M2.5+). The biggest: M" + q.mag.toFixed(1) + ", " + q.place + (q.time ? ", " + ago(q.time) : "") + ".",
     time: q.time, go: function(){ select({ kind: "quake", id: q.id }, { fly: true }); } });
@@ -2195,8 +2435,10 @@ function frame(now){
   if (S.party > Date.now()) G.controls().autoRotateSpeed = 6;
   else if (G.controls().autoRotateSpeed !== 0.35) G.controls().autoRotateSpeed = 0.35;
 
+  updateGlobalCands(now, pov);
   drawTags(now);
   updateSats(false);
+  updateGlobal(now);
   drawRadar(now);
 
   /* the reticle rides on the target */
@@ -2257,6 +2499,7 @@ function open(opts){
     S.globe.resumeAnimation();
     SND.startDrone();
     SND.whoosh(1.2, 0.05);
+    if (!S.G || Date.now() - S.G.at > G_POLL) loadGlobal().catch(function(){});
     setAutoRotate(!S.target);
     refresh();
     afterOpen();
@@ -2271,6 +2514,7 @@ function open(opts){
   }
   S.raf = requestAnimationFrame(frame);
   S.timers.push(setInterval(refresh, 20000));
+  S.timers.push(setInterval(function(){ if (!document.hidden) loadGlobal().catch(function(){}); }, G_POLL));
   S.timers.push(setInterval(function(){ if (!document.hidden) loadQuakes().catch(function(){}); }, 300000));
   S.timers.push(setInterval(function(){ if (!document.hidden && !(S.tour && S.tour.world)) loadWorld().catch(function(){}); }, 1800000));
 }
@@ -2296,13 +2540,17 @@ function close(){
 }
 
 /* routes resolve on the homepage's schedule; redraw arcs when they land */
-window.addEventListener("overhead:routes", function(){ S.dirtyArcs = true; S.dirtyList = true; });
+window.addEventListener("overhead:routes", function(){
+  S.dirtyArcs = true; S.dirtyList = true;
+  if (S.target && S.target.kind === "ac") refreshDossier("ac:" + S.target.id);
+});
 
 window.GODSEYE = {
   open: open, close: close,
   toggle: function(){ S.open ? close() : open(); },
   isOpen: function(){ return S.open; },
   stats: function(){ return { fps: S.fps, dpr: S.dpr, lite: !!LITE, sats: S.sats.length, aircraft: S.aircraft.length,
+    global: S.G ? S.G.n : 0, globalTags: S.gCand.length,
     events: S.world.events.length, fires: S.world.fires || 0, paths: S.globe ? S.globe.pathsData().map(function(p){ return p.pts.length; }) : [], kp: S.world.kp, tour: S.tour ? (S.tour.world ? "world" : "local") + ":" + S.tour.i : null }; },
   /* warm the cache on hover so the boot is quick */
   preload: function(){ loadScript(BASE + "vendor/globe.gl.min.js").catch(function(){}); },

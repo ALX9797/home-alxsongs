@@ -30,6 +30,12 @@ window.CONFIG = {
   // Godseye (the 3D planet) looks wider than the homepage map. Max 250.
   GODSEYE_RADIUS_NM: 150,
 
+  // Worldwide traffic in Godseye comes from OpenSky, fetched by each visitor's
+  // browser (free, no key; ~100 global requests per visitor per day, polled
+  // every 2 minutes). Point this at another URL returning OpenSky's
+  // /states/all format, or set it to "" to switch the worldwide layer off.
+  // GODSEYE_GLOBAL_URL: "https://opensky-network.org/api/states/all?extended=1",
+
   // Map tiles: a free CARTO key keeps the pretty dark basemap. Request one at
   // https://carto.com/basemaps/apikey (free, no account — give them this
   // site's domain). Leave empty and the map falls back to Esri's keyless
