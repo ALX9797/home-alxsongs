@@ -1,12 +1,12 @@
 {
-  "version": 1,
-  "updated_at": "2026-09-26T11:11:23+01:00",
+  "version": 2,
+  "updated_at": "2026-09-26T12:36:31+01:00",
   "items": [
     {
       "id": "3addcc24b497faf6",
       "topic": "Manchester United · Premier League",
       "summary": "",
-      "updated_at": "2026-09-26T11:11:22+01:00",
+      "updated_at": "2026-09-26T12:36:29+01:00",
       "status": "provider-data",
       "sources": [
         {
@@ -24,7 +24,9 @@
           "competition": "English Premier League",
           "source_url": "https://www.espn.com/soccer/match/_/gameId/401878773",
           "starts_at": "2026-10-10T16:30Z",
-          "completed": false
+          "completed": false,
+          "state": "pre",
+          "outcome": null
         },
         {
           "id": "401879260",
@@ -35,7 +37,9 @@
           "competition": "English Premier League",
           "source_url": "https://www.espn.com/soccer/match/_/gameId/401879260",
           "starts_at": "2026-10-18T13:00Z",
-          "completed": false
+          "completed": false,
+          "state": "pre",
+          "outcome": null
         },
         {
           "id": "401879252",
@@ -46,7 +50,9 @@
           "competition": "English Premier League",
           "source_url": "https://www.espn.com/soccer/match/_/gameId/401879252",
           "starts_at": "2026-10-25T14:00Z",
-          "completed": false
+          "completed": false,
+          "state": "pre",
+          "outcome": null
         },
         {
           "id": "401878777",
@@ -57,7 +63,9 @@
           "competition": "English Premier League",
           "source_url": "https://www.espn.com/soccer/match/_/gameId/401878777",
           "starts_at": "2026-09-20T15:30Z",
-          "completed": true
+          "completed": true,
+          "state": "post",
+          "outcome": "draw"
         },
         {
           "id": "401879278",
@@ -68,7 +76,9 @@
           "competition": "English Premier League",
           "source_url": "https://www.espn.com/soccer/match/_/gameId/401879278",
           "starts_at": "2026-09-13T15:30Z",
-          "completed": true
+          "completed": true,
+          "state": "post",
+          "outcome": "loss"
         },
         {
           "id": "401879291",
@@ -79,7 +89,9 @@
           "competition": "English Premier League",
           "source_url": "https://www.espn.com/soccer/match/_/gameId/401879291",
           "starts_at": "2026-09-06T13:00Z",
-          "completed": true
+          "completed": true,
+          "state": "post",
+          "outcome": "draw"
         }
       ]
     },
@@ -87,7 +99,7 @@
       "id": "359bde922ce0d9f2",
       "topic": "LoL · 2026-09-25 to 2026-10-03 (UTC window)",
       "summary": "",
-      "updated_at": "2026-09-26T11:11:23+01:00",
+      "updated_at": "2026-09-26T12:36:30+01:00",
       "status": "provider-data",
       "sources": [
         {
@@ -146,7 +158,7 @@
       "id": "385c7d7fbe7d8716",
       "topic": "Formula 1 · schedule and classification",
       "summary": "",
-      "updated_at": "2026-09-26T11:11:23+01:00",
+      "updated_at": "2026-09-26T12:36:30+01:00",
       "status": "provider-data",
       "sources": [
         {
@@ -179,7 +191,7 @@
       "id": "b08bc42d1737ca5e",
       "topic": "Wales men · international football",
       "summary": "",
-      "updated_at": "2026-09-26T11:11:23+01:00",
+      "updated_at": "2026-09-26T12:36:31+01:00",
       "status": "provider-data",
       "sources": [
         {
@@ -197,7 +209,9 @@
           "competition": "UEFA Nations League",
           "source_url": "https://www.espn.com/soccer/match/_/gameId/401861070",
           "starts_at": "2026-09-27T16:00Z",
-          "completed": false
+          "completed": false,
+          "state": "pre",
+          "outcome": null
         },
         {
           "id": "401861100",
@@ -208,7 +222,9 @@
           "competition": "UEFA Nations League",
           "source_url": "https://www.espn.com/soccer/match/_/gameId/401861100",
           "starts_at": "2026-10-01T18:45Z",
-          "completed": false
+          "completed": false,
+          "state": "pre",
+          "outcome": null
         },
         {
           "id": "401861125",
@@ -219,7 +235,9 @@
           "competition": "UEFA Nations League",
           "source_url": "https://www.espn.com/soccer/match/_/gameId/401861125",
           "starts_at": "2026-10-04T18:45Z",
-          "completed": false
+          "completed": false,
+          "state": "pre",
+          "outcome": null
         },
         {
           "id": "401861044",
@@ -230,7 +248,9 @@
           "competition": "UEFA Nations League",
           "source_url": "https://www.espn.com/soccer/match/_/gameId/401861044",
           "starts_at": "2026-09-24T18:45Z",
-          "completed": true
+          "completed": true,
+          "state": "post",
+          "outcome": "loss"
         },
         {
           "id": "401869206",
@@ -241,7 +261,9 @@
           "competition": "International Friendly",
           "source_url": "https://www.espn.com/soccer/match/_/gameId/401869206",
           "starts_at": "2026-06-06T17:45Z",
-          "completed": true
+          "completed": true,
+          "state": "post",
+          "outcome": "loss"
         },
         {
           "id": "401863573",
@@ -252,9 +274,60 @@
           "competition": "International Friendly",
           "source_url": "https://www.espn.com/soccer/match/_/gameId/401863573",
           "starts_at": "2026-06-02T18:45Z",
-          "completed": true
+          "completed": true,
+          "state": "post",
+          "outcome": "draw"
         }
       ]
     }
-  ]
+  ],
+  "today": {
+    "date": "2026-09-26",
+    "updated_at": "2026-09-26T12:30:05.544587+01:00",
+    "timezone": "Europe/London",
+    "items": [
+      {
+        "id": "lol-1662460",
+        "group": "lol",
+        "title": "LYON vs Shopify Rebellion",
+        "competition": "LCS",
+        "starts_at": "2026-09-26T20:00:00Z",
+        "when": "Sat 26 Sep 2026 21:00 BST",
+        "status": "not_started",
+        "detail": "",
+        "viewing": [
+          {
+            "label": "Official English stream (twitch.tv)",
+            "url": "https://www.twitch.tv/lcs",
+            "kind": "stream"
+          }
+        ],
+        "viewing_status": "listed",
+        "sources": [
+          {
+            "title": "PandaScore API records (requires access)",
+            "url": "https://developers.pandascore.co/"
+          }
+        ],
+        "updated_at": "2026-09-26T12:30:05.544470+01:00"
+      }
+    ],
+    "coverage": [
+      {
+        "group": "manutd",
+        "status": "checked",
+        "matches": 0
+      },
+      {
+        "group": "wales",
+        "status": "checked",
+        "matches": 0
+      },
+      {
+        "group": "lol",
+        "status": "checked",
+        "matches": 1
+      }
+    ]
+  }
 }

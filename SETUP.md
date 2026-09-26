@@ -461,3 +461,18 @@ topics need a new data connector; they are not sent to a generative fallback.
 The local olwen-publish.service runs after the morning briefing and updates
 only this JSON file through the server's gh login. No private memory, chat
 history or API tokens belong in this public repository.
+
+### Olwen Today layout
+
+`data/olwen.json` version 2 adds a `today` sheet (UK date, research timestamp,
+coverage status, match records and sourced viewing links). `olwen.js` renders it
+above the existing provider-data cards, now under More fixtures & results.
+The disclosure uses localStorage key `home.olwen.more.expanded.v2` and defaults
+closed. Stale dates and missing viewing information are labelled explicitly;
+all dynamic text uses textContent and links allow only HTTP(S).
+
+The server's `olwen-today.timer` runs a Jev-assisted source search at 6am UK time
+and then triggers the existing publisher. Channel claims require an exact
+structured UK listing match; LoL streams come from official provider fields.
+No generated prose is published. The existing explicit topic allowlist still
+controls which groups appear publicly.
