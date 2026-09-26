@@ -307,8 +307,7 @@ function build(){
         }).join("") +
       '</span>' +
       '<span class="ge-sep"></span>' +
-      '<button data-act="tour" id="geTourBtn" title="Tour of the sky around you (T)">▶ Tour</button>' +
-      '<button data-act="world" id="geWorldBtn" title="World tour: the last 24 hours (W)">◍ 24h</button>' +
+      '<button data-act="tour" id="geTourBtn" title="Tour: the last 24 hours on Earth (T)">▶ Tour</button>' +
       '<button data-act="home" title="Back home (H)">⌂</button>' +
       '<button data-act="space" title="Pull back to orbit (O)">◎</button>' +
       '<button data-act="sound" id="geSndBtn" title="Sound (M)">♪</button>' +
@@ -323,8 +322,7 @@ function build(){
       '<dl>' +
         '<dt><kbd>drag</kbd> <kbd>scroll</kbd></dt><dd>spin and zoom the planet</dd>' +
         '<dt><kbd>click</kbd></dt><dd>lock onto anything: aircraft, satellites, quakes, the sun</dd>' +
-        '<dt><kbd>T</kbd></dt><dd>tour of the sky around you</dd>' +
-        '<dt><kbd>W</kbd></dt><dd>world tour: storms, fires, launches, news, quakes, extremes — the last 24 hours</dd>' +
+        '<dt><kbd>T</kbd></dt><dd>the tour: storms, fires, launches, news, quakes, extremes — the last 24 hours on Earth</dd>' +
         '<dt><kbd>space</kbd> / <kbd>N</kbd></dt><dd>next target</dd>' +
         '<dt><kbd>1</kbd>–<kbd>4</kbd></dt><dd>optic · holo · night vision · thermal</dd>' +
         '<dt><kbd>H</kbd> <kbd>O</kbd></dt><dd>home · pull back to orbit</dd>' +
@@ -1073,7 +1071,7 @@ function updateGlobalCands(now, pov){
   if (now - (S.gCandAt || 0) < 250) return;
   S.gCandAt = now;
   var G = S.G, A = pov.altitude, prev = S.gCand, next = [];
-  if (G && show("air") && A < 0.9){
+  if (G && show("air") && !S.tour && A < 0.9){
     var c = xyz(pov.lat, pov.lng), lim = Math.min(Math.acos(1 / (1 + A)), 0.8 * A + 0.03), cl = Math.cos(lim);
     var u = G.u, ids = [], dots = [];
     for (var i = 0; i < G.n; i++){
@@ -1316,12 +1314,46 @@ function adaptResolution(now){
   }
 }
 
+/* The camera always looks at the planet's centre, so whatever it's aimed
+   at sits in the middle of the screen — right under the lock card on a
+   phone, or the caption during the tour. A view offset slides the picture
+   so that point lands in the middle of the space the UI leaves free.
+   Measured four times a second, eased every frame. */
+function frameView(now){
+  var G = S.globe, cam = G.camera(), W = window.innerWidth, H = window.innerHeight;
+  if (!cam || !cam.setViewOffset) return;
+  if (now - (S.frameAt || 0) > 250){
+    S.frameAt = now;
+    var top = 56, bottom = H - 86, left = 0, right = W, touring = !!S.tour;
+    var dos = $("geDossier"), cap = $("geCap"), tl = $("geTl"), lp = $("geLeft");
+    if (dos.classList.contains("on") && !touring){
+      var r = dos.getBoundingClientRect();
+      if (W < 1100) bottom = Math.min(bottom, r.top - 8); else right = Math.min(right, r.left - 8);
+    }
+    if (W >= 760 && !touring && lp){ var lr = lp.getBoundingClientRect(); if (lr.width) left = Math.max(left, lr.right + 8); }
+    [touring && tl.classList.contains("on") ? tl : null, cap.classList.contains("on") ? cap : null].forEach(function(el){
+      if (!el) return;
+      var cr = el.getBoundingClientRect();
+      if (cr.height && cr.top > H * 0.45) bottom = Math.min(bottom, cr.top - 8);
+    });
+    if (bottom - top < H * 0.25) bottom = top + H * 0.25;        /* never squeeze it into a sliver */
+    S.frameGoal = { x: W / 2 - (left + right) / 2, y: H / 2 - (top + bottom) / 2, W: W, H: H };
+  }
+  var g = S.frameGoal; if (!g) return;
+  var v = S.frameCur || (S.frameCur = { x: 0, y: 0 });
+  var k = reduce ? 1 : 0.12;
+  v.x += (g.x - v.x) * k; v.y += (g.y - v.y) * k;
+  if (Math.abs(v.x - (v.lx || 0)) < 0.05 && Math.abs(v.y - (v.ly || 0)) < 0.05 && g.W === v.W && g.H === v.H) return;
+  v.lx = v.x; v.ly = v.y; v.W = g.W; v.H = g.H;
+  cam.setViewOffset(g.W, g.H, v.x, v.y, g.W, g.H);
+}
+
 function updateArcs(){
   if (!S.globe) return;
   S.dirtyArcs = false;
   if (!show("air")){ S.globe.arcsData([]); return; }
   var rt = routes(), arcs = [], selHex = S.target && S.target.kind === "ac" ? S.target.id : null;
-  S.aircraft.forEach(function(a){
+  (S.tour ? [] : S.aircraft).forEach(function(a){
     if (a.ground || !a.call) return;
     var r = rt[a.call];
     if (!r || !r.from || !r.to || !isFinite(r.from.lat) || !isFinite(r.to.lat)) return;
@@ -1435,7 +1467,7 @@ function drawTags(now){
 
   /* aircraft: place every icon, then hand out labels greedily (locked
      target first, then nearest to home) so no label lands on another */
-  var showAir = show("air"), cand = [];
+  var showAir = show("air") && !S.tour, cand = [];
   var planes = S.gCand.length ? S.aircraft.concat(S.gCand) : S.aircraft.slice();
   if (selKey && selKey.indexOf("ac:") === 0){
     var sa = resolve(S.target);
@@ -1445,7 +1477,7 @@ function drawTags(now){
     var key = "ac:" + a.hex;
     var t = S.tags[key];
     var isSel = key === selKey;
-    var want = showAir && (isSel || A < (a.global ? 0.95 : 1.6));
+    var want = isSel || (showAir && A < (a.global ? 0.95 : 1.6));
     if (!want){ if (t) place(t, 0, 0, false); return; }
     if (!t){
       t = tagFor(key, "ac", PLANE + "<span></span>");
@@ -1898,66 +1930,14 @@ function radarClick(e){
 }
 
 /* =====================================================================
-   TOUR — a director that picks the best shots from live data
+   TOUR — one tour: the world's last 24 hours (see WORLD below). T, the
+   Tour button and the screensaver all start it.
    ===================================================================== */
-function tourSteps(){
-  var h = home(), sun = subsolar(new Date()), steps = [];
-  var air = S.aircraft.filter(function(a){ return !a.ground; });
-  steps.push({ k: "Orbit", t: "Earth, live. The sun is directly overhead at " + fmtLL(sun.lat, sun.lng) + " — everything on the bright side is daytime this second.",
-    go: function(){ deselect(); flyTo({ lat: lerp(sun.lat, h.lat, 0.5), lng: wrapLng(sun.lng + 25) }, 2.7, 3200); setTimeout(function(){ if (S.tour) setAutoRotate(true); }, 3300); }, ms: 8000 });
-  steps.push({ k: "Ground zero", t: "This is you. " + air.length + " aircraft are in the air within " + RANGE_NM + " nautical miles right now.",
-    go: function(){ select({ kind: "home" }, { fly: true, alt: 0.42 }); }, ms: 7500 });
-  if (air.length){
-    var hi = air.slice().sort(function(a, b){ return b.altFt - a.altFt; })[0];
-    steps.push({ k: "Highest", t: hi.label + " is the highest thing flying near you: " + fmt(hi.altFt) + " ft, " + (hi.altFt * 0.0003048).toFixed(1) + " km straight up.",
-      go: function(){ select({ kind: "ac", id: hi.hex }, { fly: true }); }, ms: 7500 });
-    var fast = air.slice().sort(function(a, b){ return b.gs - a.gs; })[0];
-    if (fast && fast !== hi) steps.push({ k: "Fastest", t: fast.label + " is doing " + fmt(fast.gs) + " knots over the ground — " + fmt(fast.gs * 1.852) + " km/h.",
-      go: function(){ select({ kind: "ac", id: fast.hex }, { fly: true }); }, ms: 7000 });
-    var rt = routes(), far = null, farD = 0;
-    air.forEach(function(a){
-      var r = rt[a.call];
-      if (r && r.from && r.to && isFinite(r.from.lat) && isFinite(r.to.lat)){
-        var d = distKm(r.from.lat, r.from.lon, r.to.lat, r.to.lon);
-        if (d > farD){ farD = d; far = { a: a, r: r }; }
-      }
-    });
-    if (far) steps.push({ k: "Longest journey", t: far.a.label + " is flying " + (far.r.from.city || far.r.from.code) + " → " + (far.r.to.city || far.r.to.code) + ": " + fmt(farD) + " km, over your head.",
-      go: function(){
-        select({ kind: "ac", id: far.a.hex }, { fly: false });
-        var mid = toLL(slerp(xyz(far.r.from.lat, far.r.from.lon), xyz(far.r.to.lat, far.r.to.lon), 0.5));
-        flyTo(mid, clamp(farD / 4200, 0.9, 3), 3400);
-      }, ms: 9000 });
-  }
-  if (S.iss && !S.iss.static) steps.push({ k: "Low orbit", t: "The International Space Station: " + fmt(S.iss.km) + " km up, " + fmt(S.iss.kmh) + " km/h. " +
-      (S.nextPass ? "It next passes over you at " + pad(S.nextPass.start.getHours()) + ":" + pad(S.nextPass.start.getMinutes()) + "." : "Seven people live there."),
-    go: function(){ select({ kind: "sat", id: S.iss.id }, { fly: true, alt: 0.6 }); }, ms: 10000 });
-  var others = S.sats.filter(function(o){ return o !== S.iss; }).length;
-  if (others > 10) steps.push({ k: "The swarm", t: others + " satellites bright enough to see with your own eyes, every one of them where it actually is.",
-    go: function(){ deselect(); flyTo({ lat: h.lat, lng: h.lng }, 4.2, 3000); setTimeout(function(){ if (S.tour) setAutoRotate(true); }, 3100); }, ms: 8000 });
-  var q = S.quakes[0];
-  if (q) steps.push({ k: "Underground", t: "The strongest shake in the last day: M" + q.mag.toFixed(1) + ", " + q.place + (q.time ? ", " + ago(q.time) : "") + ".",
-    go: function(){ select({ kind: "quake", id: q.id }, { fly: true }); }, ms: 7500 });
-  var dawn = { lat: 0, lng: wrapLng(sun.lng - 90) };
-  steps.push({ k: "Sunrise", t: "It is sunrise right here, right now. The line sweeps west at 1,670 km/h at the equator — it never stops.",
-    go: function(){ deselect(); flyTo(dawn, 1.4, 3400); }, ms: 8000 });
-  steps.push({ k: "Home", t: "Back where you started. The loop runs until you touch something.",
-    go: function(){ select({ kind: "home" }, { fly: true, alt: 0.9 }); }, ms: 6500 });
-  return steps;
-}
-function startTour(){
-  if (!S.globe) return;
-  stopTour();
-  S.tour = { steps: tourSteps(), i: -1, timer: 0 };
-  $("geTourBtn").classList.add("on");
-  $("geTourBtn").textContent = "■ Stop";
-  SND.blip();
-  tourNext();
-}
+function startTour(){ startWorld(); }
 function tourNext(){
   var T = S.tour; if (!T) return;
   T.i = (T.i + 1) % T.steps.length;
-  if (T.i === 0 && T.steps._built) T.steps = T.world ? worldSteps() : tourSteps();      /* fresh data each lap */
+  if (T.i === 0 && T.steps._built) T.steps = worldSteps();      /* fresh data each lap */
   T.steps._built = true;
   var s = T.steps[T.i];
   setAutoRotate(false);
@@ -1975,10 +1955,12 @@ function stopTour(){
   S.tour = null;
   $("geTourBtn").classList.remove("on");
   $("geTourBtn").textContent = "▶ Tour";
-  $("geWorldBtn").classList.remove("on");
   S.root.classList.remove("touring-world");
   $("geDots").innerHTML = "";
   paintTimeline();
+  S.dirtyArcs = true; S.gCandAt = 0;
+  renderDossier(true);            /* the card was hidden during the tour; show what's locked now */
+  if (S.open && !S.party) caption("Paused", "Tour stopped — the planet's yours. Press T to start it again.");
   if (wasWorld) paintParticles();
 }
 
@@ -2207,7 +2189,7 @@ function loadWorld(){
     applyFilter();
     var counts = {};
     events.forEach(function(e){ counts[e.kind] = (counts[e.kind] || 0) + 1; });
-    if (!events.length && !S.quakes.length) throw new Error("no feeds answered");
+    if (!events.length && !S.quakes.length){ S.world.at = Date.now(); throw new Error("no feeds answered"); }
     var bits = [];
     if (counts.storm) bits.push(counts.storm + " storm" + (counts.storm > 1 ? "s" : ""));
     if (fires.length) bits.push(fires.length + " fires");
@@ -2264,7 +2246,9 @@ function worldSteps(){
   var mid = { lat: 28, lng: wrapLng(sun.lng + 180) };
   steps.push({ k: "Midnight", t: "And it's midnight right here, right now. Every light on this side of the line is someone still up.",
     go: function(){ deselect(); flyTo(mid, 1.3, 3400); } });
-  steps.push({ k: "Home", t: "That was the last 24 hours. Back to you — press W to go round again.",
+  steps.push({ k: "Sunrise", t: "And it's sunrise right here, right now. The line sweeps west at 1,670 km/h at the equator and never stops.",
+    go: function(){ deselect(); flyTo({ lat: 0, lng: wrapLng(sun.lng - 90) }, 1.4, 3400); }, ms: 8000 });
+  steps.push({ k: "Home", t: "That was the last 24 hours. And this is you — press T to go round again.",
     go: function(){ select({ kind: "home" }, { fly: true, alt: 1.1 }); }, ms: 6500 });
   steps.forEach(function(s){
     if (!s.ms) s.ms = clamp(4800 + s.t.length * 32, 7000, 12500);
@@ -2280,8 +2264,11 @@ function startWorld(){
   if (!S.world.at){ caption("24 h", "Still gathering the day's events — one moment.", true); loadWorld().then(startWorld, function(){}); return; }
   stopTour();
   S.tour = { steps: worldSteps(), i: -1, timer: 0, world: true };
-  $("geWorldBtn").classList.add("on");
+  $("geTourBtn").classList.add("on");
+  $("geTourBtn").textContent = "■ Stop";
+  /* cinematic: panels and the lock card step aside, nearby planes hide */
   S.root.classList.add("touring-world");
+  S.dirtyArcs = true; S.gCandAt = 0;
   paintParticles();
   SND.blip();
   tourNext();
@@ -2321,8 +2308,7 @@ function setMode(m){
     thermal: "Thermal — land, day side and cities run hot." }[m]);
 }
 function act(a){
-  if (a === "tour") return S.tour && !S.tour.world ? stopTour() : startTour();
-  if (a === "world") return S.tour && S.tour.world ? stopTour() : startWorld();
+  if (a === "tour" || a === "world") return S.tour ? stopTour() : startWorld();
   if (a === "home"){ stopTour(); return select({ kind: "home" }, { fly: true }); }
   if (a === "space"){ stopTour(); deselect(); var h = home(); flyTo({ lat: h.lat, lng: h.lng }, 3.2); setTimeout(function(){ setAutoRotate(true); }, 2500); return; }
   if (a === "sound"){ SND.setOn(!SND.isOn()); SND.init(); if (SND.isOn()){ SND.startDrone(); SND.blip(); } else SND.stopDrone(); paintSoundButton(); return; }
@@ -2425,6 +2411,7 @@ function frame(now){
   /* one read of the camera per frame; everything below shares it */
   var pov = S.pov = G.pointOfView(), alt = pov.altitude;
   adaptResolution(now);
+  frameView(now);
   if (S.U){
     var rows = 160 * Math.pow(2, Math.round(Math.log(clamp(2.4 / alt, 1, 16)) / Math.LN2));
     if (rows !== S.U.uRows.value) S.U.uRows.value = rows;
@@ -2467,8 +2454,7 @@ function frame(now){
     keepRingShader();
     /* screensaver: leave it alone for 45 s and it starts showing off */
     if (!S.tour && !S.booting && !S.fly && Date.now() - S.lastInput > 45000 && $("geHelp").hidden){
-      S.saver = !S.saver;
-      if (S.saver && S.world.events.length >= 4) startWorld(); else startTour();
+      startWorld();
     }
   }
   if (S.dirtyArcs) updateArcs();
@@ -2549,6 +2535,7 @@ window.GODSEYE = {
   open: open, close: close,
   toggle: function(){ S.open ? close() : open(); },
   isOpen: function(){ return S.open; },
+  frame: function(){ return S.frameCur ? { x: Math.round(S.frameCur.x), y: Math.round(S.frameCur.y) } : null; },
   stats: function(){ return { fps: S.fps, dpr: S.dpr, lite: !!LITE, sats: S.sats.length, aircraft: S.aircraft.length,
     global: S.G ? S.G.n : 0, globalTags: S.gCand.length,
     events: S.world.events.length, fires: S.world.fires || 0, paths: S.globe ? S.globe.pathsData().map(function(p){ return p.pts.length; }) : [], kp: S.world.kp, tour: S.tour ? (S.tour.world ? "world" : "local") + ":" + S.tour.i : null }; },

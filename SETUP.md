@@ -434,10 +434,9 @@ Lives in `godseye/` and loads nothing heavy until it's opened.
 - **Seismic** — USGS, magnitude 2.5+, past 24 h.
 - **Click anything** to lock on: dossier, route progress, photo, follow-cam.
   Radar scope bottom-left; click a blip to lock it.
-- **Tour** (`T`) — the sky around you: highest, fastest, longest route, ISS,
-  biggest quake, where sunrise is right now. Loops.
-- **World tour** (`W`, or the **24h** button) — the last 24 hours on Earth, as a
-  ~2-minute flight with a timeline: the biggest quake, storms with their tracks
+- **Tour** (`T`, or the **Tour** button) — the last 24 hours on Earth, as a
+  ~2-minute flight with a timeline. While it plays the side panels and lock card
+  step aside and nearby planes hide, so it's just the planet and a caption: the biggest quake, storms with their tracks
   (NASA EONET), volcanoes, the largest wildfire (every fire shows as an orange
   dot), rocket launches in the last day and the next one due (Launch Library 2),
   today's news that has a place on the map and the most-read place on Wikipedia,
@@ -447,7 +446,10 @@ Lives in `godseye/` and loads nothing heavy until it's opened.
   is left out. The **24h** filter chip lists the same events.
 - **Aurora** — the auroral ovals glow on the night side, sized and brightened
   by the live Kp index.
-- Leave Godseye alone for 45 s and it alternates between the two tours.
+- Leave Godseye alone for 45 s and the tour starts by itself. Touch anything to
+  stop it.
+- Whatever the camera is aimed at is framed in the part of the screen the
+  panels and cards leave clear (above the lock card on a phone).
 - `Space`/`N` next target · `H` home · `O` orbit · `F` follow · `M` sound
   (synthesised, remembered) · `?` help · `Esc`/`G` exit. The ⎘ button copies a
   link to the exact target (`#godseye/ac:<hex>`).
