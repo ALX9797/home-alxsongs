@@ -805,6 +805,12 @@ kbd{
 .olwen-fact h4{margin:8px 0;font-size:17px;line-height:1.3}
 .olwen-fact p{margin:7px 0}
 .olwen-fact .olwen-result{color:var(--ink);font-weight:600}
+.olwen-more{margin-top:28px;border-top:1px solid var(--line-hot);padding-top:22px}
+.olwen-more summary h3{font-family:var(--display);font-size:22px;margin:0}
+.olwen-start{color:var(--ice)!important;font-family:var(--mono);font-size:18px!important}
+.olwen-viewing{border-top:1px solid var(--line);padding-top:14px;margin-top:18px}
+.olwen-viewing a{display:block;color:var(--ice);text-decoration:underline;text-underline-offset:3px;font-size:14px;margin:8px 0;overflow-wrap:anywhere}
+.olwen-viewing a:focus-visible{outline:2px solid var(--acid);outline-offset:4px}
 </style>
 </head>
 <body data-sensor="off" data-stars="on" class="booting">
@@ -918,14 +924,20 @@ kbd{
   </section>
 
   <section id="olwen" aria-labelledby="olwenHeading">
-    <details id="olwenDisclosure" class="olwen-disclosure" open>
-    <summary class="head">
+    <div class="head">
       <span class="n">O</span>
-      <h2 id="olwenHeading">Olwen’s notes</h2>
-      <span class="meta" id="olwenMeta">loading…</span>
-    </summary>
-    <p class="olwen-intro">Fixtures, scores and race classifications copied from sports-provider records. Times are UK time where supplied. These are dated snapshots, not a live feed.</p>
-    <div id="olwenNotes" class="olwen-notes" aria-live="polite"></div>
+      <h2 id="olwenHeading">Today with Olwen</h2>
+      <span class="meta" id="olwenTodayMeta">loading…</span>
+    </div>
+    <p class="olwen-intro">Today's followed matches, UK start times and where to watch. Researched each morning at 6am; schedules can change.</p>
+    <div id="olwenToday" class="olwen-notes" aria-live="polite"></div>
+    <details id="olwenDisclosure" class="olwen-disclosure olwen-more">
+      <summary class="head">
+        <h3>More fixtures &amp; results</h3>
+        <span class="meta" id="olwenMeta">loading…</span>
+      </summary>
+      <p class="olwen-intro">Upcoming fixtures, recent scores and F1 classifications from sports-provider records.</p>
+      <div id="olwenNotes" class="olwen-notes" aria-live="polite"></div>
     </details>
   </section>
 
