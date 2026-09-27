@@ -1,12 +1,12 @@
 {
   "version": 2,
-  "updated_at": "2026-09-26T12:36:31+01:00",
+  "updated_at": "2026-09-27T06:01:04+01:00",
   "items": [
     {
       "id": "3addcc24b497faf6",
       "topic": "Manchester United · Premier League",
       "summary": "",
-      "updated_at": "2026-09-26T12:36:29+01:00",
+      "updated_at": "2026-09-27T06:01:02+01:00",
       "status": "provider-data",
       "sources": [
         {
@@ -97,9 +97,9 @@
     },
     {
       "id": "359bde922ce0d9f2",
-      "topic": "LoL · 2026-09-25 to 2026-10-03 (UTC window)",
+      "topic": "LoL · 2026-09-26 to 2026-10-04 (UTC window)",
       "summary": "",
-      "updated_at": "2026-09-26T12:36:30+01:00",
+      "updated_at": "2026-09-27T06:01:03+01:00",
       "status": "provider-data",
       "sources": [
         {
@@ -108,17 +108,6 @@
         }
       ],
       "facts": [
-        {
-          "id": "1662460",
-          "title": "LYON vs Shopify Rebellion",
-          "when": "Sat 26 Sep 2026 21:00 BST",
-          "status": "not_started",
-          "detail": "",
-          "competition": "LCS",
-          "source_url": "https://api.pandascore.co/matches/1662460",
-          "starts_at": "2026-09-26T20:00:00Z",
-          "completed": false
-        },
         {
           "id": "1662461",
           "title": "Cloud9 vs Team Liquid",
@@ -132,7 +121,7 @@
         },
         {
           "id": "1662463",
-          "title": "Opponents not supplied",
+          "title": "LYON",
           "when": "Sat 03 Oct 2026 21:00 BST",
           "status": "not_started",
           "detail": "",
@@ -142,14 +131,25 @@
           "completed": false
         },
         {
-          "id": "1662459",
-          "title": "FlyQuest vs Shopify Rebellion",
-          "when": "Fri 25 Sep 2026 21:03 BST",
-          "status": "finished",
-          "detail": "FlyQuest 2 — 3 Shopify Rebellion",
+          "id": "1662466",
+          "title": "Opponents not supplied",
+          "when": "Sun 04 Oct 2026 21:00 BST",
+          "status": "not_started",
+          "detail": "",
           "competition": "LCS",
-          "source_url": "https://api.pandascore.co/matches/1662459",
-          "starts_at": "2026-09-25T20:03:50Z",
+          "source_url": "https://api.pandascore.co/matches/1662466",
+          "starts_at": "2026-10-04T20:00:00Z",
+          "completed": false
+        },
+        {
+          "id": "1662460",
+          "title": "LYON vs Shopify Rebellion",
+          "when": "Sat 26 Sep 2026 21:04 BST",
+          "status": "finished",
+          "detail": "LYON 3 — 1 Shopify Rebellion",
+          "competition": "LCS",
+          "source_url": "https://api.pandascore.co/matches/1662460",
+          "starts_at": "2026-09-26T20:04:58Z",
           "completed": true
         }
       ]
@@ -158,7 +158,7 @@
       "id": "385c7d7fbe7d8716",
       "topic": "Formula 1 · schedule and classification",
       "summary": "",
-      "updated_at": "2026-09-26T12:36:30+01:00",
+      "updated_at": "2026-09-27T06:01:03+01:00",
       "status": "provider-data",
       "sources": [
         {
@@ -168,21 +168,21 @@
       ],
       "facts": [
         {
-          "id": "next-2026-15",
-          "title": "Azerbaijan Grand Prix",
-          "when": "Sat 26 Sep 2026 12:00 BST",
+          "id": "next-2026-16",
+          "title": "Bahrain Grand Prix in Malaysia",
+          "when": "Sun 04 Oct 2026 08:00 BST",
           "status": "Next race in provider schedule",
-          "detail": "Baku City Circuit",
-          "competition": "Formula 1 · round 15",
+          "detail": "Sepang International Circuit",
+          "competition": "Formula 1 · round 16",
           "source_url": "https://api.jolpi.ca/ergast/f1/current/next.json"
         },
         {
-          "id": "last-2026-14",
-          "title": "Spanish Grand Prix",
-          "when": "2026-09-13",
+          "id": "last-2026-15",
+          "title": "Azerbaijan Grand Prix",
+          "when": "2026-09-26",
           "status": "Latest published race result · top five",
-          "detail": "1. Andrea Kimi Antonelli · Mercedes · 25 points · Finished\n2. Max Verstappen · Red Bull · 18 points · Finished\n3. Lando Norris · McLaren · 15 points · Finished\n4. Charles Leclerc · Ferrari · 12 points · Finished\n5. George Russell · Mercedes · 10 points · Finished",
-          "competition": "Formula 1 · round 14",
+          "detail": "1. George Russell · Mercedes · 25 points · Finished\n2. Max Verstappen · Red Bull · 18 points · Finished\n3. Isack Hadjar · Red Bull · 15 points · Finished\n4. Charles Leclerc · Ferrari · 12 points · Finished\n5. Andrea Kimi Antonelli · Mercedes · 10 points · Finished",
+          "competition": "Formula 1 · round 15",
           "source_url": "https://api.jolpi.ca/ergast/f1/current/last/results.json"
         }
       ]
@@ -191,7 +191,7 @@
       "id": "b08bc42d1737ca5e",
       "topic": "Wales men · international football",
       "summary": "",
-      "updated_at": "2026-09-26T12:36:31+01:00",
+      "updated_at": "2026-09-27T06:01:04+01:00",
       "status": "provider-data",
       "sources": [
         {
@@ -282,17 +282,62 @@
     }
   ],
   "today": {
-    "date": "2026-09-26",
-    "updated_at": "2026-09-26T12:30:05.544587+01:00",
+    "date": "2026-09-27",
+    "updated_at": "2026-09-27T06:00:48.314476+01:00",
     "timezone": "Europe/London",
     "items": [
       {
-        "id": "lol-1662460",
+        "id": "wales-401861070",
+        "group": "wales",
+        "title": "Denmark vs Wales",
+        "competition": "UEFA Nations League",
+        "starts_at": "2026-09-27T16:00Z",
+        "when": "Sun 27 Sep 2026 17:00 BST",
+        "status": "Scheduled",
+        "detail": "",
+        "viewing": [
+          {
+            "label": "BBC One",
+            "url": "https://www.live-footballontv.com/wales-on-tv.html",
+            "kind": "tv"
+          },
+          {
+            "label": "S4C",
+            "url": "https://www.live-footballontv.com/wales-on-tv.html",
+            "kind": "tv"
+          },
+          {
+            "label": "BBC iPlayer",
+            "url": "https://www.live-footballontv.com/wales-on-tv.html",
+            "kind": "tv"
+          },
+          {
+            "label": "S4C Online",
+            "url": "https://www.live-footballontv.com/wales-on-tv.html",
+            "kind": "tv"
+          },
+          {
+            "label": "BBC Sport Website",
+            "url": "https://www.live-footballontv.com/wales-on-tv.html",
+            "kind": "tv"
+          }
+        ],
+        "viewing_status": "listed",
+        "sources": [
+          {
+            "title": "ESPN fixtures and results",
+            "url": "https://www.espn.com/soccer/team/fixtures/_/id/578/wales"
+          }
+        ],
+        "updated_at": "2026-09-27T06:00:26.377012+01:00"
+      },
+      {
+        "id": "lol-1662461",
         "group": "lol",
-        "title": "LYON vs Shopify Rebellion",
+        "title": "Cloud9 vs Team Liquid",
         "competition": "LCS",
-        "starts_at": "2026-09-26T20:00:00Z",
-        "when": "Sat 26 Sep 2026 21:00 BST",
+        "starts_at": "2026-09-27T20:00:00Z",
+        "when": "Sun 27 Sep 2026 21:00 BST",
         "status": "not_started",
         "detail": "",
         "viewing": [
@@ -309,7 +354,7 @@
             "url": "https://developers.pandascore.co/"
           }
         ],
-        "updated_at": "2026-09-26T12:30:05.544470+01:00"
+        "updated_at": "2026-09-27T06:00:48.314397+01:00"
       }
     ],
     "coverage": [
@@ -321,7 +366,7 @@
       {
         "group": "wales",
         "status": "checked",
-        "matches": 0
+        "matches": 1
       },
       {
         "group": "lol",
