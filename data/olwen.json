@@ -1,12 +1,12 @@
 {
   "version": 2,
-  "updated_at": "2026-09-30T06:01:16+01:00",
+  "updated_at": "2026-10-01T06:01:08+01:00",
   "items": [
     {
       "id": "3addcc24b497faf6",
       "topic": "Manchester United · Premier League",
       "summary": "",
-      "updated_at": "2026-09-30T06:01:14+01:00",
+      "updated_at": "2026-10-01T06:01:06+01:00",
       "status": "provider-data",
       "sources": [
         {
@@ -97,9 +97,9 @@
     },
     {
       "id": "359bde922ce0d9f2",
-      "topic": "LoL · 2026-09-29 to 2026-10-07 (UTC window)",
+      "topic": "LoL · 2026-09-30 to 2026-10-08 (UTC window)",
       "summary": "",
-      "updated_at": "2026-09-30T06:01:15+01:00",
+      "updated_at": "2026-10-01T06:01:07+01:00",
       "status": "provider-data",
       "sources": [
         {
@@ -162,6 +162,17 @@
           "source_url": "https://api.pandascore.co/matches/1691708",
           "starts_at": "2026-10-07T20:00:00Z",
           "completed": false
+        },
+        {
+          "id": "1691711",
+          "title": "Opponents not supplied",
+          "when": "Thu 08 Oct 2026 21:00 BST",
+          "status": "not_started",
+          "detail": "",
+          "competition": "LCS",
+          "source_url": "https://api.pandascore.co/matches/1691711",
+          "starts_at": "2026-10-08T20:00:00Z",
+          "completed": false
         }
       ]
     },
@@ -169,7 +180,7 @@
       "id": "385c7d7fbe7d8716",
       "topic": "Formula 1 · schedule and classification",
       "summary": "",
-      "updated_at": "2026-09-30T06:01:15+01:00",
+      "updated_at": "2026-10-01T06:01:07+01:00",
       "status": "provider-data",
       "sources": [
         {
@@ -202,7 +213,7 @@
       "id": "b08bc42d1737ca5e",
       "topic": "Wales men · international football",
       "summary": "",
-      "updated_at": "2026-09-30T06:01:16+01:00",
+      "updated_at": "2026-10-01T06:01:07+01:00",
       "status": "provider-data",
       "sources": [
         {
@@ -293,10 +304,56 @@
     }
   ],
   "today": {
-    "date": "2026-09-30",
-    "updated_at": "2026-09-30T06:00:19.108391+01:00",
+    "date": "2026-10-01",
+    "updated_at": "2026-10-01T06:00:29.052312+01:00",
     "timezone": "Europe/London",
-    "items": [],
+    "items": [
+      {
+        "id": "wales-401861100",
+        "group": "wales",
+        "title": "Wales vs Norway",
+        "competition": "UEFA Nations League",
+        "starts_at": "2026-10-01T18:45Z",
+        "when": "Thu 01 Oct 2026 19:45 BST",
+        "status": "Scheduled",
+        "detail": "",
+        "viewing": [
+          {
+            "label": "BBC Two",
+            "url": "https://www.live-footballontv.com/wales-on-tv.html",
+            "kind": "tv"
+          },
+          {
+            "label": "S4C",
+            "url": "https://www.live-footballontv.com/wales-on-tv.html",
+            "kind": "tv"
+          },
+          {
+            "label": "BBC iPlayer",
+            "url": "https://www.live-footballontv.com/wales-on-tv.html",
+            "kind": "tv"
+          },
+          {
+            "label": "S4C Online",
+            "url": "https://www.live-footballontv.com/wales-on-tv.html",
+            "kind": "tv"
+          },
+          {
+            "label": "BBC Sport Website",
+            "url": "https://www.live-footballontv.com/wales-on-tv.html",
+            "kind": "tv"
+          }
+        ],
+        "viewing_status": "listed",
+        "sources": [
+          {
+            "title": "ESPN fixtures and results",
+            "url": "https://www.espn.com/soccer/team/fixtures/_/id/578/wales"
+          }
+        ],
+        "updated_at": "2026-10-01T06:00:28.425791+01:00"
+      }
+    ],
     "coverage": [
       {
         "group": "manutd",
@@ -306,7 +363,7 @@
       {
         "group": "wales",
         "status": "checked",
-        "matches": 0
+        "matches": 1
       },
       {
         "group": "lol",
