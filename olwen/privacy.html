@@ -1,0 +1,63 @@
+<!doctype html>
+<html lang="en-GB">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="How Olwen accesses, uses, stores and shares information for its private assistant and Google Calendar connection.">
+  <meta name="theme-color" content="#080b11">
+  <meta name="referrer" content="strict-origin-when-cross-origin">
+  <title>Privacy policy — Olwen</title>
+  <link rel="canonical" href="https://home.alxsongs.com/olwen/privacy.html">
+  <link rel="stylesheet" href="site.css">
+</head>
+<body>
+  <a class="skip" href="#main">Skip to content</a>
+  <div class="wrap">
+    <header>
+      <a class="brand" href="./" aria-label="Olwen home"><span class="mark" aria-hidden="true"></span>OLWEN</a>
+      <nav aria-label="Main navigation"><a href="./">About</a><a href="privacy.html" aria-current="page">Privacy</a><a href="terms.html">Terms</a></nav>
+    </header>
+    <main id="main" class="prose">
+      <p class="eyebrow">Your information</p>
+      <h1>Privacy policy</h1>
+      <p class="date">Effective 1 October 2026</p>
+      <p>Olwen is a private personal assistant operated by Alex (alxsongs). This policy covers its assistant features, Google Calendar connection and these public information pages. The assistant is intended for its authorised owner; there is no public registration.</p>
+
+      <h2>Information Olwen accesses</h2>
+      <ul>
+        <li><strong>Google Calendar:</strong> calendar names, identifiers and settings, and event information returned for requested calendars. This can include titles, descriptions, times, time zones, locations, participants, availability, recurrence and event links.</li>
+        <li><strong>Google authorisation:</strong> access and refresh tokens that let Olwen use the permissions granted by the owner. Google handles sign-in; Olwen does not receive the Google password.</li>
+        <li><strong>Assistant content:</strong> messages, requested notes, tool results and reminder records needed to answer questions or perform the owner's instructions.</li>
+      </ul>
+
+      <h2>How information is used</h2>
+      <p>Calendar access supports agenda questions, availability checks, requested event changes and reminders. The connection requests permission to read calendars and to manage events; Google's event permission includes creating, changing and deleting events. Changes are made through the assistant in response to the owner's instructions. The background reminder service only reads Google events.</p>
+      <p>Google Calendar information is used for these personal-assistant functions. It is not sold, used for advertising or used to train general-purpose AI models. Olwen's use of Google API data, including any transfer to another service, follows the <a href="https://developers.google.com/terms/api-services-user-data-policy">Google API Services User Data Policy</a> and its Limited Use requirements.</p>
+
+      <h2>Processing and storage</h2>
+      <p>The configured assistant processes conversations with locally hosted models on the owner's computers. Calendar details used in a conversation can be stored in chat history or tool records. Upcoming-event details are also stored locally as reminders. Notes are stored in the owner's notes app.</p>
+      <p>Authorisation tokens and application records are held on the owner's server with file and account access controls. The assistant interface uses a private network and authenticated access. Local application records and backups may remain until the owner removes them; there is no automatic deletion period covering all records.</p>
+
+      <h2>Services that receive information</h2>
+      <ul>
+        <li><strong>Google</strong> receives authentication requests, calendar queries and requested event changes.</li>
+        <li><strong>Phone notifications:</strong> the configured ntfy notification service receives reminder text, which can include the event title, time, location and link, to deliver it to the owner's devices. Notification services and devices may retain delivered messages under their own settings.</li>
+        <li><strong>Web research:</strong> search providers and visited websites receive search queries and page requests. Personal information included in a search request is sent to those services.</li>
+        <li><strong>Website hosting:</strong> these public information pages are hosted on GitHub Pages. GitHub may process normal connection information such as IP addresses and browser details under its <a href="https://docs.github.com/en/site-policy/privacy-policies/github-general-privacy-statement">privacy statement</a>. These pages contain no calendar records, Google tokens, analytics scripts or advertising trackers.</li>
+      </ul>
+      <p>Google Calendar data is not published to this website. Access to private assistant records is limited to the owner and people the owner authorises to support the installation.</p>
+
+      <h2>Disconnecting and deleting information</h2>
+      <p>The owner can withdraw access in <a href="https://myaccount.google.com/connections">Google Account connections</a> by removing Olwen's connection. The local Google Calendar connector and reminder sync can also be disabled. Disconnecting stops future access; it does not automatically erase information already saved locally or notifications already delivered.</p>
+      <p>To remove saved information, the owner can delete the relevant conversations, notes and reminders and remove local authorisation tokens. Removing all retained copies may also require deleting backups and notification history. Deleting a local reminder or chat does not delete the original Google Calendar event; event deletion is a separate action.</p>
+
+      <h2>Contact and changes</h2>
+      <p>For privacy questions or deletion assistance, contact Alex using the user support email shown on Olwen's Google authorisation screen. This policy will be updated if the installation's data practices change. A new use of Google data will be disclosed and any necessary permission obtained before that use begins.</p>
+    </main>
+    <footer>
+      <p>Olwen · a personal project by Alex</p>
+      <nav aria-label="Footer navigation"><a href="./">Olwen home</a><a href="terms.html">Terms of use</a><a href="/">home.alxsongs</a></nav>
+    </footer>
+  </div>
+</body>
+</html>
