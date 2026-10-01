@@ -1,12 +1,12 @@
 {
   "version": 2,
-  "updated_at": "2026-10-01T06:01:08+01:00",
+  "updated_at": "2026-10-01T12:38:35+01:00",
   "items": [
     {
       "id": "3addcc24b497faf6",
-      "topic": "Manchester United · Premier League",
+      "topic": "Manchester United · all competitions",
       "summary": "",
-      "updated_at": "2026-10-01T06:01:06+01:00",
+      "updated_at": "2026-10-01T12:38:35+01:00",
       "status": "provider-data",
       "sources": [
         {
@@ -29,6 +29,19 @@
           "outcome": null
         },
         {
+          "id": "401915412",
+          "title": "Atlético Madrid vs Manchester United",
+          "when": "Tue 13 Oct 2026 20:00 BST",
+          "status": "Scheduled",
+          "detail": "",
+          "competition": "UEFA Champions League",
+          "source_url": "https://www.espn.com/soccer/match/_/gameId/401915412",
+          "starts_at": "2026-10-13T19:00Z",
+          "completed": false,
+          "state": "pre",
+          "outcome": null
+        },
+        {
           "id": "401879260",
           "title": "Leeds United vs Manchester United",
           "when": "Sun 18 Oct 2026 14:00 BST",
@@ -37,19 +50,6 @@
           "competition": "English Premier League",
           "source_url": "https://www.espn.com/soccer/match/_/gameId/401879260",
           "starts_at": "2026-10-18T13:00Z",
-          "completed": false,
-          "state": "pre",
-          "outcome": null
-        },
-        {
-          "id": "401879252",
-          "title": "Manchester United vs AFC Bournemouth",
-          "when": "Sun 25 Oct 2026 14:00 GMT",
-          "status": "Scheduled",
-          "detail": "",
-          "competition": "English Premier League",
-          "source_url": "https://www.espn.com/soccer/match/_/gameId/401879252",
-          "starts_at": "2026-10-25T14:00Z",
           "completed": false,
           "state": "pre",
           "outcome": null
@@ -68,6 +68,19 @@
           "outcome": "draw"
         },
         {
+          "id": "401914261",
+          "title": "Manchester United vs Brighton & Hove Albion",
+          "when": "Wed 16 Sep 2026 20:00 BST",
+          "status": "Full Time",
+          "detail": "Manchester United 2 — 3 Brighton & Hove Albion",
+          "competition": "English Carabao Cup",
+          "source_url": "https://www.espn.com/soccer/match/_/gameId/401914261",
+          "starts_at": "2026-09-16T19:00Z",
+          "completed": true,
+          "state": "post",
+          "outcome": "loss"
+        },
+        {
           "id": "401879278",
           "title": "Manchester United vs Manchester City",
           "when": "Sun 13 Sep 2026 16:30 BST",
@@ -79,19 +92,6 @@
           "completed": true,
           "state": "post",
           "outcome": "loss"
-        },
-        {
-          "id": "401879291",
-          "title": "Everton vs Manchester United",
-          "when": "Sun 06 Sep 2026 14:00 BST",
-          "status": "Full Time",
-          "detail": "Everton 2 — 2 Manchester United",
-          "competition": "English Premier League",
-          "source_url": "https://www.espn.com/soccer/match/_/gameId/401879291",
-          "starts_at": "2026-09-06T13:00Z",
-          "completed": true,
-          "state": "post",
-          "outcome": "draw"
         }
       ]
     },
@@ -99,7 +99,7 @@
       "id": "359bde922ce0d9f2",
       "topic": "LoL · 2026-09-30 to 2026-10-08 (UTC window)",
       "summary": "",
-      "updated_at": "2026-10-01T06:01:07+01:00",
+      "updated_at": "2026-10-01T12:38:35+01:00",
       "status": "provider-data",
       "sources": [
         {
@@ -180,7 +180,7 @@
       "id": "385c7d7fbe7d8716",
       "topic": "Formula 1 · schedule and classification",
       "summary": "",
-      "updated_at": "2026-10-01T06:01:07+01:00",
+      "updated_at": "2026-10-01T12:38:35+01:00",
       "status": "provider-data",
       "sources": [
         {
@@ -213,7 +213,7 @@
       "id": "b08bc42d1737ca5e",
       "topic": "Wales men · international football",
       "summary": "",
-      "updated_at": "2026-10-01T06:01:07+01:00",
+      "updated_at": "2026-10-01T12:38:35+01:00",
       "status": "provider-data",
       "sources": [
         {
@@ -305,7 +305,7 @@
   ],
   "today": {
     "date": "2026-10-01",
-    "updated_at": "2026-10-01T06:00:29.052312+01:00",
+    "updated_at": "2026-10-01T12:38:35+01:00",
     "timezone": "Europe/London",
     "items": [
       {
@@ -351,7 +351,7 @@
             "url": "https://www.espn.com/soccer/team/fixtures/_/id/578/wales"
           }
         ],
-        "updated_at": "2026-10-01T06:00:28.425791+01:00"
+        "updated_at": "2026-10-01T12:38:35+01:00"
       }
     ],
     "coverage": [
@@ -361,14 +361,19 @@
         "matches": 0
       },
       {
-        "group": "wales",
-        "status": "checked",
-        "matches": 1
-      },
-      {
         "group": "lol",
         "status": "checked",
         "matches": 0
+      },
+      {
+        "group": "f1",
+        "status": "checked",
+        "matches": 0
+      },
+      {
+        "group": "wales",
+        "status": "checked",
+        "matches": 1
       }
     ]
   }
