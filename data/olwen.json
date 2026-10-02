@@ -1,12 +1,12 @@
 {
   "version": 2,
-  "updated_at": "2026-10-01T12:38:35+01:00",
+  "updated_at": "2026-10-02T06:00:00+01:00",
   "items": [
     {
       "id": "3addcc24b497faf6",
       "topic": "Manchester United · all competitions",
       "summary": "",
-      "updated_at": "2026-10-01T12:38:35+01:00",
+      "updated_at": "2026-10-02T06:00:00+01:00",
       "status": "provider-data",
       "sources": [
         {
@@ -97,9 +97,9 @@
     },
     {
       "id": "359bde922ce0d9f2",
-      "topic": "LoL · 2026-09-30 to 2026-10-08 (UTC window)",
+      "topic": "LoL · 2026-10-01 to 2026-10-09 (UTC window)",
       "summary": "",
-      "updated_at": "2026-10-01T12:38:35+01:00",
+      "updated_at": "2026-10-02T06:00:00+01:00",
       "status": "provider-data",
       "sources": [
         {
@@ -173,6 +173,17 @@
           "source_url": "https://api.pandascore.co/matches/1691711",
           "starts_at": "2026-10-08T20:00:00Z",
           "completed": false
+        },
+        {
+          "id": "1691732",
+          "title": "Opponents not supplied",
+          "when": "Fri 09 Oct 2026 21:00 BST",
+          "status": "not_started",
+          "detail": "",
+          "competition": "LCS",
+          "source_url": "https://api.pandascore.co/matches/1691732",
+          "starts_at": "2026-10-09T20:00:00Z",
+          "completed": false
         }
       ]
     },
@@ -180,7 +191,7 @@
       "id": "385c7d7fbe7d8716",
       "topic": "Formula 1 · schedule and classification",
       "summary": "",
-      "updated_at": "2026-10-01T12:38:35+01:00",
+      "updated_at": "2026-10-02T06:00:00+01:00",
       "status": "provider-data",
       "sources": [
         {
@@ -213,7 +224,7 @@
       "id": "b08bc42d1737ca5e",
       "topic": "Wales men · international football",
       "summary": "",
-      "updated_at": "2026-10-01T12:38:35+01:00",
+      "updated_at": "2026-10-02T06:00:00+01:00",
       "status": "provider-data",
       "sources": [
         {
@@ -222,19 +233,6 @@
         }
       ],
       "facts": [
-        {
-          "id": "401861100",
-          "title": "Wales vs Norway",
-          "when": "Thu 01 Oct 2026 19:45 BST",
-          "status": "Scheduled",
-          "detail": "",
-          "competition": "UEFA Nations League",
-          "source_url": "https://www.espn.com/soccer/match/_/gameId/401861100",
-          "starts_at": "2026-10-01T18:45Z",
-          "completed": false,
-          "state": "pre",
-          "outcome": null
-        },
         {
           "id": "401861125",
           "title": "Wales vs Denmark",
@@ -262,6 +260,32 @@
           "outcome": null
         },
         {
+          "id": "401861189",
+          "title": "Wales vs Portugal",
+          "when": "Tue 17 Nov 2026 19:45 GMT",
+          "status": "Scheduled",
+          "detail": "",
+          "competition": "UEFA Nations League",
+          "source_url": "https://www.espn.com/soccer/match/_/gameId/401861189",
+          "starts_at": "2026-11-17T19:45Z",
+          "completed": false,
+          "state": "pre",
+          "outcome": null
+        },
+        {
+          "id": "401861100",
+          "title": "Wales vs Norway",
+          "when": "Thu 01 Oct 2026 19:45 BST",
+          "status": "Full Time",
+          "detail": "Wales 2 — 1 Norway",
+          "competition": "UEFA Nations League",
+          "source_url": "https://www.espn.com/soccer/match/_/gameId/401861100",
+          "starts_at": "2026-10-01T18:45Z",
+          "completed": true,
+          "state": "post",
+          "outcome": "win"
+        },
+        {
           "id": "401861070",
           "title": "Denmark vs Wales",
           "when": "Sun 27 Sep 2026 17:00 BST",
@@ -286,74 +310,15 @@
           "completed": true,
           "state": "post",
           "outcome": "loss"
-        },
-        {
-          "id": "401869206",
-          "title": "Romania vs Wales",
-          "when": "Sat 06 Jun 2026 18:45 BST",
-          "status": "Full Time",
-          "detail": "Romania 2 — 1 Wales",
-          "competition": "International Friendly",
-          "source_url": "https://www.espn.com/soccer/match/_/gameId/401869206",
-          "starts_at": "2026-06-06T17:45Z",
-          "completed": true,
-          "state": "post",
-          "outcome": "loss"
         }
       ]
     }
   ],
   "today": {
-    "date": "2026-10-01",
-    "updated_at": "2026-10-01T12:38:35+01:00",
+    "date": "2026-10-02",
+    "updated_at": "2026-10-02T06:00:00+01:00",
     "timezone": "Europe/London",
-    "items": [
-      {
-        "id": "wales-401861100",
-        "group": "wales",
-        "title": "Wales vs Norway",
-        "competition": "UEFA Nations League",
-        "starts_at": "2026-10-01T18:45Z",
-        "when": "Thu 01 Oct 2026 19:45 BST",
-        "status": "Scheduled",
-        "detail": "",
-        "viewing": [
-          {
-            "label": "BBC Two",
-            "url": "https://www.live-footballontv.com/wales-on-tv.html",
-            "kind": "tv"
-          },
-          {
-            "label": "S4C",
-            "url": "https://www.live-footballontv.com/wales-on-tv.html",
-            "kind": "tv"
-          },
-          {
-            "label": "BBC iPlayer",
-            "url": "https://www.live-footballontv.com/wales-on-tv.html",
-            "kind": "tv"
-          },
-          {
-            "label": "S4C Online",
-            "url": "https://www.live-footballontv.com/wales-on-tv.html",
-            "kind": "tv"
-          },
-          {
-            "label": "BBC Sport Website",
-            "url": "https://www.live-footballontv.com/wales-on-tv.html",
-            "kind": "tv"
-          }
-        ],
-        "viewing_status": "listed",
-        "sources": [
-          {
-            "title": "ESPN fixtures and results",
-            "url": "https://www.espn.com/soccer/team/fixtures/_/id/578/wales"
-          }
-        ],
-        "updated_at": "2026-10-01T12:38:35+01:00"
-      }
-    ],
+    "items": [],
     "coverage": [
       {
         "group": "manutd",
@@ -373,7 +338,7 @@
       {
         "group": "wales",
         "status": "checked",
-        "matches": 1
+        "matches": 0
       }
     ]
   }
