@@ -1,12 +1,12 @@
 {
   "version": 2,
-  "updated_at": "2026-10-02T06:00:00+01:00",
+  "updated_at": "2026-10-03T06:00:00+01:00",
   "items": [
     {
       "id": "3addcc24b497faf6",
       "topic": "Manchester United · all competitions",
       "summary": "",
-      "updated_at": "2026-10-02T06:00:00+01:00",
+      "updated_at": "2026-10-03T06:00:00+01:00",
       "status": "provider-data",
       "sources": [
         {
@@ -97,9 +97,9 @@
     },
     {
       "id": "359bde922ce0d9f2",
-      "topic": "LoL · 2026-10-01 to 2026-10-09 (UTC window)",
+      "topic": "LoL · 2026-10-02 to 2026-10-10 (UTC window)",
       "summary": "",
-      "updated_at": "2026-10-02T06:00:00+01:00",
+      "updated_at": "2026-10-03T06:00:00+01:00",
       "status": "provider-data",
       "sources": [
         {
@@ -184,6 +184,17 @@
           "source_url": "https://api.pandascore.co/matches/1691732",
           "starts_at": "2026-10-09T20:00:00Z",
           "completed": false
+        },
+        {
+          "id": "1691731",
+          "title": "Opponents not supplied",
+          "when": "Sat 10 Oct 2026 21:00 BST",
+          "status": "not_started",
+          "detail": "",
+          "competition": "LCS",
+          "source_url": "https://api.pandascore.co/matches/1691731",
+          "starts_at": "2026-10-10T20:00:00Z",
+          "completed": false
         }
       ]
     },
@@ -191,7 +202,7 @@
       "id": "385c7d7fbe7d8716",
       "topic": "Formula 1 · schedule and classification",
       "summary": "",
-      "updated_at": "2026-10-02T06:00:00+01:00",
+      "updated_at": "2026-10-03T06:00:00+01:00",
       "status": "provider-data",
       "sources": [
         {
@@ -224,7 +235,7 @@
       "id": "b08bc42d1737ca5e",
       "topic": "Wales men · international football",
       "summary": "",
-      "updated_at": "2026-10-02T06:00:00+01:00",
+      "updated_at": "2026-10-03T06:00:00+01:00",
       "status": "provider-data",
       "sources": [
         {
@@ -315,10 +326,36 @@
     }
   ],
   "today": {
-    "date": "2026-10-02",
-    "updated_at": "2026-10-02T06:00:00+01:00",
+    "date": "2026-10-03",
+    "updated_at": "2026-10-03T06:00:00+01:00",
     "timezone": "Europe/London",
-    "items": [],
+    "items": [
+      {
+        "id": "lol-1662463",
+        "group": "lol",
+        "title": "Cloud9 vs LYON",
+        "competition": "LCS",
+        "starts_at": "2026-10-03T20:00:00Z",
+        "when": "Sat 03 Oct 2026 21:00 BST",
+        "status": "not_started",
+        "detail": "",
+        "viewing": [
+          {
+            "label": "Official English stream (twitch.tv)",
+            "url": "https://www.twitch.tv/lcs",
+            "kind": "stream"
+          }
+        ],
+        "viewing_status": "listed",
+        "sources": [
+          {
+            "title": "PandaScore API records (requires access)",
+            "url": "https://developers.pandascore.co/"
+          }
+        ],
+        "updated_at": "2026-10-03T06:00:00+01:00"
+      }
+    ],
     "coverage": [
       {
         "group": "manutd",
@@ -328,7 +365,7 @@
       {
         "group": "lol",
         "status": "checked",
-        "matches": 0
+        "matches": 1
       },
       {
         "group": "f1",
