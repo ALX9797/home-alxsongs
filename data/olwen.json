@@ -1,12 +1,12 @@
 {
   "version": 2,
-  "updated_at": "2026-10-05T06:00:00+01:00",
+  "updated_at": "2026-10-06T06:00:00+01:00",
   "items": [
     {
       "id": "3addcc24b497faf6",
       "topic": "Manchester United · all competitions",
       "summary": "",
-      "updated_at": "2026-10-05T06:00:00+01:00",
+      "updated_at": "2026-10-06T06:00:00+01:00",
       "status": "provider-data",
       "sources": [
         {
@@ -97,9 +97,9 @@
     },
     {
       "id": "359bde922ce0d9f2",
-      "topic": "LoL · 2026-10-04 to 2026-10-12 (UTC window)",
+      "topic": "LoL · 2026-10-05 to 2026-10-13 (UTC window)",
       "summary": "",
-      "updated_at": "2026-10-05T06:00:00+01:00",
+      "updated_at": "2026-10-06T06:00:00+01:00",
       "status": "provider-data",
       "sources": [
         {
@@ -109,91 +109,80 @@
       ],
       "facts": [
         {
-          "id": "1691709",
-          "title": "Maryville University vs Zeu5 Esports",
-          "when": "Mon 05 Oct 2026 21:00 BST",
-          "status": "not_started",
-          "detail": "",
-          "competition": "LCS",
-          "source_url": "https://api.pandascore.co/matches/1691709",
-          "starts_at": "2026-10-05T20:00:00Z",
-          "completed": false
-        },
-        {
           "id": "1691710",
           "title": "Cupid Esports vs Fuego",
-          "when": "Tue 06 Oct 2026 21:00 BST",
+          "when": "Tue 06 Oct 2026 22:00 BST",
           "status": "not_started",
           "detail": "",
           "competition": "LCS",
           "source_url": "https://api.pandascore.co/matches/1691710",
-          "starts_at": "2026-10-06T20:00:00Z",
+          "starts_at": "2026-10-06T21:00:00Z",
           "completed": false
         },
         {
           "id": "1691708",
-          "title": "Disguised",
-          "when": "Wed 07 Oct 2026 21:00 BST",
+          "title": "Disguised vs Maryville University",
+          "when": "Wed 07 Oct 2026 22:00 BST",
           "status": "not_started",
           "detail": "",
           "competition": "LCS",
           "source_url": "https://api.pandascore.co/matches/1691708",
-          "starts_at": "2026-10-07T20:00:00Z",
+          "starts_at": "2026-10-07T21:00:00Z",
           "completed": false
         },
         {
           "id": "1691711",
           "title": "Opponents not supplied",
-          "when": "Thu 08 Oct 2026 21:00 BST",
+          "when": "Thu 08 Oct 2026 22:00 BST",
           "status": "not_started",
           "detail": "",
           "competition": "LCS",
           "source_url": "https://api.pandascore.co/matches/1691711",
-          "starts_at": "2026-10-08T20:00:00Z",
+          "starts_at": "2026-10-08T21:00:00Z",
           "completed": false
         },
         {
           "id": "1691732",
           "title": "Opponents not supplied",
-          "when": "Fri 09 Oct 2026 21:00 BST",
+          "when": "Fri 09 Oct 2026 22:00 BST",
           "status": "not_started",
           "detail": "",
           "competition": "LCS",
           "source_url": "https://api.pandascore.co/matches/1691732",
-          "starts_at": "2026-10-09T20:00:00Z",
+          "starts_at": "2026-10-09T21:00:00Z",
           "completed": false
         },
         {
           "id": "1691731",
           "title": "Opponents not supplied",
-          "when": "Sat 10 Oct 2026 21:00 BST",
+          "when": "Sat 10 Oct 2026 22:00 BST",
           "status": "not_started",
           "detail": "",
           "competition": "LCS",
           "source_url": "https://api.pandascore.co/matches/1691731",
-          "starts_at": "2026-10-10T20:00:00Z",
+          "starts_at": "2026-10-10T21:00:00Z",
           "completed": false
         },
         {
           "id": "1691728",
           "title": "Opponents not supplied",
-          "when": "Mon 12 Oct 2026 21:00 BST",
+          "when": "Tue 13 Oct 2026 00:00 BST",
           "status": "not_started",
           "detail": "",
           "competition": "LCS",
           "source_url": "https://api.pandascore.co/matches/1691728",
-          "starts_at": "2026-10-12T20:00:00Z",
+          "starts_at": "2026-10-12T23:00:00Z",
           "completed": false
         },
         {
-          "id": "1662466",
-          "title": "Team Liquid vs LYON",
-          "when": "Sun 04 Oct 2026 21:11 BST",
+          "id": "1691709",
+          "title": "Maryville University vs Zeu5 Esports",
+          "when": "Mon 05 Oct 2026 22:06 BST",
           "status": "finished",
-          "detail": "Team Liquid 3 — 1 LYON",
+          "detail": "Maryville University 3 — 1 Zeu5 Esports",
           "competition": "LCS",
-          "source_url": "https://api.pandascore.co/matches/1662466",
-          "starts_at": "2026-10-04T20:11:05Z",
+          "source_url": "https://api.pandascore.co/matches/1691709",
+          "starts_at": "2026-10-05T21:06:20Z",
           "completed": true
         }
       ]
@@ -202,7 +191,7 @@
       "id": "385c7d7fbe7d8716",
       "topic": "Formula 1 · schedule and classification",
       "summary": "",
-      "updated_at": "2026-10-05T06:00:00+01:00",
+      "updated_at": "2026-10-06T06:00:00+01:00",
       "status": "provider-data",
       "sources": [
         {
@@ -235,7 +224,7 @@
       "id": "b08bc42d1737ca5e",
       "topic": "Wales men · international football",
       "summary": "",
-      "updated_at": "2026-10-05T06:00:00+01:00",
+      "updated_at": "2026-10-06T06:00:00+01:00",
       "status": "provider-data",
       "sources": [
         {
@@ -313,17 +302,17 @@
     }
   ],
   "today": {
-    "date": "2026-10-05",
-    "updated_at": "2026-10-05T06:00:00+01:00",
+    "date": "2026-10-06",
+    "updated_at": "2026-10-06T06:00:00+01:00",
     "timezone": "Europe/London",
     "items": [
       {
-        "id": "lol-1691709",
+        "id": "lol-1691710",
         "group": "lol",
-        "title": "Maryville University vs Zeu5 Esports",
+        "title": "Cupid Esports vs Fuego",
         "competition": "LCS",
-        "starts_at": "2026-10-05T20:00:00Z",
-        "when": "Mon 05 Oct 2026 21:00 BST",
+        "starts_at": "2026-10-06T21:00:00Z",
+        "when": "Tue 06 Oct 2026 22:00 BST",
         "status": "not_started",
         "detail": "",
         "viewing": [
@@ -340,7 +329,7 @@
             "url": "https://developers.pandascore.co/"
           }
         ],
-        "updated_at": "2026-10-05T06:00:00+01:00"
+        "updated_at": "2026-10-06T06:00:00+01:00"
       }
     ],
     "coverage": [
