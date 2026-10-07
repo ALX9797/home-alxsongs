@@ -1,12 +1,12 @@
 {
   "version": 2,
-  "updated_at": "2026-10-06T06:00:00+01:00",
+  "updated_at": "2026-10-07T06:00:00+01:00",
   "items": [
     {
       "id": "3addcc24b497faf6",
       "topic": "Manchester United · all competitions",
       "summary": "",
-      "updated_at": "2026-10-06T06:00:00+01:00",
+      "updated_at": "2026-10-07T06:00:00+01:00",
       "status": "provider-data",
       "sources": [
         {
@@ -97,9 +97,9 @@
     },
     {
       "id": "359bde922ce0d9f2",
-      "topic": "LoL · 2026-10-05 to 2026-10-13 (UTC window)",
+      "topic": "LoL · 2026-10-06 to 2026-10-14 (UTC window)",
       "summary": "",
-      "updated_at": "2026-10-06T06:00:00+01:00",
+      "updated_at": "2026-10-07T06:00:00+01:00",
       "status": "provider-data",
       "sources": [
         {
@@ -108,17 +108,6 @@
         }
       ],
       "facts": [
-        {
-          "id": "1691710",
-          "title": "Cupid Esports vs Fuego",
-          "when": "Tue 06 Oct 2026 22:00 BST",
-          "status": "not_started",
-          "detail": "",
-          "competition": "LCS",
-          "source_url": "https://api.pandascore.co/matches/1691710",
-          "starts_at": "2026-10-06T21:00:00Z",
-          "completed": false
-        },
         {
           "id": "1691708",
           "title": "Disguised vs Maryville University",
@@ -132,7 +121,7 @@
         },
         {
           "id": "1691711",
-          "title": "Opponents not supplied",
+          "title": "Cupid Esports",
           "when": "Thu 08 Oct 2026 22:00 BST",
           "status": "not_started",
           "detail": "",
@@ -143,7 +132,7 @@
         },
         {
           "id": "1691732",
-          "title": "Opponents not supplied",
+          "title": "Fuego",
           "when": "Fri 09 Oct 2026 22:00 BST",
           "status": "not_started",
           "detail": "",
@@ -175,14 +164,14 @@
           "completed": false
         },
         {
-          "id": "1691709",
-          "title": "Maryville University vs Zeu5 Esports",
-          "when": "Mon 05 Oct 2026 22:06 BST",
+          "id": "1691710",
+          "title": "Cupid Esports vs Fuego",
+          "when": "Tue 06 Oct 2026 22:03 BST",
           "status": "finished",
-          "detail": "Maryville University 3 — 1 Zeu5 Esports",
+          "detail": "Cupid Esports 3 — 0 Fuego",
           "competition": "LCS",
-          "source_url": "https://api.pandascore.co/matches/1691709",
-          "starts_at": "2026-10-05T21:06:20Z",
+          "source_url": "https://api.pandascore.co/matches/1691710",
+          "starts_at": "2026-10-06T21:03:41Z",
           "completed": true
         }
       ]
@@ -191,7 +180,7 @@
       "id": "385c7d7fbe7d8716",
       "topic": "Formula 1 · schedule and classification",
       "summary": "",
-      "updated_at": "2026-10-06T06:00:00+01:00",
+      "updated_at": "2026-10-07T06:00:00+01:00",
       "status": "provider-data",
       "sources": [
         {
@@ -224,7 +213,7 @@
       "id": "b08bc42d1737ca5e",
       "topic": "Wales men · international football",
       "summary": "",
-      "updated_at": "2026-10-06T06:00:00+01:00",
+      "updated_at": "2026-10-07T06:00:00+01:00",
       "status": "provider-data",
       "sources": [
         {
@@ -302,17 +291,17 @@
     }
   ],
   "today": {
-    "date": "2026-10-06",
-    "updated_at": "2026-10-06T06:00:00+01:00",
+    "date": "2026-10-07",
+    "updated_at": "2026-10-07T06:00:00+01:00",
     "timezone": "Europe/London",
     "items": [
       {
-        "id": "lol-1691710",
+        "id": "lol-1691708",
         "group": "lol",
-        "title": "Cupid Esports vs Fuego",
+        "title": "Disguised vs Maryville University",
         "competition": "LCS",
-        "starts_at": "2026-10-06T21:00:00Z",
-        "when": "Tue 06 Oct 2026 22:00 BST",
+        "starts_at": "2026-10-07T21:00:00Z",
+        "when": "Wed 07 Oct 2026 22:00 BST",
         "status": "not_started",
         "detail": "",
         "viewing": [
@@ -329,7 +318,7 @@
             "url": "https://developers.pandascore.co/"
           }
         ],
-        "updated_at": "2026-10-06T06:00:00+01:00"
+        "updated_at": "2026-10-07T06:00:00+01:00"
       }
     ],
     "coverage": [
