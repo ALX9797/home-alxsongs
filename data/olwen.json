@@ -1,12 +1,12 @@
 {
   "version": 2,
-  "updated_at": "2026-10-09T06:00:00+01:00",
+  "updated_at": "2026-10-10T06:00:00+01:00",
   "items": [
     {
       "id": "3addcc24b497faf6",
       "topic": "Manchester United · all competitions",
       "summary": "",
-      "updated_at": "2026-10-09T06:00:00+01:00",
+      "updated_at": "2026-10-10T06:00:00+01:00",
       "status": "provider-data",
       "sources": [
         {
@@ -97,9 +97,9 @@
     },
     {
       "id": "359bde922ce0d9f2",
-      "topic": "LoL · 2026-10-08 to 2026-10-16 (UTC window)",
+      "topic": "LoL · 2026-10-09 to 2026-10-17 (UTC window)",
       "summary": "",
-      "updated_at": "2026-10-09T06:00:00+01:00",
+      "updated_at": "2026-10-10T06:00:00+01:00",
       "status": "provider-data",
       "sources": [
         {
@@ -109,19 +109,8 @@
       ],
       "facts": [
         {
-          "id": "1691732",
-          "title": "Disguised vs Fuego",
-          "when": "Fri 09 Oct 2026 22:00 BST",
-          "status": "not_started",
-          "detail": "",
-          "competition": "LCS",
-          "source_url": "https://api.pandascore.co/matches/1691732",
-          "starts_at": "2026-10-09T21:00:00Z",
-          "completed": false
-        },
-        {
           "id": "1691731",
-          "title": "Cupid Esports",
+          "title": "Cupid Esports vs Disguised",
           "when": "Sat 10 Oct 2026 22:00 BST",
           "status": "not_started",
           "detail": "",
@@ -186,14 +175,25 @@
           "completed": false
         },
         {
-          "id": "1691711",
-          "title": "Maryville University vs Cupid Esports",
-          "when": "Thu 08 Oct 2026 22:03 BST",
+          "id": "1710929",
+          "title": "Opponents not supplied",
+          "when": "Sat 17 Oct 2026 19:00 BST",
+          "status": "not_started",
+          "detail": "",
+          "competition": "Worlds",
+          "source_url": "https://api.pandascore.co/matches/1710929",
+          "starts_at": "2026-10-17T18:00:00Z",
+          "completed": false
+        },
+        {
+          "id": "1691732",
+          "title": "Disguised vs Fuego",
+          "when": "Sat 10 Oct 2026 00:09 BST",
           "status": "finished",
-          "detail": "Maryville University 3 — 0 Cupid Esports",
+          "detail": "Disguised 3 — 0 Fuego",
           "competition": "LCS",
-          "source_url": "https://api.pandascore.co/matches/1691711",
-          "starts_at": "2026-10-08T21:03:11Z",
+          "source_url": "https://api.pandascore.co/matches/1691732",
+          "starts_at": "2026-10-09T23:09:03Z",
           "completed": true
         }
       ]
@@ -202,7 +202,7 @@
       "id": "385c7d7fbe7d8716",
       "topic": "Formula 1 · schedule and classification",
       "summary": "",
-      "updated_at": "2026-10-09T06:00:00+01:00",
+      "updated_at": "2026-10-10T06:00:00+01:00",
       "status": "provider-data",
       "sources": [
         {
@@ -235,7 +235,7 @@
       "id": "b08bc42d1737ca5e",
       "topic": "Wales men · international football",
       "summary": "",
-      "updated_at": "2026-10-09T06:00:00+01:00",
+      "updated_at": "2026-10-10T06:00:00+01:00",
       "status": "provider-data",
       "sources": [
         {
@@ -313,8 +313,8 @@
     }
   ],
   "today": {
-    "date": "2026-10-09",
-    "updated_at": "2026-10-09T06:00:00+01:00",
+    "date": "2026-10-10",
+    "updated_at": "2026-10-10T06:00:00+01:00",
     "timezone": "Europe/London",
     "items": [
       {
@@ -322,8 +322,68 @@
         "group": "lol",
         "title": "Disguised vs Fuego",
         "competition": "LCS",
-        "starts_at": "2026-10-09T21:00:00Z",
-        "when": "Fri 09 Oct 2026 22:00 BST",
+        "starts_at": "2026-10-09T23:09:03Z",
+        "when": "Sat 10 Oct 2026 00:09 BST",
+        "status": "finished",
+        "detail": "Disguised 3 — 0 Fuego",
+        "viewing": [
+          {
+            "label": "Official English stream (twitch.tv)",
+            "url": "https://www.twitch.tv/lcs",
+            "kind": "stream"
+          }
+        ],
+        "viewing_status": "listed",
+        "sources": [
+          {
+            "title": "PandaScore API records (requires access)",
+            "url": "https://developers.pandascore.co/"
+          }
+        ],
+        "updated_at": "2026-10-10T06:00:00+01:00"
+      },
+      {
+        "id": "manutd-401878773",
+        "group": "manutd",
+        "title": "Manchester United vs Tottenham Hotspur",
+        "competition": "English Premier League",
+        "starts_at": "2026-10-10T16:30Z",
+        "when": "Sat 10 Oct 2026 17:30 BST",
+        "status": "Scheduled",
+        "detail": "",
+        "viewing": [
+          {
+            "label": "Sky Sports Main Event",
+            "url": "https://www.live-footballontv.com/man-utd-on-tv.html",
+            "kind": "tv"
+          },
+          {
+            "label": "Sky Sports Premier League",
+            "url": "https://www.live-footballontv.com/man-utd-on-tv.html",
+            "kind": "tv"
+          },
+          {
+            "label": "Sky Sports Ultra HDR",
+            "url": "https://www.live-footballontv.com/man-utd-on-tv.html",
+            "kind": "tv"
+          }
+        ],
+        "viewing_status": "listed",
+        "sources": [
+          {
+            "title": "ESPN fixtures and results",
+            "url": "https://www.espn.com/soccer/team/fixtures/_/id/360/manchester-united"
+          }
+        ],
+        "updated_at": "2026-10-10T06:00:00+01:00"
+      },
+      {
+        "id": "lol-1691731",
+        "group": "lol",
+        "title": "Cupid Esports vs Disguised",
+        "competition": "LCS",
+        "starts_at": "2026-10-10T21:00:00Z",
+        "when": "Sat 10 Oct 2026 22:00 BST",
         "status": "not_started",
         "detail": "",
         "viewing": [
@@ -340,19 +400,19 @@
             "url": "https://developers.pandascore.co/"
           }
         ],
-        "updated_at": "2026-10-09T06:00:00+01:00"
+        "updated_at": "2026-10-10T06:00:00+01:00"
       }
     ],
     "coverage": [
       {
         "group": "manutd",
         "status": "checked",
-        "matches": 0
+        "matches": 1
       },
       {
         "group": "lol",
         "status": "checked",
-        "matches": 1
+        "matches": 2
       },
       {
         "group": "f1",
