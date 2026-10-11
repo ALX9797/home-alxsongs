@@ -1,12 +1,12 @@
 {
   "version": 2,
-  "updated_at": "2026-10-10T06:00:00+01:00",
+  "updated_at": "2026-10-11T06:00:00+01:00",
   "items": [
     {
       "id": "3addcc24b497faf6",
       "topic": "Manchester United · all competitions",
       "summary": "",
-      "updated_at": "2026-10-10T06:00:00+01:00",
+      "updated_at": "2026-10-11T06:00:00+01:00",
       "status": "provider-data",
       "sources": [
         {
@@ -15,19 +15,6 @@
         }
       ],
       "facts": [
-        {
-          "id": "401878773",
-          "title": "Manchester United vs Tottenham Hotspur",
-          "when": "Sat 10 Oct 2026 17:30 BST",
-          "status": "Scheduled",
-          "detail": "",
-          "competition": "English Premier League",
-          "source_url": "https://www.espn.com/soccer/match/_/gameId/401878773",
-          "starts_at": "2026-10-10T16:30Z",
-          "completed": false,
-          "state": "pre",
-          "outcome": null
-        },
         {
           "id": "401915412",
           "title": "Atlético Madrid vs Manchester United",
@@ -55,6 +42,32 @@
           "outcome": null
         },
         {
+          "id": "401915395",
+          "title": "Como vs Manchester United",
+          "when": "Wed 21 Oct 2026 17:45 BST",
+          "status": "Scheduled",
+          "detail": "",
+          "competition": "UEFA Champions League",
+          "source_url": "https://www.espn.com/soccer/match/_/gameId/401915395",
+          "starts_at": "2026-10-21T16:45Z",
+          "completed": false,
+          "state": "pre",
+          "outcome": null
+        },
+        {
+          "id": "401878773",
+          "title": "Manchester United vs Tottenham Hotspur",
+          "when": "Sat 10 Oct 2026 17:30 BST",
+          "status": "Full Time",
+          "detail": "Manchester United 1 — 1 Tottenham Hotspur",
+          "competition": "English Premier League",
+          "source_url": "https://www.espn.com/soccer/match/_/gameId/401878773",
+          "starts_at": "2026-10-10T16:30Z",
+          "completed": true,
+          "state": "post",
+          "outcome": "draw"
+        },
+        {
           "id": "401878777",
           "title": "Fulham vs Manchester United",
           "when": "Sun 20 Sep 2026 16:30 BST",
@@ -79,27 +92,14 @@
           "completed": true,
           "state": "post",
           "outcome": "loss"
-        },
-        {
-          "id": "401879278",
-          "title": "Manchester United vs Manchester City",
-          "when": "Sun 13 Sep 2026 16:30 BST",
-          "status": "Full Time",
-          "detail": "Manchester United 0 — 1 Manchester City",
-          "competition": "English Premier League",
-          "source_url": "https://www.espn.com/soccer/match/_/gameId/401879278",
-          "starts_at": "2026-09-13T15:30Z",
-          "completed": true,
-          "state": "post",
-          "outcome": "loss"
         }
       ]
     },
     {
       "id": "359bde922ce0d9f2",
-      "topic": "LoL · 2026-10-09 to 2026-10-17 (UTC window)",
+      "topic": "LoL · 2026-10-10 to 2026-10-18 (UTC window)",
       "summary": "",
-      "updated_at": "2026-10-10T06:00:00+01:00",
+      "updated_at": "2026-10-11T06:00:00+01:00",
       "status": "provider-data",
       "sources": [
         {
@@ -109,19 +109,8 @@
       ],
       "facts": [
         {
-          "id": "1691731",
-          "title": "Cupid Esports vs Disguised",
-          "when": "Sat 10 Oct 2026 22:00 BST",
-          "status": "not_started",
-          "detail": "",
-          "competition": "LCS",
-          "source_url": "https://api.pandascore.co/matches/1691731",
-          "starts_at": "2026-10-10T21:00:00Z",
-          "completed": false
-        },
-        {
           "id": "1691728",
-          "title": "Maryville University",
+          "title": "Maryville University vs Disguised",
           "when": "Tue 13 Oct 2026 00:00 BST",
           "status": "not_started",
           "detail": "",
@@ -132,7 +121,7 @@
         },
         {
           "id": "1710926",
-          "title": "Opponents not supplied",
+          "title": "FURIA Esports vs MVK Esports",
           "when": "Thu 15 Oct 2026 19:00 BST",
           "status": "not_started",
           "detail": "",
@@ -143,7 +132,7 @@
         },
         {
           "id": "1710927",
-          "title": "Opponents not supplied",
+          "title": "Cloud9 vs Karmine Corp",
           "when": "Fri 16 Oct 2026 00:00 BST",
           "status": "not_started",
           "detail": "",
@@ -186,14 +175,25 @@
           "completed": false
         },
         {
-          "id": "1691732",
-          "title": "Disguised vs Fuego",
-          "when": "Sat 10 Oct 2026 00:09 BST",
+          "id": "1710931",
+          "title": "Opponents not supplied",
+          "when": "Sun 18 Oct 2026 19:00 BST",
+          "status": "not_started",
+          "detail": "",
+          "competition": "Worlds",
+          "source_url": "https://api.pandascore.co/matches/1710931",
+          "starts_at": "2026-10-18T18:00:00Z",
+          "completed": false
+        },
+        {
+          "id": "1691731",
+          "title": "Cupid Esports vs Disguised",
+          "when": "Sat 10 Oct 2026 22:03 BST",
           "status": "finished",
-          "detail": "Disguised 3 — 0 Fuego",
+          "detail": "Cupid Esports 0 — 3 Disguised",
           "competition": "LCS",
-          "source_url": "https://api.pandascore.co/matches/1691732",
-          "starts_at": "2026-10-09T23:09:03Z",
+          "source_url": "https://api.pandascore.co/matches/1691731",
+          "starts_at": "2026-10-10T21:03:24Z",
           "completed": true
         }
       ]
@@ -202,7 +202,7 @@
       "id": "385c7d7fbe7d8716",
       "topic": "Formula 1 · schedule and classification",
       "summary": "",
-      "updated_at": "2026-10-10T06:00:00+01:00",
+      "updated_at": "2026-10-11T06:00:00+01:00",
       "status": "provider-data",
       "sources": [
         {
@@ -235,7 +235,7 @@
       "id": "b08bc42d1737ca5e",
       "topic": "Wales men · international football",
       "summary": "",
-      "updated_at": "2026-10-10T06:00:00+01:00",
+      "updated_at": "2026-10-11T06:00:00+01:00",
       "status": "provider-data",
       "sources": [
         {
@@ -313,111 +313,45 @@
     }
   ],
   "today": {
-    "date": "2026-10-10",
-    "updated_at": "2026-10-10T06:00:00+01:00",
+    "date": "2026-10-11",
+    "updated_at": "2026-10-11T06:00:00+01:00",
     "timezone": "Europe/London",
     "items": [
       {
-        "id": "lol-1691732",
-        "group": "lol",
-        "title": "Disguised vs Fuego",
-        "competition": "LCS",
-        "starts_at": "2026-10-09T23:09:03Z",
-        "when": "Sat 10 Oct 2026 00:09 BST",
-        "status": "finished",
-        "detail": "Disguised 3 — 0 Fuego",
-        "viewing": [
-          {
-            "label": "Official English stream (twitch.tv)",
-            "url": "https://www.twitch.tv/lcs",
-            "kind": "stream"
-          }
-        ],
-        "viewing_status": "listed",
+        "id": "f1-next-2026-17",
+        "group": "f1",
+        "title": "Singapore Grand Prix",
+        "competition": "Formula 1 · round 17",
+        "starts_at": "2026-10-11T12:00:00Z",
+        "when": "Sun 11 Oct 2026 13:00 BST",
+        "status": "Next race in provider schedule",
+        "detail": "Marina Bay Street Circuit",
+        "viewing": [],
+        "viewing_status": "UK broadcaster not confirmed",
         "sources": [
           {
-            "title": "PandaScore API records (requires access)",
-            "url": "https://developers.pandascore.co/"
+            "title": "Jolpica F1 data",
+            "url": "https://api.jolpi.ca/ergast/f1/current/next.json"
           }
         ],
-        "updated_at": "2026-10-10T06:00:00+01:00"
-      },
-      {
-        "id": "manutd-401878773",
-        "group": "manutd",
-        "title": "Manchester United vs Tottenham Hotspur",
-        "competition": "English Premier League",
-        "starts_at": "2026-10-10T16:30Z",
-        "when": "Sat 10 Oct 2026 17:30 BST",
-        "status": "Scheduled",
-        "detail": "",
-        "viewing": [
-          {
-            "label": "Sky Sports Main Event",
-            "url": "https://www.live-footballontv.com/man-utd-on-tv.html",
-            "kind": "tv"
-          },
-          {
-            "label": "Sky Sports Premier League",
-            "url": "https://www.live-footballontv.com/man-utd-on-tv.html",
-            "kind": "tv"
-          },
-          {
-            "label": "Sky Sports Ultra HDR",
-            "url": "https://www.live-footballontv.com/man-utd-on-tv.html",
-            "kind": "tv"
-          }
-        ],
-        "viewing_status": "listed",
-        "sources": [
-          {
-            "title": "ESPN fixtures and results",
-            "url": "https://www.espn.com/soccer/team/fixtures/_/id/360/manchester-united"
-          }
-        ],
-        "updated_at": "2026-10-10T06:00:00+01:00"
-      },
-      {
-        "id": "lol-1691731",
-        "group": "lol",
-        "title": "Cupid Esports vs Disguised",
-        "competition": "LCS",
-        "starts_at": "2026-10-10T21:00:00Z",
-        "when": "Sat 10 Oct 2026 22:00 BST",
-        "status": "not_started",
-        "detail": "",
-        "viewing": [
-          {
-            "label": "Official English stream (twitch.tv)",
-            "url": "https://www.twitch.tv/lcs",
-            "kind": "stream"
-          }
-        ],
-        "viewing_status": "listed",
-        "sources": [
-          {
-            "title": "PandaScore API records (requires access)",
-            "url": "https://developers.pandascore.co/"
-          }
-        ],
-        "updated_at": "2026-10-10T06:00:00+01:00"
+        "updated_at": "2026-10-11T06:00:00+01:00"
       }
     ],
     "coverage": [
       {
         "group": "manutd",
         "status": "checked",
-        "matches": 1
+        "matches": 0
       },
       {
         "group": "lol",
         "status": "checked",
-        "matches": 2
+        "matches": 0
       },
       {
         "group": "f1",
         "status": "checked",
-        "matches": 0
+        "matches": 1
       },
       {
         "group": "wales",
