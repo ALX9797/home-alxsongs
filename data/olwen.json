@@ -1,12 +1,12 @@
 {
   "version": 2,
-  "updated_at": "2026-10-11T06:00:00+01:00",
+  "updated_at": "2026-10-12T06:00:00+01:00",
   "items": [
     {
       "id": "3addcc24b497faf6",
       "topic": "Manchester United · all competitions",
       "summary": "",
-      "updated_at": "2026-10-11T06:00:00+01:00",
+      "updated_at": "2026-10-12T06:00:00+01:00",
       "status": "provider-data",
       "sources": [
         {
@@ -97,9 +97,9 @@
     },
     {
       "id": "359bde922ce0d9f2",
-      "topic": "LoL · 2026-10-10 to 2026-10-18 (UTC window)",
+      "topic": "LoL · 2026-10-11 to 2026-10-19 (UTC window)",
       "summary": "",
-      "updated_at": "2026-10-11T06:00:00+01:00",
+      "updated_at": "2026-10-12T06:00:00+01:00",
       "status": "provider-data",
       "sources": [
         {
@@ -184,17 +184,6 @@
           "source_url": "https://api.pandascore.co/matches/1710931",
           "starts_at": "2026-10-18T18:00:00Z",
           "completed": false
-        },
-        {
-          "id": "1691731",
-          "title": "Cupid Esports vs Disguised",
-          "when": "Sat 10 Oct 2026 22:03 BST",
-          "status": "finished",
-          "detail": "Cupid Esports 0 — 3 Disguised",
-          "competition": "LCS",
-          "source_url": "https://api.pandascore.co/matches/1691731",
-          "starts_at": "2026-10-10T21:03:24Z",
-          "completed": true
         }
       ]
     },
@@ -202,7 +191,7 @@
       "id": "385c7d7fbe7d8716",
       "topic": "Formula 1 · schedule and classification",
       "summary": "",
-      "updated_at": "2026-10-11T06:00:00+01:00",
+      "updated_at": "2026-10-12T06:00:00+01:00",
       "status": "provider-data",
       "sources": [
         {
@@ -212,21 +201,21 @@
       ],
       "facts": [
         {
-          "id": "next-2026-17",
-          "title": "Singapore Grand Prix",
-          "when": "Sun 11 Oct 2026 13:00 BST",
+          "id": "next-2026-18",
+          "title": "United States Grand Prix",
+          "when": "Sun 25 Oct 2026 20:00 GMT",
           "status": "Next race in provider schedule",
-          "detail": "Marina Bay Street Circuit",
-          "competition": "Formula 1 · round 17",
+          "detail": "Circuit of the Americas",
+          "competition": "Formula 1 · round 18",
           "source_url": "https://api.jolpi.ca/ergast/f1/current/next.json"
         },
         {
-          "id": "last-2026-16",
-          "title": "Bahrain Grand Prix in Malaysia",
-          "when": "2026-10-04",
+          "id": "last-2026-17",
+          "title": "Singapore Grand Prix",
+          "when": "2026-10-11",
           "status": "Latest published race result · top five",
-          "detail": "1. Max Verstappen · Red Bull · 25 points · Finished\n2. Andrea Kimi Antonelli · Mercedes · 18 points · Finished\n3. Lewis Hamilton · Ferrari · 15 points · Finished\n4. Charles Leclerc · Ferrari · 12 points · Finished\n5. Isack Hadjar · Red Bull · 10 points · Finished",
-          "competition": "Formula 1 · round 16",
+          "detail": "1. Max Verstappen · Red Bull · 25 points · Finished\n2. Charles Leclerc · Ferrari · 18 points · Finished\n3. Andrea Kimi Antonelli · Mercedes · 15 points · Finished\n4. Lando Norris · McLaren · 12 points · Finished\n5. Oscar Piastri · McLaren · 10 points · Finished",
+          "competition": "Formula 1 · round 17",
           "source_url": "https://api.jolpi.ca/ergast/f1/current/last/results.json"
         }
       ]
@@ -235,7 +224,7 @@
       "id": "b08bc42d1737ca5e",
       "topic": "Wales men · international football",
       "summary": "",
-      "updated_at": "2026-10-11T06:00:00+01:00",
+      "updated_at": "2026-10-12T06:00:00+01:00",
       "status": "provider-data",
       "sources": [
         {
@@ -313,30 +302,10 @@
     }
   ],
   "today": {
-    "date": "2026-10-11",
-    "updated_at": "2026-10-11T06:00:00+01:00",
+    "date": "2026-10-12",
+    "updated_at": "2026-10-12T06:00:00+01:00",
     "timezone": "Europe/London",
-    "items": [
-      {
-        "id": "f1-next-2026-17",
-        "group": "f1",
-        "title": "Singapore Grand Prix",
-        "competition": "Formula 1 · round 17",
-        "starts_at": "2026-10-11T12:00:00Z",
-        "when": "Sun 11 Oct 2026 13:00 BST",
-        "status": "Next race in provider schedule",
-        "detail": "Marina Bay Street Circuit",
-        "viewing": [],
-        "viewing_status": "UK broadcaster not confirmed",
-        "sources": [
-          {
-            "title": "Jolpica F1 data",
-            "url": "https://api.jolpi.ca/ergast/f1/current/next.json"
-          }
-        ],
-        "updated_at": "2026-10-11T06:00:00+01:00"
-      }
-    ],
+    "items": [],
     "coverage": [
       {
         "group": "manutd",
@@ -351,7 +320,7 @@
       {
         "group": "f1",
         "status": "checked",
-        "matches": 1
+        "matches": 0
       },
       {
         "group": "wales",
