@@ -1,12 +1,12 @@
 {
   "version": 2,
-  "updated_at": "2026-10-12T06:00:00+01:00",
+  "updated_at": "2026-10-13T06:00:00+01:00",
   "items": [
     {
       "id": "3addcc24b497faf6",
       "topic": "Manchester United · all competitions",
       "summary": "",
-      "updated_at": "2026-10-12T06:00:00+01:00",
+      "updated_at": "2026-10-13T06:00:00+01:00",
       "status": "provider-data",
       "sources": [
         {
@@ -97,9 +97,9 @@
     },
     {
       "id": "359bde922ce0d9f2",
-      "topic": "LoL · 2026-10-11 to 2026-10-19 (UTC window)",
+      "topic": "LoL · 2026-10-12 to 2026-10-20 (UTC window)",
       "summary": "",
-      "updated_at": "2026-10-12T06:00:00+01:00",
+      "updated_at": "2026-10-13T06:00:00+01:00",
       "status": "provider-data",
       "sources": [
         {
@@ -109,35 +109,24 @@
       ],
       "facts": [
         {
-          "id": "1691728",
-          "title": "Maryville University vs Disguised",
-          "when": "Tue 13 Oct 2026 00:00 BST",
+          "id": "1710927",
+          "title": "Cloud9 vs Karmine Corp",
+          "when": "Thu 15 Oct 2026 19:00 BST",
           "status": "not_started",
           "detail": "",
-          "competition": "LCS",
-          "source_url": "https://api.pandascore.co/matches/1691728",
-          "starts_at": "2026-10-12T23:00:00Z",
+          "competition": "Worlds",
+          "source_url": "https://api.pandascore.co/matches/1710927",
+          "starts_at": "2026-10-15T18:00:00Z",
           "completed": false
         },
         {
           "id": "1710926",
           "title": "FURIA Esports vs MVK Esports",
-          "when": "Thu 15 Oct 2026 19:00 BST",
-          "status": "not_started",
-          "detail": "",
-          "competition": "Worlds",
-          "source_url": "https://api.pandascore.co/matches/1710926",
-          "starts_at": "2026-10-15T18:00:00Z",
-          "completed": false
-        },
-        {
-          "id": "1710927",
-          "title": "Cloud9 vs Karmine Corp",
           "when": "Fri 16 Oct 2026 00:00 BST",
           "status": "not_started",
           "detail": "",
           "competition": "Worlds",
-          "source_url": "https://api.pandascore.co/matches/1710927",
+          "source_url": "https://api.pandascore.co/matches/1710926",
           "starts_at": "2026-10-15T23:00:00Z",
           "completed": false
         },
@@ -184,6 +173,17 @@
           "source_url": "https://api.pandascore.co/matches/1710931",
           "starts_at": "2026-10-18T18:00:00Z",
           "completed": false
+        },
+        {
+          "id": "1691728",
+          "title": "Maryville University vs Disguised",
+          "when": "Tue 13 Oct 2026 00:02 BST",
+          "status": "finished",
+          "detail": "Maryville University 0 — 3 Disguised",
+          "competition": "LCS",
+          "source_url": "https://api.pandascore.co/matches/1691728",
+          "starts_at": "2026-10-12T23:02:36Z",
+          "completed": true
         }
       ]
     },
@@ -191,7 +191,7 @@
       "id": "385c7d7fbe7d8716",
       "topic": "Formula 1 · schedule and classification",
       "summary": "",
-      "updated_at": "2026-10-12T06:00:00+01:00",
+      "updated_at": "2026-10-13T06:00:00+01:00",
       "status": "provider-data",
       "sources": [
         {
@@ -224,7 +224,7 @@
       "id": "b08bc42d1737ca5e",
       "topic": "Wales men · international football",
       "summary": "",
-      "updated_at": "2026-10-12T06:00:00+01:00",
+      "updated_at": "2026-10-13T06:00:00+01:00",
       "status": "provider-data",
       "sources": [
         {
@@ -302,20 +302,71 @@
     }
   ],
   "today": {
-    "date": "2026-10-12",
-    "updated_at": "2026-10-12T06:00:00+01:00",
+    "date": "2026-10-13",
+    "updated_at": "2026-10-13T06:00:00+01:00",
     "timezone": "Europe/London",
-    "items": [],
+    "items": [
+      {
+        "id": "lol-1691728",
+        "group": "lol",
+        "title": "Maryville University vs Disguised",
+        "competition": "LCS",
+        "starts_at": "2026-10-12T23:02:36Z",
+        "when": "Tue 13 Oct 2026 00:02 BST",
+        "status": "finished",
+        "detail": "Maryville University 0 — 3 Disguised",
+        "viewing": [
+          {
+            "label": "Official English stream (twitch.tv)",
+            "url": "https://www.twitch.tv/lcs",
+            "kind": "stream"
+          }
+        ],
+        "viewing_status": "listed",
+        "sources": [
+          {
+            "title": "PandaScore API records (requires access)",
+            "url": "https://developers.pandascore.co/"
+          }
+        ],
+        "updated_at": "2026-10-13T06:00:00+01:00"
+      },
+      {
+        "id": "manutd-401915412",
+        "group": "manutd",
+        "title": "Atlético Madrid vs Manchester United",
+        "competition": "UEFA Champions League",
+        "starts_at": "2026-10-13T19:00Z",
+        "when": "Tue 13 Oct 2026 20:00 BST",
+        "status": "Scheduled",
+        "detail": "",
+        "viewing": [
+          {
+            "label": "Amazon Prime Video",
+            "url": "https://www.live-footballontv.com/man-utd-on-tv.html",
+            "kind": "tv"
+          }
+        ],
+        "viewing_status": "listed",
+        "sources": [
+          {
+            "title": "ESPN fixtures and results",
+            "url": "https://www.espn.com/soccer/team/fixtures/_/id/360/manchester-united"
+          }
+        ],
+        "updated_at": "2026-10-13T06:00:00+01:00"
+      }
+    ],
     "coverage": [
       {
         "group": "manutd",
         "status": "checked",
-        "matches": 0
+        "matches": 1
       },
       {
         "group": "lol",
         "status": "checked",
-        "matches": 0
+        "matches": 1
       },
       {
         "group": "f1",
