@@ -1,12 +1,12 @@
 {
   "version": 2,
-  "updated_at": "2026-10-14T06:00:00+01:00",
+  "updated_at": "2026-10-15T06:00:00+01:00",
   "items": [
     {
       "id": "3addcc24b497faf6",
       "topic": "Manchester United · all competitions",
       "summary": "",
-      "updated_at": "2026-10-14T06:00:00+01:00",
+      "updated_at": "2026-10-15T06:00:00+01:00",
       "status": "provider-data",
       "sources": [
         {
@@ -97,9 +97,9 @@
     },
     {
       "id": "359bde922ce0d9f2",
-      "topic": "LoL · 2026-10-13 to 2026-10-21 (UTC window)",
+      "topic": "LoL · 2026-10-14 to 2026-10-22 (UTC window)",
       "summary": "",
-      "updated_at": "2026-10-14T06:00:00+01:00",
+      "updated_at": "2026-10-15T06:00:00+01:00",
       "status": "provider-data",
       "sources": [
         {
@@ -180,7 +180,7 @@
       "id": "385c7d7fbe7d8716",
       "topic": "Formula 1 · schedule and classification",
       "summary": "",
-      "updated_at": "2026-10-14T06:00:00+01:00",
+      "updated_at": "2026-10-15T06:00:00+01:00",
       "status": "provider-data",
       "sources": [
         {
@@ -213,7 +213,7 @@
       "id": "b08bc42d1737ca5e",
       "topic": "Wales men · international football",
       "summary": "",
-      "updated_at": "2026-10-14T06:00:00+01:00",
+      "updated_at": "2026-10-15T06:00:00+01:00",
       "status": "provider-data",
       "sources": [
         {
@@ -291,10 +291,30 @@
     }
   ],
   "today": {
-    "date": "2026-10-14",
-    "updated_at": "2026-10-14T06:00:00+01:00",
+    "date": "2026-10-15",
+    "updated_at": "2026-10-15T06:00:00+01:00",
     "timezone": "Europe/London",
-    "items": [],
+    "items": [
+      {
+        "id": "lol-1710927",
+        "group": "lol",
+        "title": "Cloud9 vs Karmine Corp",
+        "competition": "Worlds",
+        "starts_at": "2026-10-15T18:00:00Z",
+        "when": "Thu 15 Oct 2026 19:00 BST",
+        "status": "not_started",
+        "detail": "",
+        "viewing": [],
+        "viewing_status": "UK broadcaster not confirmed",
+        "sources": [
+          {
+            "title": "PandaScore API records (requires access)",
+            "url": "https://developers.pandascore.co/"
+          }
+        ],
+        "updated_at": "2026-10-15T06:00:00+01:00"
+      }
+    ],
     "coverage": [
       {
         "group": "manutd",
@@ -304,7 +324,7 @@
       {
         "group": "lol",
         "status": "checked",
-        "matches": 0
+        "matches": 1
       },
       {
         "group": "f1",
