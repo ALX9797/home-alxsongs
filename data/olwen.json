@@ -1,12 +1,12 @@
 {
   "version": 2,
-  "updated_at": "2026-10-15T06:00:00+01:00",
+  "updated_at": "2026-10-16T06:00:00+01:00",
   "items": [
     {
       "id": "3addcc24b497faf6",
       "topic": "Manchester United · all competitions",
       "summary": "",
-      "updated_at": "2026-10-15T06:00:00+01:00",
+      "updated_at": "2026-10-16T06:00:00+01:00",
       "status": "provider-data",
       "sources": [
         {
@@ -97,9 +97,9 @@
     },
     {
       "id": "359bde922ce0d9f2",
-      "topic": "LoL · 2026-10-14 to 2026-10-22 (UTC window)",
+      "topic": "LoL · 2026-10-15 to 2026-10-23 (UTC window)",
       "summary": "",
-      "updated_at": "2026-10-15T06:00:00+01:00",
+      "updated_at": "2026-10-16T06:00:00+01:00",
       "status": "provider-data",
       "sources": [
         {
@@ -109,30 +109,8 @@
       ],
       "facts": [
         {
-          "id": "1710927",
-          "title": "Cloud9 vs Karmine Corp",
-          "when": "Thu 15 Oct 2026 19:00 BST",
-          "status": "not_started",
-          "detail": "",
-          "competition": "Worlds",
-          "source_url": "https://api.pandascore.co/matches/1710927",
-          "starts_at": "2026-10-15T18:00:00Z",
-          "completed": false
-        },
-        {
-          "id": "1710926",
-          "title": "FURIA Esports vs MVK Esports",
-          "when": "Fri 16 Oct 2026 00:00 BST",
-          "status": "not_started",
-          "detail": "",
-          "competition": "Worlds",
-          "source_url": "https://api.pandascore.co/matches/1710926",
-          "starts_at": "2026-10-15T23:00:00Z",
-          "completed": false
-        },
-        {
           "id": "1710930",
-          "title": "Opponents not supplied",
+          "title": "MVK Esports vs Karmine Corp",
           "when": "Fri 16 Oct 2026 19:00 BST",
           "status": "not_started",
           "detail": "",
@@ -143,7 +121,7 @@
         },
         {
           "id": "1710928",
-          "title": "Opponents not supplied",
+          "title": "FURIA Esports vs Cloud9",
           "when": "Sat 17 Oct 2026 00:00 BST",
           "status": "not_started",
           "detail": "",
@@ -173,6 +151,105 @@
           "source_url": "https://api.pandascore.co/matches/1710931",
           "starts_at": "2026-10-18T18:00:00Z",
           "completed": false
+        },
+        {
+          "id": "1710932",
+          "title": "Opponents not supplied",
+          "when": "Fri 23 Oct 2026 18:00 BST",
+          "status": "not_started",
+          "detail": "",
+          "competition": "Worlds",
+          "source_url": "https://api.pandascore.co/matches/1710932",
+          "starts_at": "2026-10-23T17:00:00Z",
+          "completed": false
+        },
+        {
+          "id": "1710933",
+          "title": "Opponents not supplied",
+          "when": "Fri 23 Oct 2026 19:00 BST",
+          "status": "not_started",
+          "detail": "",
+          "competition": "Worlds",
+          "source_url": "https://api.pandascore.co/matches/1710933",
+          "starts_at": "2026-10-23T18:00:00Z",
+          "completed": false
+        },
+        {
+          "id": "1710934",
+          "title": "Opponents not supplied",
+          "when": "Fri 23 Oct 2026 20:00 BST",
+          "status": "not_started",
+          "detail": "",
+          "competition": "Worlds",
+          "source_url": "https://api.pandascore.co/matches/1710934",
+          "starts_at": "2026-10-23T19:00:00Z",
+          "completed": false
+        },
+        {
+          "id": "1710935",
+          "title": "Opponents not supplied",
+          "when": "Fri 23 Oct 2026 21:00 BST",
+          "status": "not_started",
+          "detail": "",
+          "competition": "Worlds",
+          "source_url": "https://api.pandascore.co/matches/1710935",
+          "starts_at": "2026-10-23T20:00:00Z",
+          "completed": false
+        },
+        {
+          "id": "1710936",
+          "title": "Opponents not supplied",
+          "when": "Fri 23 Oct 2026 22:00 BST",
+          "status": "not_started",
+          "detail": "",
+          "competition": "Worlds",
+          "source_url": "https://api.pandascore.co/matches/1710936",
+          "starts_at": "2026-10-23T21:00:00Z",
+          "completed": false
+        },
+        {
+          "id": "1710937",
+          "title": "Opponents not supplied",
+          "when": "Fri 23 Oct 2026 23:00 BST",
+          "status": "not_started",
+          "detail": "",
+          "competition": "Worlds",
+          "source_url": "https://api.pandascore.co/matches/1710937",
+          "starts_at": "2026-10-23T22:00:00Z",
+          "completed": false
+        },
+        {
+          "id": "1710938",
+          "title": "Opponents not supplied",
+          "when": "Sat 24 Oct 2026 00:00 BST",
+          "status": "not_started",
+          "detail": "",
+          "competition": "Worlds",
+          "source_url": "https://api.pandascore.co/matches/1710938",
+          "starts_at": "2026-10-23T23:00:00Z",
+          "completed": false
+        },
+        {
+          "id": "1710927",
+          "title": "Cloud9 vs Karmine Corp",
+          "when": "Thu 15 Oct 2026 19:20 BST",
+          "status": "finished",
+          "detail": "Cloud9 2 — 3 Karmine Corp",
+          "competition": "Worlds",
+          "source_url": "https://api.pandascore.co/matches/1710927",
+          "starts_at": "2026-10-15T18:20:58Z",
+          "completed": true
+        },
+        {
+          "id": "1710926",
+          "title": "FURIA Esports vs MVK Esports",
+          "when": "Fri 16 Oct 2026 00:06 BST",
+          "status": "finished",
+          "detail": "FURIA Esports 0 — 3 MVK Esports",
+          "competition": "Worlds",
+          "source_url": "https://api.pandascore.co/matches/1710926",
+          "starts_at": "2026-10-15T23:06:15Z",
+          "completed": true
         }
       ]
     },
@@ -180,7 +257,7 @@
       "id": "385c7d7fbe7d8716",
       "topic": "Formula 1 · schedule and classification",
       "summary": "",
-      "updated_at": "2026-10-15T06:00:00+01:00",
+      "updated_at": "2026-10-16T06:00:00+01:00",
       "status": "provider-data",
       "sources": [
         {
@@ -213,7 +290,7 @@
       "id": "b08bc42d1737ca5e",
       "topic": "Wales men · international football",
       "summary": "",
-      "updated_at": "2026-10-15T06:00:00+01:00",
+      "updated_at": "2026-10-16T06:00:00+01:00",
       "status": "provider-data",
       "sources": [
         {
@@ -291,19 +368,19 @@
     }
   ],
   "today": {
-    "date": "2026-10-15",
-    "updated_at": "2026-10-15T06:00:00+01:00",
+    "date": "2026-10-16",
+    "updated_at": "2026-10-16T06:00:00+01:00",
     "timezone": "Europe/London",
     "items": [
       {
-        "id": "lol-1710927",
+        "id": "lol-1710926",
         "group": "lol",
-        "title": "Cloud9 vs Karmine Corp",
+        "title": "FURIA Esports vs MVK Esports",
         "competition": "Worlds",
-        "starts_at": "2026-10-15T18:00:00Z",
-        "when": "Thu 15 Oct 2026 19:00 BST",
-        "status": "not_started",
-        "detail": "",
+        "starts_at": "2026-10-15T23:06:15Z",
+        "when": "Fri 16 Oct 2026 00:06 BST",
+        "status": "finished",
+        "detail": "FURIA Esports 0 — 3 MVK Esports",
         "viewing": [],
         "viewing_status": "UK broadcaster not confirmed",
         "sources": [
@@ -312,7 +389,32 @@
             "url": "https://developers.pandascore.co/"
           }
         ],
-        "updated_at": "2026-10-15T06:00:00+01:00"
+        "updated_at": "2026-10-16T06:00:00+01:00"
+      },
+      {
+        "id": "lol-1710930",
+        "group": "lol",
+        "title": "MVK Esports vs Karmine Corp",
+        "competition": "Worlds",
+        "starts_at": "2026-10-16T18:00:00Z",
+        "when": "Fri 16 Oct 2026 19:00 BST",
+        "status": "not_started",
+        "detail": "",
+        "viewing": [
+          {
+            "label": "Official English stream (twitch.tv)",
+            "url": "https://www.twitch.tv/riotgames",
+            "kind": "stream"
+          }
+        ],
+        "viewing_status": "listed",
+        "sources": [
+          {
+            "title": "PandaScore API records (requires access)",
+            "url": "https://developers.pandascore.co/"
+          }
+        ],
+        "updated_at": "2026-10-16T06:00:00+01:00"
       }
     ],
     "coverage": [
@@ -324,7 +426,7 @@
       {
         "group": "lol",
         "status": "checked",
-        "matches": 1
+        "matches": 2
       },
       {
         "group": "f1",
