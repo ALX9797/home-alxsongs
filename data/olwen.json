@@ -1,12 +1,12 @@
 {
   "version": 2,
-  "updated_at": "2026-10-17T06:00:00+01:00",
+  "updated_at": "2026-10-18T06:00:00+01:00",
   "items": [
     {
       "id": "3addcc24b497faf6",
       "topic": "Manchester United · all competitions",
       "summary": "",
-      "updated_at": "2026-10-17T06:00:00+01:00",
+      "updated_at": "2026-10-18T06:00:00+01:00",
       "status": "provider-data",
       "sources": [
         {
@@ -97,9 +97,9 @@
     },
     {
       "id": "359bde922ce0d9f2",
-      "topic": "LoL · 2026-10-16 to 2026-10-24 (UTC window)",
+      "topic": "LoL · 2026-10-17 to 2026-10-25 (UTC window)",
       "summary": "",
-      "updated_at": "2026-10-17T06:00:00+01:00",
+      "updated_at": "2026-10-18T06:00:00+01:00",
       "status": "provider-data",
       "sources": [
         {
@@ -109,19 +109,8 @@
       ],
       "facts": [
         {
-          "id": "1710929",
-          "title": "MVK Esports vs FURIA Esports",
-          "when": "Sat 17 Oct 2026 19:00 BST",
-          "status": "not_started",
-          "detail": "",
-          "competition": "Worlds",
-          "source_url": "https://api.pandascore.co/matches/1710929",
-          "starts_at": "2026-10-17T18:00:00Z",
-          "completed": false
-        },
-        {
           "id": "1710931",
-          "title": "Karmine Corp",
+          "title": "Karmine Corp vs MVK Esports",
           "when": "Sun 18 Oct 2026 19:00 BST",
           "status": "not_started",
           "detail": "",
@@ -296,26 +285,48 @@
           "completed": false
         },
         {
-          "id": "1710930",
-          "title": "MVK Esports vs Karmine Corp",
-          "when": "Fri 16 Oct 2026 19:06 BST",
-          "status": "finished",
-          "detail": "MVK Esports 0 — 3 Karmine Corp",
+          "id": "1710947",
+          "title": "Opponents not supplied",
+          "when": "Sun 25 Oct 2026 01:00 BST",
+          "status": "not_started",
+          "detail": "",
           "competition": "Worlds",
-          "source_url": "https://api.pandascore.co/matches/1710930",
-          "starts_at": "2026-10-16T18:06:01Z",
-          "completed": true
+          "source_url": "https://api.pandascore.co/matches/1710947",
+          "starts_at": "2026-10-25T00:00:00Z",
+          "completed": false
         },
         {
-          "id": "1710928",
-          "title": "FURIA Esports vs Cloud9",
-          "when": "Fri 16 Oct 2026 21:50 BST",
-          "status": "finished",
-          "detail": "FURIA Esports 3 — 1 Cloud9",
+          "id": "1710953",
+          "title": "Opponents not supplied",
+          "when": "Sun 25 Oct 2026 17:00 GMT",
+          "status": "not_started",
+          "detail": "",
           "competition": "Worlds",
-          "source_url": "https://api.pandascore.co/matches/1710928",
-          "starts_at": "2026-10-16T20:50:01Z",
-          "completed": true
+          "source_url": "https://api.pandascore.co/matches/1710953",
+          "starts_at": "2026-10-25T17:00:00Z",
+          "completed": false
+        },
+        {
+          "id": "1710954",
+          "title": "Opponents not supplied",
+          "when": "Sun 25 Oct 2026 18:00 GMT",
+          "status": "not_started",
+          "detail": "",
+          "competition": "Worlds",
+          "source_url": "https://api.pandascore.co/matches/1710954",
+          "starts_at": "2026-10-25T18:00:00Z",
+          "completed": false
+        },
+        {
+          "id": "1710955",
+          "title": "Opponents not supplied",
+          "when": "Sun 25 Oct 2026 19:00 GMT",
+          "status": "not_started",
+          "detail": "",
+          "competition": "Worlds",
+          "source_url": "https://api.pandascore.co/matches/1710955",
+          "starts_at": "2026-10-25T19:00:00Z",
+          "completed": false
         }
       ]
     },
@@ -323,7 +334,7 @@
       "id": "385c7d7fbe7d8716",
       "topic": "Formula 1 · schedule and classification",
       "summary": "",
-      "updated_at": "2026-10-17T06:00:00+01:00",
+      "updated_at": "2026-10-18T06:00:00+01:00",
       "status": "provider-data",
       "sources": [
         {
@@ -356,7 +367,7 @@
       "id": "b08bc42d1737ca5e",
       "topic": "Wales men · international football",
       "summary": "",
-      "updated_at": "2026-10-17T06:00:00+01:00",
+      "updated_at": "2026-10-18T06:00:00+01:00",
       "status": "provider-data",
       "sources": [
         {
@@ -434,17 +445,47 @@
     }
   ],
   "today": {
-    "date": "2026-10-17",
-    "updated_at": "2026-10-17T06:00:00+01:00",
+    "date": "2026-10-18",
+    "updated_at": "2026-10-18T06:00:00+01:00",
     "timezone": "Europe/London",
     "items": [
       {
-        "id": "lol-1710929",
+        "id": "manutd-401879260",
+        "group": "manutd",
+        "title": "Leeds United vs Manchester United",
+        "competition": "English Premier League",
+        "starts_at": "2026-10-18T13:00Z",
+        "when": "Sun 18 Oct 2026 14:00 BST",
+        "status": "Scheduled",
+        "detail": "",
+        "viewing": [
+          {
+            "label": "Sky Sports Main Event",
+            "url": "https://www.live-footballontv.com/man-utd-on-tv.html",
+            "kind": "tv"
+          },
+          {
+            "label": "Sky Sports Ultra HDR",
+            "url": "https://www.live-footballontv.com/man-utd-on-tv.html",
+            "kind": "tv"
+          }
+        ],
+        "viewing_status": "listed",
+        "sources": [
+          {
+            "title": "ESPN fixtures and results",
+            "url": "https://www.espn.com/soccer/team/fixtures/_/id/360/manchester-united"
+          }
+        ],
+        "updated_at": "2026-10-18T06:00:00+01:00"
+      },
+      {
+        "id": "lol-1710931",
         "group": "lol",
-        "title": "MVK Esports vs FURIA Esports",
+        "title": "Karmine Corp vs MVK Esports",
         "competition": "Worlds",
-        "starts_at": "2026-10-17T18:00:00Z",
-        "when": "Sat 17 Oct 2026 19:00 BST",
+        "starts_at": "2026-10-18T18:00:00Z",
+        "when": "Sun 18 Oct 2026 19:00 BST",
         "status": "not_started",
         "detail": "",
         "viewing": [
@@ -461,14 +502,14 @@
             "url": "https://developers.pandascore.co/"
           }
         ],
-        "updated_at": "2026-10-17T06:00:00+01:00"
+        "updated_at": "2026-10-18T06:00:00+01:00"
       }
     ],
     "coverage": [
       {
         "group": "manutd",
         "status": "checked",
-        "matches": 0
+        "matches": 1
       },
       {
         "group": "lol",
