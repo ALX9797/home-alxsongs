@@ -1,12 +1,12 @@
 {
   "version": 2,
-  "updated_at": "2026-10-18T06:00:00+01:00",
+  "updated_at": "2026-10-19T06:00:00+01:00",
   "items": [
     {
       "id": "3addcc24b497faf6",
       "topic": "Manchester United · all competitions",
       "summary": "",
-      "updated_at": "2026-10-18T06:00:00+01:00",
+      "updated_at": "2026-10-19T06:00:00+01:00",
       "status": "provider-data",
       "sources": [
         {
@@ -15,19 +15,6 @@
         }
       ],
       "facts": [
-        {
-          "id": "401879260",
-          "title": "Leeds United vs Manchester United",
-          "when": "Sun 18 Oct 2026 14:00 BST",
-          "status": "Scheduled",
-          "detail": "",
-          "competition": "English Premier League",
-          "source_url": "https://www.espn.com/soccer/match/_/gameId/401879260",
-          "starts_at": "2026-10-18T13:00Z",
-          "completed": false,
-          "state": "pre",
-          "outcome": null
-        },
         {
           "id": "401915395",
           "title": "Como vs Manchester United",
@@ -55,6 +42,32 @@
           "outcome": null
         },
         {
+          "id": "401879248",
+          "title": "Chelsea vs Manchester United",
+          "when": "Sat 31 Oct 2026 12:30 GMT",
+          "status": "Scheduled",
+          "detail": "",
+          "competition": "English Premier League",
+          "source_url": "https://www.espn.com/soccer/match/_/gameId/401879248",
+          "starts_at": "2026-10-31T12:30Z",
+          "completed": false,
+          "state": "pre",
+          "outcome": null
+        },
+        {
+          "id": "401879260",
+          "title": "Leeds United vs Manchester United",
+          "when": "Sun 18 Oct 2026 14:00 BST",
+          "status": "Full Time",
+          "detail": "Leeds United 1 — 1 Manchester United",
+          "competition": "English Premier League",
+          "source_url": "https://www.espn.com/soccer/match/_/gameId/401879260",
+          "starts_at": "2026-10-18T13:00Z",
+          "completed": true,
+          "state": "post",
+          "outcome": "draw"
+        },
+        {
           "id": "401915412",
           "title": "Atlético Madrid vs Manchester United",
           "when": "Tue 13 Oct 2026 20:00 BST",
@@ -79,27 +92,14 @@
           "completed": true,
           "state": "post",
           "outcome": "draw"
-        },
-        {
-          "id": "401878777",
-          "title": "Fulham vs Manchester United",
-          "when": "Sun 20 Sep 2026 16:30 BST",
-          "status": "Full Time",
-          "detail": "Fulham 1 — 1 Manchester United",
-          "competition": "English Premier League",
-          "source_url": "https://www.espn.com/soccer/match/_/gameId/401878777",
-          "starts_at": "2026-09-20T15:30Z",
-          "completed": true,
-          "state": "post",
-          "outcome": "draw"
         }
       ]
     },
     {
       "id": "359bde922ce0d9f2",
-      "topic": "LoL · 2026-10-17 to 2026-10-25 (UTC window)",
+      "topic": "LoL · 2026-10-18 to 2026-10-26 (UTC window)",
       "summary": "",
-      "updated_at": "2026-10-18T06:00:00+01:00",
+      "updated_at": "2026-10-19T06:00:00+01:00",
       "status": "provider-data",
       "sources": [
         {
@@ -109,19 +109,8 @@
       ],
       "facts": [
         {
-          "id": "1710931",
-          "title": "Karmine Corp vs MVK Esports",
-          "when": "Sun 18 Oct 2026 19:00 BST",
-          "status": "not_started",
-          "detail": "",
-          "competition": "Worlds",
-          "source_url": "https://api.pandascore.co/matches/1710931",
-          "starts_at": "2026-10-18T18:00:00Z",
-          "completed": false
-        },
-        {
           "id": "1710932",
-          "title": "Opponents not supplied",
+          "title": "Gen.G vs Invictus Gaming",
           "when": "Fri 23 Oct 2026 18:00 BST",
           "status": "not_started",
           "detail": "",
@@ -132,7 +121,7 @@
         },
         {
           "id": "1710933",
-          "title": "Opponents not supplied",
+          "title": "Team Liquid vs CTBC Flying Oyster",
           "when": "Fri 23 Oct 2026 19:00 BST",
           "status": "not_started",
           "detail": "",
@@ -143,7 +132,7 @@
         },
         {
           "id": "1710934",
-          "title": "Opponents not supplied",
+          "title": "Anyone's Legend vs Karmine Corp",
           "when": "Fri 23 Oct 2026 20:00 BST",
           "status": "not_started",
           "detail": "",
@@ -154,7 +143,7 @@
         },
         {
           "id": "1710935",
-          "title": "Opponents not supplied",
+          "title": "G2 Esports vs Dplus KIA",
           "when": "Fri 23 Oct 2026 21:00 BST",
           "status": "not_started",
           "detail": "",
@@ -165,7 +154,7 @@
         },
         {
           "id": "1710936",
-          "title": "Opponents not supplied",
+          "title": "Hanwha Life Esports vs Top Esports",
           "when": "Fri 23 Oct 2026 22:00 BST",
           "status": "not_started",
           "detail": "",
@@ -176,7 +165,7 @@
         },
         {
           "id": "1710937",
-          "title": "Opponents not supplied",
+          "title": "LOS vs T1",
           "when": "Fri 23 Oct 2026 23:00 BST",
           "status": "not_started",
           "detail": "",
@@ -187,7 +176,7 @@
         },
         {
           "id": "1710938",
-          "title": "Opponents not supplied",
+          "title": "Team Secret Whales vs LYON",
           "when": "Sat 24 Oct 2026 00:00 BST",
           "status": "not_started",
           "detail": "",
@@ -198,7 +187,7 @@
         },
         {
           "id": "1710939",
-          "title": "Opponents not supplied",
+          "title": "Bilibili Gaming vs Movistar KOI",
           "when": "Sat 24 Oct 2026 01:00 BST",
           "status": "not_started",
           "detail": "",
@@ -327,6 +316,17 @@
           "source_url": "https://api.pandascore.co/matches/1710955",
           "starts_at": "2026-10-25T19:00:00Z",
           "completed": false
+        },
+        {
+          "id": "1710956",
+          "title": "Opponents not supplied",
+          "when": "Sun 25 Oct 2026 22:00 GMT",
+          "status": "not_started",
+          "detail": "",
+          "competition": "Worlds",
+          "source_url": "https://api.pandascore.co/matches/1710956",
+          "starts_at": "2026-10-25T22:00:00Z",
+          "completed": false
         }
       ]
     },
@@ -334,7 +334,7 @@
       "id": "385c7d7fbe7d8716",
       "topic": "Formula 1 · schedule and classification",
       "summary": "",
-      "updated_at": "2026-10-18T06:00:00+01:00",
+      "updated_at": "2026-10-19T06:00:00+01:00",
       "status": "provider-data",
       "sources": [
         {
@@ -367,7 +367,7 @@
       "id": "b08bc42d1737ca5e",
       "topic": "Wales men · international football",
       "summary": "",
-      "updated_at": "2026-10-18T06:00:00+01:00",
+      "updated_at": "2026-10-19T06:00:00+01:00",
       "status": "provider-data",
       "sources": [
         {
@@ -445,76 +445,20 @@
     }
   ],
   "today": {
-    "date": "2026-10-18",
-    "updated_at": "2026-10-18T06:00:00+01:00",
+    "date": "2026-10-19",
+    "updated_at": "2026-10-19T06:00:00+01:00",
     "timezone": "Europe/London",
-    "items": [
-      {
-        "id": "manutd-401879260",
-        "group": "manutd",
-        "title": "Leeds United vs Manchester United",
-        "competition": "English Premier League",
-        "starts_at": "2026-10-18T13:00Z",
-        "when": "Sun 18 Oct 2026 14:00 BST",
-        "status": "Scheduled",
-        "detail": "",
-        "viewing": [
-          {
-            "label": "Sky Sports Main Event",
-            "url": "https://www.live-footballontv.com/man-utd-on-tv.html",
-            "kind": "tv"
-          },
-          {
-            "label": "Sky Sports Ultra HDR",
-            "url": "https://www.live-footballontv.com/man-utd-on-tv.html",
-            "kind": "tv"
-          }
-        ],
-        "viewing_status": "listed",
-        "sources": [
-          {
-            "title": "ESPN fixtures and results",
-            "url": "https://www.espn.com/soccer/team/fixtures/_/id/360/manchester-united"
-          }
-        ],
-        "updated_at": "2026-10-18T06:00:00+01:00"
-      },
-      {
-        "id": "lol-1710931",
-        "group": "lol",
-        "title": "Karmine Corp vs MVK Esports",
-        "competition": "Worlds",
-        "starts_at": "2026-10-18T18:00:00Z",
-        "when": "Sun 18 Oct 2026 19:00 BST",
-        "status": "not_started",
-        "detail": "",
-        "viewing": [
-          {
-            "label": "Official English stream (twitch.tv)",
-            "url": "https://www.twitch.tv/riotgames",
-            "kind": "stream"
-          }
-        ],
-        "viewing_status": "listed",
-        "sources": [
-          {
-            "title": "PandaScore API records (requires access)",
-            "url": "https://developers.pandascore.co/"
-          }
-        ],
-        "updated_at": "2026-10-18T06:00:00+01:00"
-      }
-    ],
+    "items": [],
     "coverage": [
       {
         "group": "manutd",
         "status": "checked",
-        "matches": 1
+        "matches": 0
       },
       {
         "group": "lol",
         "status": "checked",
-        "matches": 1
+        "matches": 0
       },
       {
         "group": "f1",
