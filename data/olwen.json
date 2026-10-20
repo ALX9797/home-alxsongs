@@ -1,12 +1,12 @@
 {
   "version": 2,
-  "updated_at": "2026-10-19T06:00:00+01:00",
+  "updated_at": "2026-10-20T06:00:00+01:00",
   "items": [
     {
       "id": "3addcc24b497faf6",
       "topic": "Manchester United · all competitions",
       "summary": "",
-      "updated_at": "2026-10-19T06:00:00+01:00",
+      "updated_at": "2026-10-20T06:00:00+01:00",
       "status": "provider-data",
       "sources": [
         {
@@ -97,9 +97,9 @@
     },
     {
       "id": "359bde922ce0d9f2",
-      "topic": "LoL · 2026-10-18 to 2026-10-26 (UTC window)",
+      "topic": "LoL · 2026-10-19 to 2026-10-27 (UTC window)",
       "summary": "",
-      "updated_at": "2026-10-19T06:00:00+01:00",
+      "updated_at": "2026-10-20T06:00:00+01:00",
       "status": "provider-data",
       "sources": [
         {
@@ -334,7 +334,7 @@
       "id": "385c7d7fbe7d8716",
       "topic": "Formula 1 · schedule and classification",
       "summary": "",
-      "updated_at": "2026-10-19T06:00:00+01:00",
+      "updated_at": "2026-10-20T06:00:00+01:00",
       "status": "provider-data",
       "sources": [
         {
@@ -367,7 +367,7 @@
       "id": "b08bc42d1737ca5e",
       "topic": "Wales men · international football",
       "summary": "",
-      "updated_at": "2026-10-19T06:00:00+01:00",
+      "updated_at": "2026-10-20T06:00:00+01:00",
       "status": "provider-data",
       "sources": [
         {
@@ -445,8 +445,8 @@
     }
   ],
   "today": {
-    "date": "2026-10-19",
-    "updated_at": "2026-10-19T06:00:00+01:00",
+    "date": "2026-10-20",
+    "updated_at": "2026-10-20T06:00:00+01:00",
     "timezone": "Europe/London",
     "items": [],
     "coverage": [
