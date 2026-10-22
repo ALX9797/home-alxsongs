@@ -1,12 +1,12 @@
 {
   "version": 2,
-  "updated_at": "2026-10-21T06:00:00+01:00",
+  "updated_at": "2026-10-22T06:00:00+01:00",
   "items": [
     {
       "id": "3addcc24b497faf6",
       "topic": "Manchester United · all competitions",
       "summary": "",
-      "updated_at": "2026-10-21T06:00:00+01:00",
+      "updated_at": "2026-10-22T06:00:00+01:00",
       "status": "provider-data",
       "sources": [
         {
@@ -15,19 +15,6 @@
         }
       ],
       "facts": [
-        {
-          "id": "401915395",
-          "title": "Como vs Manchester United",
-          "when": "Wed 21 Oct 2026 17:45 BST",
-          "status": "Scheduled",
-          "detail": "",
-          "competition": "UEFA Champions League",
-          "source_url": "https://www.espn.com/soccer/match/_/gameId/401915395",
-          "starts_at": "2026-10-21T16:45Z",
-          "completed": false,
-          "state": "pre",
-          "outcome": null
-        },
         {
           "id": "401879252",
           "title": "Manchester United vs AFC Bournemouth",
@@ -55,6 +42,32 @@
           "outcome": null
         },
         {
+          "id": "401915308",
+          "title": "Manchester United vs AS Roma",
+          "when": "Tue 03 Nov 2026 20:00 GMT",
+          "status": "Scheduled",
+          "detail": "",
+          "competition": "UEFA Champions League",
+          "source_url": "https://www.espn.com/soccer/match/_/gameId/401915308",
+          "starts_at": "2026-11-03T20:00Z",
+          "completed": false,
+          "state": "pre",
+          "outcome": null
+        },
+        {
+          "id": "401915395",
+          "title": "Como vs Manchester United",
+          "when": "Wed 21 Oct 2026 17:45 BST",
+          "status": "Full Time",
+          "detail": "Como 4 — 1 Manchester United",
+          "competition": "UEFA Champions League",
+          "source_url": "https://www.espn.com/soccer/match/_/gameId/401915395",
+          "starts_at": "2026-10-21T16:45Z",
+          "completed": true,
+          "state": "post",
+          "outcome": "loss"
+        },
+        {
           "id": "401879260",
           "title": "Leeds United vs Manchester United",
           "when": "Sun 18 Oct 2026 14:00 BST",
@@ -79,27 +92,14 @@
           "completed": true,
           "state": "post",
           "outcome": "loss"
-        },
-        {
-          "id": "401878773",
-          "title": "Manchester United vs Tottenham Hotspur",
-          "when": "Sat 10 Oct 2026 17:30 BST",
-          "status": "Full Time",
-          "detail": "Manchester United 1 — 1 Tottenham Hotspur",
-          "competition": "English Premier League",
-          "source_url": "https://www.espn.com/soccer/match/_/gameId/401878773",
-          "starts_at": "2026-10-10T16:30Z",
-          "completed": true,
-          "state": "post",
-          "outcome": "draw"
         }
       ]
     },
     {
       "id": "359bde922ce0d9f2",
-      "topic": "LoL · 2026-10-20 to 2026-10-28 (UTC window)",
+      "topic": "LoL · 2026-10-21 to 2026-10-29 (UTC window)",
       "summary": "",
-      "updated_at": "2026-10-21T06:00:00+01:00",
+      "updated_at": "2026-10-22T06:00:00+01:00",
       "status": "provider-data",
       "sources": [
         {
@@ -334,7 +334,7 @@
       "id": "385c7d7fbe7d8716",
       "topic": "Formula 1 · schedule and classification",
       "summary": "",
-      "updated_at": "2026-10-21T06:00:00+01:00",
+      "updated_at": "2026-10-22T06:00:00+01:00",
       "status": "provider-data",
       "sources": [
         {
@@ -367,7 +367,7 @@
       "id": "b08bc42d1737ca5e",
       "topic": "Wales men · international football",
       "summary": "",
-      "updated_at": "2026-10-21T06:00:00+01:00",
+      "updated_at": "2026-10-22T06:00:00+01:00",
       "status": "provider-data",
       "sources": [
         {
@@ -445,46 +445,15 @@
     }
   ],
   "today": {
-    "date": "2026-10-21",
-    "updated_at": "2026-10-21T06:00:00+01:00",
+    "date": "2026-10-22",
+    "updated_at": "2026-10-22T06:00:00+01:00",
     "timezone": "Europe/London",
-    "items": [
-      {
-        "id": "manutd-401915395",
-        "group": "manutd",
-        "title": "Como vs Manchester United",
-        "competition": "UEFA Champions League",
-        "starts_at": "2026-10-21T16:45Z",
-        "when": "Wed 21 Oct 2026 17:45 BST",
-        "status": "Scheduled",
-        "detail": "",
-        "viewing": [
-          {
-            "label": "TNT Sports 2",
-            "url": "https://www.live-footballontv.com/man-utd-on-tv.html",
-            "kind": "tv"
-          },
-          {
-            "label": "HBO Max",
-            "url": "https://www.live-footballontv.com/man-utd-on-tv.html",
-            "kind": "tv"
-          }
-        ],
-        "viewing_status": "listed",
-        "sources": [
-          {
-            "title": "ESPN fixtures and results",
-            "url": "https://www.espn.com/soccer/team/fixtures/_/id/360/manchester-united"
-          }
-        ],
-        "updated_at": "2026-10-21T06:00:00+01:00"
-      }
-    ],
+    "items": [],
     "coverage": [
       {
         "group": "manutd",
         "status": "checked",
-        "matches": 1
+        "matches": 0
       },
       {
         "group": "lol",
