@@ -1,12 +1,12 @@
 {
   "version": 2,
-  "updated_at": "2026-10-25T06:00:03+00:00",
+  "updated_at": "2026-10-26T06:00:31+00:00",
   "items": [
     {
       "id": "3addcc24b497faf6",
       "topic": "Manchester United · all competitions",
       "summary": "",
-      "updated_at": "2026-10-25T06:00:03+00:00",
+      "updated_at": "2026-10-26T06:00:31+00:00",
       "status": "provider-data",
       "sources": [
         {
@@ -15,19 +15,6 @@
         }
       ],
       "facts": [
-        {
-          "id": "401879252",
-          "title": "Manchester United vs AFC Bournemouth",
-          "when": "Sun 25 Oct 2026 14:00 GMT",
-          "status": "Scheduled",
-          "detail": "",
-          "competition": "English Premier League",
-          "source_url": "https://www.espn.com/soccer/match/_/gameId/401879252",
-          "starts_at": "2026-10-25T14:00Z",
-          "completed": false,
-          "state": "pre",
-          "outcome": null
-        },
         {
           "id": "401879248",
           "title": "Chelsea vs Manchester United",
@@ -55,6 +42,32 @@
           "outcome": null
         },
         {
+          "id": "401879240",
+          "title": "Manchester United vs Aston Villa",
+          "when": "Sun 08 Nov 2026 16:30 GMT",
+          "status": "Scheduled",
+          "detail": "",
+          "competition": "English Premier League",
+          "source_url": "https://www.espn.com/soccer/match/_/gameId/401879240",
+          "starts_at": "2026-11-08T16:30Z",
+          "completed": false,
+          "state": "pre",
+          "outcome": null
+        },
+        {
+          "id": "401879252",
+          "title": "Manchester United vs AFC Bournemouth",
+          "when": "Sun 25 Oct 2026 14:00 GMT",
+          "status": "Full Time",
+          "detail": "Manchester United 0 — 3 AFC Bournemouth",
+          "competition": "English Premier League",
+          "source_url": "https://www.espn.com/soccer/match/_/gameId/401879252",
+          "starts_at": "2026-10-25T14:00Z",
+          "completed": true,
+          "state": "post",
+          "outcome": "loss"
+        },
+        {
           "id": "401915395",
           "title": "Como vs Manchester United",
           "when": "Wed 21 Oct 2026 17:45 BST",
@@ -79,27 +92,14 @@
           "completed": true,
           "state": "post",
           "outcome": "draw"
-        },
-        {
-          "id": "401915412",
-          "title": "Atlético Madrid vs Manchester United",
-          "when": "Tue 13 Oct 2026 20:00 BST",
-          "status": "Full Time",
-          "detail": "Atlético Madrid 2 — 0 Manchester United",
-          "competition": "UEFA Champions League",
-          "source_url": "https://www.espn.com/soccer/match/_/gameId/401915412",
-          "starts_at": "2026-10-13T19:00Z",
-          "completed": true,
-          "state": "post",
-          "outcome": "loss"
         }
       ]
     },
     {
       "id": "359bde922ce0d9f2",
-      "topic": "LoL · 2026-10-24 to 2026-11-01 (UTC window)",
+      "topic": "LoL · 2026-10-25 to 2026-11-02 (UTC window)",
       "summary": "",
-      "updated_at": "2026-10-25T06:00:03+00:00",
+      "updated_at": "2026-10-26T06:00:31+00:00",
       "status": "provider-data",
       "sources": [
         {
@@ -109,68 +109,24 @@
       ],
       "facts": [
         {
-          "id": "1710953",
-          "title": "Top Esports vs G2 Esports",
-          "when": "Sun 25 Oct 2026 17:00 GMT",
+          "id": "1710998",
+          "title": "T1 vs CTBC Flying Oyster",
+          "when": "Mon 26 Oct 2026 17:00 GMT",
           "status": "not_started",
           "detail": "",
           "competition": "Worlds",
-          "source_url": "https://api.pandascore.co/matches/1710953",
-          "starts_at": "2026-10-25T17:00:00Z",
-          "completed": false
-        },
-        {
-          "id": "1710954",
-          "title": "Hanwha Life Esports vs Invictus Gaming",
-          "when": "Sun 25 Oct 2026 18:00 GMT",
-          "status": "not_started",
-          "detail": "",
-          "competition": "Worlds",
-          "source_url": "https://api.pandascore.co/matches/1710954",
-          "starts_at": "2026-10-25T18:00:00Z",
-          "completed": false
-        },
-        {
-          "id": "1710955",
-          "title": "Gen.G vs LYON",
-          "when": "Sun 25 Oct 2026 19:00 GMT",
-          "status": "not_started",
-          "detail": "",
-          "competition": "Worlds",
-          "source_url": "https://api.pandascore.co/matches/1710955",
-          "starts_at": "2026-10-25T19:00:00Z",
-          "completed": false
-        },
-        {
-          "id": "1710956",
-          "title": "Dplus KIA vs Movistar KOI",
-          "when": "Sun 25 Oct 2026 22:00 GMT",
-          "status": "not_started",
-          "detail": "",
-          "competition": "Worlds",
-          "source_url": "https://api.pandascore.co/matches/1710956",
-          "starts_at": "2026-10-25T22:00:00Z",
+          "source_url": "https://api.pandascore.co/matches/1710998",
+          "starts_at": "2026-10-26T17:00:00Z",
           "completed": false
         },
         {
           "id": "1710997",
           "title": "Karmine Corp vs Bilibili Gaming",
-          "when": "Mon 26 Oct 2026 17:00 GMT",
-          "status": "not_started",
-          "detail": "",
-          "competition": "Worlds",
-          "source_url": "https://api.pandascore.co/matches/1710997",
-          "starts_at": "2026-10-26T17:00:00Z",
-          "completed": false
-        },
-        {
-          "id": "1710998",
-          "title": "T1 vs CTBC Flying Oyster",
           "when": "Mon 26 Oct 2026 18:00 GMT",
           "status": "not_started",
           "detail": "",
           "competition": "Worlds",
-          "source_url": "https://api.pandascore.co/matches/1710998",
+          "source_url": "https://api.pandascore.co/matches/1710997",
           "starts_at": "2026-10-26T18:00:00Z",
           "completed": false
         },
@@ -296,36 +252,58 @@
           "completed": false
         },
         {
-          "id": "1710938",
-          "title": "Team Secret Whales vs LYON",
-          "when": "Sat 24 Oct 2026 01:07 BST",
+          "id": "1710947",
+          "title": "Team Liquid vs Bilibili Gaming",
+          "when": "Sun 25 Oct 2026 01:21 BST",
           "status": "finished",
-          "detail": "Team Secret Whales 0 — 1 LYON",
+          "detail": "Team Liquid 0 — 1 Bilibili Gaming",
           "competition": "Worlds",
-          "source_url": "https://api.pandascore.co/matches/1710938",
-          "starts_at": "2026-10-24T00:07:24Z",
+          "source_url": "https://api.pandascore.co/matches/1710947",
+          "starts_at": "2026-10-25T00:21:24Z",
           "completed": true
         },
         {
-          "id": "1710946",
-          "title": "Top Esports vs Anyone's Legend",
-          "when": "Sat 24 Oct 2026 18:05 BST",
+          "id": "1710954",
+          "title": "Hanwha Life Esports vs Invictus Gaming",
+          "when": "Sun 25 Oct 2026 17:05 GMT",
           "status": "finished",
-          "detail": "Top Esports 1 — 0 Anyone's Legend",
+          "detail": "Hanwha Life Esports 0 — 1 Invictus Gaming",
           "competition": "Worlds",
-          "source_url": "https://api.pandascore.co/matches/1710946",
-          "starts_at": "2026-10-24T17:05:57Z",
+          "source_url": "https://api.pandascore.co/matches/1710954",
+          "starts_at": "2026-10-25T17:05:54Z",
           "completed": true
         },
         {
-          "id": "1710941",
-          "title": "CTBC Flying Oyster vs Movistar KOI",
-          "when": "Sat 24 Oct 2026 19:01 BST",
+          "id": "1710953",
+          "title": "Top Esports vs G2 Esports",
+          "when": "Sun 25 Oct 2026 18:06 GMT",
           "status": "finished",
-          "detail": "CTBC Flying Oyster 0 — 1 Movistar KOI",
+          "detail": "Top Esports 1 — 0 G2 Esports",
           "competition": "Worlds",
-          "source_url": "https://api.pandascore.co/matches/1710941",
-          "starts_at": "2026-10-24T18:01:53Z",
+          "source_url": "https://api.pandascore.co/matches/1710953",
+          "starts_at": "2026-10-25T18:06:17Z",
+          "completed": true
+        },
+        {
+          "id": "1710956",
+          "title": "Dplus KIA vs Movistar KOI",
+          "when": "Sun 25 Oct 2026 19:06 GMT",
+          "status": "finished",
+          "detail": "Dplus KIA 2 — 0 Movistar KOI",
+          "competition": "Worlds",
+          "source_url": "https://api.pandascore.co/matches/1710956",
+          "starts_at": "2026-10-25T19:06:36Z",
+          "completed": true
+        },
+        {
+          "id": "1710955",
+          "title": "Gen.G vs LYON",
+          "when": "Sun 25 Oct 2026 20:53 GMT",
+          "status": "finished",
+          "detail": "Gen.G 2 — 1 LYON",
+          "competition": "Worlds",
+          "source_url": "https://api.pandascore.co/matches/1710955",
+          "starts_at": "2026-10-25T20:53:50Z",
           "completed": true
         }
       ]
@@ -334,7 +312,7 @@
       "id": "385c7d7fbe7d8716",
       "topic": "Formula 1 · schedule and classification",
       "summary": "",
-      "updated_at": "2026-10-25T06:00:03+00:00",
+      "updated_at": "2026-10-26T06:00:31+00:00",
       "status": "provider-data",
       "sources": [
         {
@@ -344,21 +322,21 @@
       ],
       "facts": [
         {
-          "id": "next-2026-18",
-          "title": "United States Grand Prix",
-          "when": "Sun 25 Oct 2026 20:00 GMT",
+          "id": "next-2026-19",
+          "title": "Mexico City Grand Prix",
+          "when": "Sun 01 Nov 2026 20:00 GMT",
           "status": "Next race in provider schedule",
-          "detail": "Circuit of the Americas",
-          "competition": "Formula 1 · round 18",
+          "detail": "Autódromo Hermanos Rodríguez",
+          "competition": "Formula 1 · round 19",
           "source_url": "https://api.jolpi.ca/ergast/f1/current/next.json"
         },
         {
-          "id": "last-2026-17",
-          "title": "Singapore Grand Prix",
-          "when": "2026-10-11",
+          "id": "last-2026-18",
+          "title": "United States Grand Prix",
+          "when": "2026-10-25",
           "status": "Latest published race result · top five",
-          "detail": "1. Max Verstappen · Red Bull · 25 points · Finished\n2. Charles Leclerc · Ferrari · 18 points · Finished\n3. Andrea Kimi Antonelli · Mercedes · 15 points · Finished\n4. Lando Norris · McLaren · 12 points · Finished\n5. Oscar Piastri · McLaren · 10 points · Finished",
-          "competition": "Formula 1 · round 17",
+          "detail": "1. Andrea Kimi Antonelli · Mercedes · 25 points · Finished\n2. Charles Leclerc · Ferrari · 18 points · Finished\n3. Max Verstappen · Red Bull · 15 points · Finished\n4. Lewis Hamilton · Ferrari · 12 points · Finished\n5. Lando Norris · McLaren · 10 points · Finished",
+          "competition": "Formula 1 · round 18",
           "source_url": "https://api.jolpi.ca/ergast/f1/current/last/results.json"
         }
       ]
@@ -367,7 +345,7 @@
       "id": "b08bc42d1737ca5e",
       "topic": "Wales men · international football",
       "summary": "",
-      "updated_at": "2026-10-25T06:00:03+00:00",
+      "updated_at": "2026-10-26T06:00:31+00:00",
       "status": "provider-data",
       "sources": [
         {
@@ -445,97 +423,17 @@
     }
   ],
   "today": {
-    "date": "2026-10-25",
-    "updated_at": "2026-10-25T06:00:03+00:00",
+    "date": "2026-10-26",
+    "updated_at": "2026-10-26T06:00:31+00:00",
     "timezone": "Europe/London",
     "items": [
       {
-        "id": "lol-1710940",
+        "id": "lol-1710998",
         "group": "lol",
-        "title": "Dplus KIA vs T1",
+        "title": "T1 vs CTBC Flying Oyster",
         "competition": "Worlds",
-        "starts_at": "2026-10-24T23:14:09Z",
-        "when": "Sun 25 Oct 2026 00:14 BST",
-        "status": "finished",
-        "detail": "Dplus KIA 1 — 0 T1",
-        "viewing": [
-          {
-            "label": "Official English stream (twitch.tv)",
-            "url": "https://www.twitch.tv/riotgames",
-            "kind": "stream"
-          }
-        ],
-        "viewing_status": "listed",
-        "sources": [
-          {
-            "title": "PandaScore API records (requires access)",
-            "url": "https://developers.pandascore.co/"
-          }
-        ],
-        "updated_at": "2026-10-25T06:00:03+00:00"
-      },
-      {
-        "id": "lol-1710947",
-        "group": "lol",
-        "title": "Team Liquid vs Bilibili Gaming",
-        "competition": "Worlds",
-        "starts_at": "2026-10-25T00:21:24Z",
-        "when": "Sun 25 Oct 2026 01:21 BST",
-        "status": "finished",
-        "detail": "Team Liquid 0 — 1 Bilibili Gaming",
-        "viewing": [
-          {
-            "label": "Official English stream (twitch.tv)",
-            "url": "https://www.twitch.tv/riotgames",
-            "kind": "stream"
-          }
-        ],
-        "viewing_status": "listed",
-        "sources": [
-          {
-            "title": "PandaScore API records (requires access)",
-            "url": "https://developers.pandascore.co/"
-          }
-        ],
-        "updated_at": "2026-10-25T06:00:03+00:00"
-      },
-      {
-        "id": "manutd-401879252",
-        "group": "manutd",
-        "title": "Manchester United vs AFC Bournemouth",
-        "competition": "English Premier League",
-        "starts_at": "2026-10-25T14:00Z",
-        "when": "Sun 25 Oct 2026 14:00 GMT",
-        "status": "Scheduled",
-        "detail": "",
-        "viewing": [
-          {
-            "label": "Sky Sports Main Event",
-            "url": "https://www.live-footballontv.com/man-utd-on-tv.html",
-            "kind": "tv"
-          },
-          {
-            "label": "Sky Sports Ultra HDR",
-            "url": "https://www.live-footballontv.com/man-utd-on-tv.html",
-            "kind": "tv"
-          }
-        ],
-        "viewing_status": "listed",
-        "sources": [
-          {
-            "title": "ESPN fixtures and results",
-            "url": "https://www.espn.com/soccer/team/fixtures/_/id/360/manchester-united"
-          }
-        ],
-        "updated_at": "2026-10-25T06:00:03+00:00"
-      },
-      {
-        "id": "lol-1710953",
-        "group": "lol",
-        "title": "Top Esports vs G2 Esports",
-        "competition": "Worlds",
-        "starts_at": "2026-10-25T17:00:00Z",
-        "when": "Sun 25 Oct 2026 17:00 GMT",
+        "starts_at": "2026-10-26T17:00:00Z",
+        "when": "Mon 26 Oct 2026 17:00 GMT",
         "status": "not_started",
         "detail": "",
         "viewing": [],
@@ -546,15 +444,15 @@
             "url": "https://developers.pandascore.co/"
           }
         ],
-        "updated_at": "2026-10-25T06:00:03+00:00"
+        "updated_at": "2026-10-26T06:00:31+00:00"
       },
       {
-        "id": "lol-1710954",
+        "id": "lol-1710997",
         "group": "lol",
-        "title": "Hanwha Life Esports vs Invictus Gaming",
+        "title": "Karmine Corp vs Bilibili Gaming",
         "competition": "Worlds",
-        "starts_at": "2026-10-25T18:00:00Z",
-        "when": "Sun 25 Oct 2026 18:00 GMT",
+        "starts_at": "2026-10-26T18:00:00Z",
+        "when": "Mon 26 Oct 2026 18:00 GMT",
         "status": "not_started",
         "detail": "",
         "viewing": [],
@@ -565,15 +463,15 @@
             "url": "https://developers.pandascore.co/"
           }
         ],
-        "updated_at": "2026-10-25T06:00:03+00:00"
+        "updated_at": "2026-10-26T06:00:31+00:00"
       },
       {
-        "id": "lol-1710955",
+        "id": "lol-1710999",
         "group": "lol",
-        "title": "Gen.G vs LYON",
+        "title": "LOS vs Team Secret Whales",
         "competition": "Worlds",
-        "starts_at": "2026-10-25T19:00:00Z",
-        "when": "Sun 25 Oct 2026 19:00 GMT",
+        "starts_at": "2026-10-26T19:00:00Z",
+        "when": "Mon 26 Oct 2026 19:00 GMT",
         "status": "not_started",
         "detail": "",
         "viewing": [],
@@ -584,34 +482,15 @@
             "url": "https://developers.pandascore.co/"
           }
         ],
-        "updated_at": "2026-10-25T06:00:03+00:00"
+        "updated_at": "2026-10-26T06:00:31+00:00"
       },
       {
-        "id": "f1-next-2026-18",
-        "group": "f1",
-        "title": "United States Grand Prix",
-        "competition": "Formula 1 · round 18",
-        "starts_at": "2026-10-25T20:00:00Z",
-        "when": "Sun 25 Oct 2026 20:00 GMT",
-        "status": "Next race in provider schedule",
-        "detail": "Circuit of the Americas",
-        "viewing": [],
-        "viewing_status": "UK broadcaster not confirmed",
-        "sources": [
-          {
-            "title": "Jolpica F1 data",
-            "url": "https://api.jolpi.ca/ergast/f1/current/next.json"
-          }
-        ],
-        "updated_at": "2026-10-25T06:00:03+00:00"
-      },
-      {
-        "id": "lol-1710956",
+        "id": "lol-1711000",
         "group": "lol",
-        "title": "Dplus KIA vs Movistar KOI",
+        "title": "Team Liquid vs Anyone's Legend",
         "competition": "Worlds",
-        "starts_at": "2026-10-25T22:00:00Z",
-        "when": "Sun 25 Oct 2026 22:00 GMT",
+        "starts_at": "2026-10-26T22:00:00Z",
+        "when": "Mon 26 Oct 2026 22:00 GMT",
         "status": "not_started",
         "detail": "",
         "viewing": [],
@@ -622,24 +501,24 @@
             "url": "https://developers.pandascore.co/"
           }
         ],
-        "updated_at": "2026-10-25T06:00:03+00:00"
+        "updated_at": "2026-10-26T06:00:31+00:00"
       }
     ],
     "coverage": [
       {
         "group": "manutd",
         "status": "checked",
-        "matches": 1
+        "matches": 0
       },
       {
         "group": "lol",
         "status": "checked",
-        "matches": 6
+        "matches": 4
       },
       {
         "group": "f1",
         "status": "checked",
-        "matches": 1
+        "matches": 0
       },
       {
         "group": "wales",
