@@ -1,12 +1,12 @@
 {
   "version": 2,
-  "updated_at": "2026-10-28T06:00:08+00:00",
+  "updated_at": "2026-10-29T06:00:04+00:00",
   "items": [
     {
       "id": "3addcc24b497faf6",
       "topic": "Manchester United · all competitions",
       "summary": "",
-      "updated_at": "2026-10-28T06:00:08+00:00",
+      "updated_at": "2026-10-29T06:00:04+00:00",
       "status": "provider-data",
       "sources": [
         {
@@ -97,9 +97,9 @@
     },
     {
       "id": "359bde922ce0d9f2",
-      "topic": "LoL · 2026-10-27 to 2026-11-04 (UTC window)",
+      "topic": "LoL · 2026-10-28 to 2026-11-05 (UTC window)",
       "summary": "",
-      "updated_at": "2026-10-28T06:00:08+00:00",
+      "updated_at": "2026-10-29T06:00:04+00:00",
       "status": "provider-data",
       "sources": [
         {
@@ -108,28 +108,6 @@
         }
       ],
       "facts": [
-        {
-          "id": "1711003",
-          "title": "Movistar KOI vs T1",
-          "when": "Wed 28 Oct 2026 20:00 GMT",
-          "status": "not_started",
-          "detail": "",
-          "competition": "Worlds",
-          "source_url": "https://api.pandascore.co/matches/1711003",
-          "starts_at": "2026-10-28T20:00:00Z",
-          "completed": false
-        },
-        {
-          "id": "1711002",
-          "title": "Invictus Gaming vs LYON",
-          "when": "Wed 28 Oct 2026 23:00 GMT",
-          "status": "not_started",
-          "detail": "",
-          "competition": "Worlds",
-          "source_url": "https://api.pandascore.co/matches/1711002",
-          "starts_at": "2026-10-28T23:00:00Z",
-          "completed": false
-        },
         {
           "id": "1711004",
           "title": "Karmine Corp vs CTBC Flying Oyster",
@@ -228,6 +206,39 @@
           "source_url": "https://api.pandascore.co/matches/1711016",
           "starts_at": "2026-11-04T22:00:00Z",
           "completed": false
+        },
+        {
+          "id": "1711017",
+          "title": "Opponents not supplied",
+          "when": "Thu 05 Nov 2026 22:00 GMT",
+          "status": "not_started",
+          "detail": "",
+          "competition": "Worlds",
+          "source_url": "https://api.pandascore.co/matches/1711017",
+          "starts_at": "2026-11-05T22:00:00Z",
+          "completed": false
+        },
+        {
+          "id": "1711003",
+          "title": "Movistar KOI vs T1",
+          "when": "Wed 28 Oct 2026 20:06 GMT",
+          "status": "finished",
+          "detail": "Movistar KOI 0 — 2 T1",
+          "competition": "Worlds",
+          "source_url": "https://api.pandascore.co/matches/1711003",
+          "starts_at": "2026-10-28T20:06:46Z",
+          "completed": true
+        },
+        {
+          "id": "1711002",
+          "title": "Invictus Gaming vs LYON",
+          "when": "Wed 28 Oct 2026 21:56 GMT",
+          "status": "finished",
+          "detail": "Invictus Gaming 2 — 1 LYON",
+          "competition": "Worlds",
+          "source_url": "https://api.pandascore.co/matches/1711002",
+          "starts_at": "2026-10-28T21:56:33Z",
+          "completed": true
         }
       ]
     },
@@ -235,7 +246,7 @@
       "id": "385c7d7fbe7d8716",
       "topic": "Formula 1 · schedule and classification",
       "summary": "",
-      "updated_at": "2026-10-28T06:00:08+00:00",
+      "updated_at": "2026-10-29T06:00:04+00:00",
       "status": "provider-data",
       "sources": [
         {
@@ -268,7 +279,7 @@
       "id": "b08bc42d1737ca5e",
       "topic": "Wales men · international football",
       "summary": "",
-      "updated_at": "2026-10-28T06:00:08+00:00",
+      "updated_at": "2026-10-29T06:00:04+00:00",
       "status": "provider-data",
       "sources": [
         {
@@ -346,17 +357,17 @@
     }
   ],
   "today": {
-    "date": "2026-10-28",
-    "updated_at": "2026-10-28T06:00:08+00:00",
+    "date": "2026-10-29",
+    "updated_at": "2026-10-29T06:00:04+00:00",
     "timezone": "Europe/London",
     "items": [
       {
-        "id": "lol-1711003",
+        "id": "lol-1711004",
         "group": "lol",
-        "title": "Movistar KOI vs T1",
+        "title": "Karmine Corp vs CTBC Flying Oyster",
         "competition": "Worlds",
-        "starts_at": "2026-10-28T20:00:00Z",
-        "when": "Wed 28 Oct 2026 20:00 GMT",
+        "starts_at": "2026-10-29T20:00:00Z",
+        "when": "Thu 29 Oct 2026 20:00 GMT",
         "status": "not_started",
         "detail": "",
         "viewing": [
@@ -373,15 +384,15 @@
             "url": "https://developers.pandascore.co/"
           }
         ],
-        "updated_at": "2026-10-28T06:00:08+00:00"
+        "updated_at": "2026-10-29T06:00:04+00:00"
       },
       {
-        "id": "lol-1711002",
+        "id": "lol-1711001",
         "group": "lol",
-        "title": "Invictus Gaming vs LYON",
+        "title": "Top Esports vs Bilibili Gaming",
         "competition": "Worlds",
-        "starts_at": "2026-10-28T23:00:00Z",
-        "when": "Wed 28 Oct 2026 23:00 GMT",
+        "starts_at": "2026-10-29T23:00:00Z",
+        "when": "Thu 29 Oct 2026 23:00 GMT",
         "status": "not_started",
         "detail": "",
         "viewing": [
@@ -398,7 +409,7 @@
             "url": "https://developers.pandascore.co/"
           }
         ],
-        "updated_at": "2026-10-28T06:00:08+00:00"
+        "updated_at": "2026-10-29T06:00:04+00:00"
       }
     ],
     "coverage": [
