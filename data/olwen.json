@@ -1,12 +1,12 @@
 {
   "version": 2,
-  "updated_at": "2026-10-30T06:00:03+00:00",
+  "updated_at": "2026-10-31T06:00:03+00:00",
   "items": [
     {
       "id": "3addcc24b497faf6",
       "topic": "Manchester United · all competitions",
       "summary": "",
-      "updated_at": "2026-10-30T06:00:03+00:00",
+      "updated_at": "2026-10-31T06:00:03+00:00",
       "status": "provider-data",
       "sources": [
         {
@@ -97,9 +97,9 @@
     },
     {
       "id": "359bde922ce0d9f2",
-      "topic": "LoL · 2026-10-29 to 2026-11-06 (UTC window)",
+      "topic": "LoL · 2026-10-30 to 2026-11-07 (UTC window)",
       "summary": "",
-      "updated_at": "2026-10-30T06:00:03+00:00",
+      "updated_at": "2026-10-31T06:00:03+00:00",
       "status": "provider-data",
       "sources": [
         {
@@ -109,30 +109,8 @@
       ],
       "facts": [
         {
-          "id": "1711005",
-          "title": "Team Liquid vs LOS",
-          "when": "Fri 30 Oct 2026 20:00 GMT",
-          "status": "not_started",
-          "detail": "",
-          "competition": "Worlds",
-          "source_url": "https://api.pandascore.co/matches/1711005",
-          "starts_at": "2026-10-30T20:00:00Z",
-          "completed": false
-        },
-        {
-          "id": "1711006",
-          "title": "Hanwha Life Esports vs G2 Esports",
-          "when": "Fri 30 Oct 2026 23:00 GMT",
-          "status": "not_started",
-          "detail": "",
-          "competition": "Worlds",
-          "source_url": "https://api.pandascore.co/matches/1711006",
-          "starts_at": "2026-10-30T23:00:00Z",
-          "completed": false
-        },
-        {
           "id": "1711008",
-          "title": "Opponents not supplied",
+          "title": "LOS vs LYON",
           "when": "Sat 31 Oct 2026 17:00 GMT",
           "status": "not_started",
           "detail": "",
@@ -143,7 +121,7 @@
         },
         {
           "id": "1711009",
-          "title": "Opponents not supplied",
+          "title": "Karmine Corp vs Movistar KOI",
           "when": "Sat 31 Oct 2026 20:00 GMT",
           "status": "not_started",
           "detail": "",
@@ -154,7 +132,7 @@
         },
         {
           "id": "1711010",
-          "title": "Opponents not supplied",
+          "title": "Hanwha Life Esports vs Bilibili Gaming",
           "when": "Sat 31 Oct 2026 23:00 GMT",
           "status": "not_started",
           "detail": "",
@@ -208,25 +186,36 @@
           "completed": false
         },
         {
-          "id": "1711004",
-          "title": "Karmine Corp vs CTBC Flying Oyster",
-          "when": "Thu 29 Oct 2026 20:05 GMT",
-          "status": "finished",
-          "detail": "Karmine Corp 2 — 0 CTBC Flying Oyster",
+          "id": "1711019",
+          "title": "Opponents not supplied",
+          "when": "Sat 07 Nov 2026 22:00 GMT",
+          "status": "not_started",
+          "detail": "",
           "competition": "Worlds",
-          "source_url": "https://api.pandascore.co/matches/1711004",
-          "starts_at": "2026-10-29T20:05:50Z",
+          "source_url": "https://api.pandascore.co/matches/1711019",
+          "starts_at": "2026-11-07T22:00:00Z",
+          "completed": false
+        },
+        {
+          "id": "1711005",
+          "title": "Team Liquid vs LOS",
+          "when": "Fri 30 Oct 2026 20:13 GMT",
+          "status": "finished",
+          "detail": "Team Liquid 1 — 2 LOS",
+          "competition": "Worlds",
+          "source_url": "https://api.pandascore.co/matches/1711005",
+          "starts_at": "2026-10-30T20:13:42Z",
           "completed": true
         },
         {
-          "id": "1711001",
-          "title": "Top Esports vs Bilibili Gaming",
-          "when": "Thu 29 Oct 2026 22:32 GMT",
+          "id": "1711006",
+          "title": "Hanwha Life Esports vs G2 Esports",
+          "when": "Fri 30 Oct 2026 23:16 GMT",
           "status": "finished",
-          "detail": "Top Esports 2 — 1 Bilibili Gaming",
+          "detail": "Hanwha Life Esports 2 — 0 G2 Esports",
           "competition": "Worlds",
-          "source_url": "https://api.pandascore.co/matches/1711001",
-          "starts_at": "2026-10-29T22:32:45Z",
+          "source_url": "https://api.pandascore.co/matches/1711006",
+          "starts_at": "2026-10-30T23:16:03Z",
           "completed": true
         }
       ]
@@ -235,7 +224,7 @@
       "id": "385c7d7fbe7d8716",
       "topic": "Formula 1 · schedule and classification",
       "summary": "",
-      "updated_at": "2026-10-30T06:00:03+00:00",
+      "updated_at": "2026-10-31T06:00:03+00:00",
       "status": "provider-data",
       "sources": [
         {
@@ -268,7 +257,7 @@
       "id": "b08bc42d1737ca5e",
       "topic": "Wales men · international football",
       "summary": "",
-      "updated_at": "2026-10-30T06:00:03+00:00",
+      "updated_at": "2026-10-31T06:00:03+00:00",
       "status": "provider-data",
       "sources": [
         {
@@ -346,42 +335,52 @@
     }
   ],
   "today": {
-    "date": "2026-10-30",
-    "updated_at": "2026-10-30T06:00:03+00:00",
+    "date": "2026-10-31",
+    "updated_at": "2026-10-31T06:00:03+00:00",
     "timezone": "Europe/London",
     "items": [
       {
-        "id": "lol-1711005",
-        "group": "lol",
-        "title": "Team Liquid vs LOS",
-        "competition": "Worlds",
-        "starts_at": "2026-10-30T20:00:00Z",
-        "when": "Fri 30 Oct 2026 20:00 GMT",
-        "status": "not_started",
+        "id": "manutd-401879248",
+        "group": "manutd",
+        "title": "Chelsea vs Manchester United",
+        "competition": "English Premier League",
+        "starts_at": "2026-10-31T12:30Z",
+        "when": "Sat 31 Oct 2026 12:30 GMT",
+        "status": "Scheduled",
         "detail": "",
         "viewing": [
           {
-            "label": "Official English stream (youtube.com)",
-            "url": "https://www.youtube.com/@lolesports/live",
-            "kind": "stream"
+            "label": "TNT Sports 1",
+            "url": "https://www.live-footballontv.com/man-utd-on-tv.html",
+            "kind": "tv"
+          },
+          {
+            "label": "TNT Sports Ultimate",
+            "url": "https://www.live-footballontv.com/man-utd-on-tv.html",
+            "kind": "tv"
+          },
+          {
+            "label": "HBO Max",
+            "url": "https://www.live-footballontv.com/man-utd-on-tv.html",
+            "kind": "tv"
           }
         ],
         "viewing_status": "listed",
         "sources": [
           {
-            "title": "PandaScore API records (requires access)",
-            "url": "https://developers.pandascore.co/"
+            "title": "ESPN fixtures and results",
+            "url": "https://www.espn.com/soccer/team/fixtures/_/id/360/manchester-united"
           }
         ],
-        "updated_at": "2026-10-30T06:00:03+00:00"
+        "updated_at": "2026-10-31T06:00:03+00:00"
       },
       {
-        "id": "lol-1711006",
+        "id": "lol-1711008",
         "group": "lol",
-        "title": "Hanwha Life Esports vs G2 Esports",
+        "title": "LOS vs LYON",
         "competition": "Worlds",
-        "starts_at": "2026-10-30T23:00:00Z",
-        "when": "Fri 30 Oct 2026 23:00 GMT",
+        "starts_at": "2026-10-31T17:00:00Z",
+        "when": "Sat 31 Oct 2026 17:00 GMT",
         "status": "not_started",
         "detail": "",
         "viewing": [
@@ -398,19 +397,69 @@
             "url": "https://developers.pandascore.co/"
           }
         ],
-        "updated_at": "2026-10-30T06:00:03+00:00"
+        "updated_at": "2026-10-31T06:00:03+00:00"
+      },
+      {
+        "id": "lol-1711009",
+        "group": "lol",
+        "title": "Karmine Corp vs Movistar KOI",
+        "competition": "Worlds",
+        "starts_at": "2026-10-31T20:00:00Z",
+        "when": "Sat 31 Oct 2026 20:00 GMT",
+        "status": "not_started",
+        "detail": "",
+        "viewing": [
+          {
+            "label": "Official English stream (youtube.com)",
+            "url": "https://www.youtube.com/@lolesports/live",
+            "kind": "stream"
+          }
+        ],
+        "viewing_status": "listed",
+        "sources": [
+          {
+            "title": "PandaScore API records (requires access)",
+            "url": "https://developers.pandascore.co/"
+          }
+        ],
+        "updated_at": "2026-10-31T06:00:03+00:00"
+      },
+      {
+        "id": "lol-1711010",
+        "group": "lol",
+        "title": "Hanwha Life Esports vs Bilibili Gaming",
+        "competition": "Worlds",
+        "starts_at": "2026-10-31T23:00:00Z",
+        "when": "Sat 31 Oct 2026 23:00 GMT",
+        "status": "not_started",
+        "detail": "",
+        "viewing": [
+          {
+            "label": "Official English stream (youtube.com)",
+            "url": "https://www.youtube.com/@lolesports/live",
+            "kind": "stream"
+          }
+        ],
+        "viewing_status": "listed",
+        "sources": [
+          {
+            "title": "PandaScore API records (requires access)",
+            "url": "https://developers.pandascore.co/"
+          }
+        ],
+        "updated_at": "2026-10-31T06:00:03+00:00"
       }
     ],
     "coverage": [
       {
         "group": "manutd",
         "status": "checked",
-        "matches": 0
+        "matches": 1
       },
       {
         "group": "lol",
         "status": "checked",
-        "matches": 2
+        "matches": 3
       },
       {
         "group": "f1",
