@@ -351,6 +351,7 @@ html.ge-open, html.ge-open body{ overflow:hidden !important; }
 .ge.touring-world .ge-left{ transform:translateX(-24px); }
 .ge.touring-world .ge-right{ transform:translateX(24px); }
 #geTourBtn.on, #geWorldBtn.on{ background:var(--ge-hot); border-color:var(--ge-hot); color:#fff; }
+#geTourBtn.watched{ color:var(--ge-acc); border-color:rgba(255,255,255,.16); }
 
 /* the world tour's timeline: where each chapter sits in the last day */
 .ge-tl{

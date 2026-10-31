@@ -307,7 +307,7 @@ function build(){
         }).join("") +
       '</span>' +
       '<span class="ge-sep"></span>' +
-      '<button data-act="tour" id="geTourBtn" title="Tour: the last 24 hours on Earth (T)">▶ Tour</button>' +
+      '<button data-act="tour" id="geTourBtn" title="Daily world tour (T)">▶ Daily</button>' +
       '<button data-act="home" title="Back home (H)">⌂</button>' +
       '<button data-act="space" title="Pull back to orbit (O)">◎</button>' +
       '<button data-act="sound" id="geSndBtn" title="Sound (M)">♪</button>' +
@@ -322,7 +322,7 @@ function build(){
       '<dl>' +
         '<dt><kbd>drag</kbd> <kbd>scroll</kbd></dt><dd>spin and zoom the planet</dd>' +
         '<dt><kbd>click</kbd></dt><dd>lock onto anything: aircraft, satellites, quakes, the sun</dd>' +
-        '<dt><kbd>T</kbd></dt><dd>the tour: storms, fires, launches, news, quakes, extremes — the last 24 hours on Earth</dd>' +
+        '<dt><kbd>T</kbd></dt><dd>the daily tour: storms, fires, launches, news, quakes, extremes — one edition a day, around the world</dd>' +
         '<dt><kbd>space</kbd> / <kbd>N</kbd></dt><dd>next target</dd>' +
         '<dt><kbd>1</kbd>–<kbd>4</kbd></dt><dd>optic · holo · night vision · thermal</dd>' +
         '<dt><kbd>H</kbd> <kbd>O</kbd></dt><dd>home · pull back to orbit</dd>' +
@@ -333,8 +333,8 @@ function build(){
       '<p>Aircraft: live ADS-B within ' + RANGE_NM + ' nm, plus every airborne aircraft worldwide from OpenSky (blue dots; amber = heavy jets). ' +
       'Zoom in and the nearest become icons you can click. Positions are dead-reckoned between polls, altitude ×' + ALT_X + '. Satellites are violet. ' +
       'Satellites: CelesTrak elements, SGP4. Quakes: USGS, past 24 h. Terminator and city lights: computed for this second. ' +
-      'World tour: NASA EONET, Launch Library 2, Wikipedia, Open-Meteo, NOAA SWPC. The aurora follows the live Kp index. ' +
-      'Leave it alone for 45 s and a tour starts by itself.</p>' +
+      'World tour: NASA EONET, Launch Library 2, Wikipedia, Open-Meteo, NOAA SWPC. Each day gets a fresh edition; watch it once and replay it from the Daily button. ' +
+      'The aurora follows the live Kp index. Leave it alone for 45 s and today\'s tour starts by itself.</p>' +
       '<button class="ge-btn" data-act="help">Got it</button>' +
     '</div></div>';
   document.body.appendChild(root);
@@ -342,6 +342,7 @@ function build(){
 
   paintModeButtons();
   paintSoundButton();
+  paintTourButton();
 
   $("geExit").addEventListener("click", close);
   $("geDock").addEventListener("click", function(e){
@@ -534,6 +535,7 @@ function reveal(){
 }
 /* things asked for before the planet was ready: a tour, or overdrive */
 function afterOpen(){
+  paintTourButton();
   if (S.pendingParty){ S.pendingParty = false; startParty(); }
   if (S.pendingTour){ S.pendingTour = false; setTimeout(startTour, S.target ? 0 : 900); }
   if (S.pendingWorld){ S.pendingWorld = false; setTimeout(startWorld, 900); }
@@ -1930,15 +1932,16 @@ function radarClick(e){
 }
 
 /* =====================================================================
-   TOUR — one tour: the world's last 24 hours (see WORLD below). T, the
-   Tour button and the screensaver all start it.
+   TOUR — one daily edition: the world's last 24 hours (see WORLD below).
+   T, the Daily button and the screensaver all start it; it ends rather
+   than looping, and remembers when today's edition has been watched.
    ===================================================================== */
 function startTour(){ startWorld(); }
 function tourNext(){
   var T = S.tour; if (!T) return;
-  T.i = (T.i + 1) % T.steps.length;
-  if (T.i === 0 && T.steps._built) T.steps = worldSteps();      /* fresh data each lap */
-  T.steps._built = true;
+  /* the daily edition ends instead of looping; the final step gets its full time */
+  if (T.i >= T.steps.length - 1){ finishWorldTour(); return; }
+  T.i++;
   var s = T.steps[T.i];
   setAutoRotate(false);
   s.go();
@@ -1948,13 +1951,36 @@ function tourNext(){
   clearTimeout(T.timer);
   T.timer = setTimeout(tourNext, reduce ? s.ms + 2000 : s.ms);
 }
+function paintTourButton(){
+  var b = $("geTourBtn"); if (!b) return;
+  if (S.tour){
+    b.classList.add("on"); b.classList.remove("watched");
+    b.textContent = "■ Stop";
+    b.title = "Stop the daily world tour";
+    b.setAttribute("aria-pressed", "true");
+    return;
+  }
+  b.classList.remove("on");
+  var seen = watchedToday();
+  b.classList.toggle("watched", seen);
+  b.textContent = seen ? "↻ Daily" : "▶ Daily";
+  b.title = "Daily world tour · " + tourDayLabel() + (seen ? " · watched — click to replay (T)" : " · today's edition (T)");
+  b.setAttribute("aria-pressed", "false");
+}
+function finishWorldTour(){
+  if (!S.tour || !S.tour.world) return;
+  var day = S.tour.edition || localDayKey(new Date());
+  markWatched(day);
+  stopTour();
+  caption("Daily edition · complete", "That's today's edition. A new one lands tomorrow — the Daily button will replay this one.", true);
+  SND.ok();
+}
 function stopTour(){
   if (!S.tour) return;
   clearTimeout(S.tour.timer);
   var wasWorld = S.tour.world;
   S.tour = null;
-  $("geTourBtn").classList.remove("on");
-  $("geTourBtn").textContent = "▶ Tour";
+  useLiveEvents();
   S.root.classList.remove("touring-world");
   $("geDots").innerHTML = "";
   paintTimeline();
@@ -1962,6 +1988,7 @@ function stopTour(){
   renderDossier(true);            /* the card was hidden during the tour; show what's locked now */
   if (S.open && !S.party) caption("Paused", "Tour stopped — the planet's yours. Press T to start it again.");
   if (wasWorld) paintParticles();
+  paintTourButton();
 }
 
 /* =====================================================================
@@ -1986,6 +2013,69 @@ var EONET_KIND = { severeStorms:"storm", wildfires:"fire", volcanoes:"volcano", 
 var MAG_N = xyz(80.8, -72.8);                 /* geomagnetic north pole, 2025 */
 
 S.world = { events: [], byId: {}, kp: null, at: 0 };
+
+/* one edition per local day: the first time you watch it, the current
+   world snapshot is frozen; the rest of the day replays that edition. */
+var EDITION_KEY = "home.ge.tour.edition.v1";
+var WATCHED_KEY = "home.ge.tour.watched.v1";
+function localDayKey(d){
+  d = d || new Date();
+  return d.getFullYear() + "-" + pad(d.getMonth() + 1) + "-" + pad(d.getDate());
+}
+function localDayStart(){
+  var d = new Date(); d.setHours(0, 0, 0, 0); return d.getTime();
+}
+function tourDayLabel(d){
+  d = d || new Date();
+  return d.toLocaleDateString("en-GB", { weekday: "long", day: "numeric", month: "long" });
+}
+function tourDayShort(d){
+  d = d || new Date();
+  return d.toLocaleDateString("en-GB", { day: "numeric", month: "short" });
+}
+function readEdition(){
+  try{
+    var e = JSON.parse(LS.get(EDITION_KEY) || "null");
+    if (e && e.day && e.events && e.events.length) return e;
+  }catch(e){}
+  return null;
+}
+function writeEdition(ed){
+  try{ LS.set(EDITION_KEY, JSON.stringify(ed)); }catch(e){}
+}
+function watchedToday(){ return LS.get(WATCHED_KEY) === localDayKey(new Date()); }
+function markWatched(day){ LS.set(WATCHED_KEY, day || localDayKey(new Date())); }
+function editionForToday(make){
+  var day = localDayKey(new Date());
+  if (S.world.edition && S.world.edition.day === day) return S.world.edition;
+  var cached = readEdition();
+  if (cached && cached.day === day){ S.world.edition = cached; return cached; }
+  if (make !== false && S.world.at >= localDayStart() && S.world.events.length){
+    var ed = { day: day, at: Date.now(), events: S.world.events, fires: S.world.fires || 0 };
+    S.world.edition = ed;
+    writeEdition(ed);
+    return ed;
+  }
+  return null;
+}
+function useEditionEvents(ed){
+  if (!ed || S.world.live) return !!ed;
+  S.world.live = { events: S.world.events, byId: S.world.byId, fires: S.world.fires };
+  S.world.events = ed.events;
+  S.world.byId = {};
+  ed.events.forEach(function(e){ S.world.byId[e.id] = e; });
+  S.world.fires = ed.fires != null ? ed.fires : S.world.fires;
+  S.dirtyList = true; S.dirtyArcs = true; S.gCandAt = 0;
+  return true;
+}
+function useLiveEvents(){
+  if (!S.world.live) return;
+  S.world.events = S.world.live.events;
+  S.world.byId = S.world.live.byId;
+  S.world.fires = S.world.live.fires;
+  S.world.live = null;
+  S.dirtyList = true; S.dirtyArcs = true; S.gCandAt = 0;
+}
 
 function cacheGet(k, maxAge){
   try{ var c = JSON.parse(LS.get(k) || "null"); if (c && Date.now() - c.at < maxAge) return c.v; }catch(e){}
@@ -2023,7 +2113,10 @@ function srcEonet(){
 
 function srcLaunches(){
   var cached = cacheGet("home.ge.launch.v1", 3600e3);       /* LL2 allows 15 calls an hour; one is plenty */
-  if (cached) return Promise.resolve(cached);
+  if (cached){
+    var cseen = {};
+    return Promise.resolve(cached.filter(function(e){ if (cseen[e.id]) return false; cseen[e.id] = 1; return true; }));
+  }
   var now = Date.now(), base = "https://ll.thespacedevs.com/2.3.0/launches/";
   var past = getJSON(base + "previous/?limit=6&mode=normal&net__gte=" + new Date(now - DAY_MS).toISOString(), 12000);
   var next = getJSON(base + "upcoming/?limit=2&mode=normal&net__lte=" + new Date(now + DAY_MS).toISOString(), 12000);
@@ -2042,6 +2135,8 @@ function srcLaunches(){
   return Promise.all([past.catch(function(){ return { results: [] }; }), next.catch(function(){ return { results: [] }; })]).then(function(r){
     var list = (r[0].results || []).map(function(x){ return map(x, false); })
       .concat((r[1].results || []).map(function(x){ return map(x, true); })).filter(Boolean);
+    var seen = {};
+    list = list.filter(function(e){ if (seen[e.id]) return false; seen[e.id] = 1; return true; });
     if (list.length) cacheSet("home.ge.launch.v1", list);
     return list;
   });
@@ -2166,8 +2261,10 @@ function applyAurora(kp){
 }
 
 function loadWorld(){
+  if (S.tour && S.tour.world) return Promise.resolve("tour active");
   var jobs = [srcEonet(), srcLaunches(), srcWiki(), srcWeather(), srcSpace()].map(function(p){ return p.catch(function(){ return []; }); });
   return Promise.all(jobs).then(function(res){
+    if (S.tour && S.tour.world) return "tour active";
     var all = [].concat.apply([], res);
     var fires = all.filter(function(e){ return e.kind === "fire"; });
     var events = all.filter(function(e){ return e.kind !== "fire"; });
@@ -2190,6 +2287,7 @@ function loadWorld(){
     var counts = {};
     events.forEach(function(e){ counts[e.kind] = (counts[e.kind] || 0) + 1; });
     if (!events.length && !S.quakes.length){ S.world.at = Date.now(); throw new Error("no feeds answered"); }
+    paintTourButton();
     var bits = [];
     if (counts.storm) bits.push(counts.storm + " storm" + (counts.storm > 1 ? "s" : ""));
     if (fires.length) bits.push(fires.length + " fires");
@@ -2208,18 +2306,27 @@ function worldSteps(){
     steps.push({ k: EV_LABEL[e.kind], ev: e, t: text || (e.title + (e.body ? " — " + e.body : "")),
       go: function(){ select({ kind: "ev", id: e.id }, { fly: true, alt: e.alt || EV_ALT[e.kind] || 0.9 }); } });
   }
-  var n = E.length + S.quakes.length;
-  steps.push({ k: "The last 24 hours", t: "One day on planet Earth: " + n + " things worth seeing, from " + [
-      E.length ? "NASA" : null, S.quakes.length ? "the USGS" : null, of("launch", 1).length ? "the launch pads" : null, of("news", 1).length ? "the news" : null
-    ].filter(Boolean).join(", ") + ". Sit back.",
-    go: function(){ deselect(); flyTo({ lat: 20, lng: wrapLng(sun.lng - 30) }, 3.2, 3000); setTimeout(function(){ if (S.tour) setAutoRotate(true); }, 3100); }, ms: 7000 });
+  var q = S.quakes[0], news = of("news", 5);
+  var bits = [];
+  if (of("storm", 2).length) bits.push("storms");
+  if (of("volcano", 1).length) bits.push("volcanoes");
+  if (of("fire", 1).length) bits.push("wildfires");
+  if (of("ice", 1).concat(of("flood", 1), of("dust", 1)).slice(0, 2).length) bits.push("ice and floods");
+  if (of("launch", 3).length) bits.push("launches");
+  if (news.length) bits.push(news.length + " stor" + (news.length === 1 ? "y" : "ies"));
+  if (of("read", 2).length) bits.push("the most-read places");
+  if (of("hot", 1).concat(of("cold", 1), of("wind", 1)).length) bits.push("weather extremes");
+  if (of("aurora", 1).length) bits.push("aurora");
+  if (of("flare", 1).length) bits.push("a solar flare");
+  if (S.quakes.length) bits.push("quakes");
+  var top = news[0] || E.filter(function(e){ return e.kind !== "read"; })[0] || q;
+  var topName = top ? (top.title || top.place || "") : "";
   if (S.G && S.G.n > 100 && S.G.top.length){
     var fi = S.G.top[0], fx = S.G.hex[fi], kt = S.G.f[fi * GF + 3] * 1.943844;
     steps.push({ k: "Air traffic", t: fmt(S.G.n) + " aircraft are in the air right now — every dot is one. Fastest over the ground: " +
       (S.G.cs[fi] || fx.toUpperCase()) + " at " + fmt(kt) + " knots" + (kt > 560 ? ", riding the jet stream." : "."),
       go: function(){ select({ kind: "ac", id: fx }, { fly: true, alt: 0.45 }); } });
   }
-  var q = S.quakes[0];
   if (q) steps.push({ k: "Quake", t: "The Earth shook " + S.quakes.length + " times hard enough to count (M2.5+). The biggest: M" + q.mag.toFixed(1) + ", " + q.place + (q.time ? ", " + ago(q.time) : "") + ".",
     time: q.time, go: function(){ select({ kind: "quake", id: q.id }, { fly: true }); } });
   of("storm", 2).forEach(function(e){ ev(e, e.title + (e.mag ? ", winds " + Math.round(e.mag) + " " + (e.magUnit || "kts") : "") + ". The blue line is its path so far."); });
@@ -2229,12 +2336,21 @@ function worldSteps(){
     ev(e, e.title + " — " + { ice: "an iceberg NASA is tracking", flood: "flooding", dust: "a dust and haze event" }[e.kind] + ", last reported " + when(e.t) + ".");
   });
   of("launch", 3).forEach(function(e){
-    ev(e, e.upcoming
+    var next = e.upcoming && e.t > Date.now();
+    ev(e, next
       ? "Coming up: " + e.rocket + " is due to launch from " + (e.where || "the pad") + " in " + Math.max(1, Math.round((e.t - Date.now()) / 3600e3)) + " h — " + e.title + "."
       : e.rocket + " lifted off from " + (e.where || "the pad") + " " + ago(e.t) + ", carrying " + e.title + ".");
   });
-  of("news", 3).forEach(function(e){ ev(e, e.body); });
-  of("read", 1).forEach(function(e){ ev(e, "The place the world read about most on Wikipedia: " + e.title + ". " + clip(e.body, 140)); });
+  /* the day's news: a lead story, then the rest of the located reports */
+  if (news.length){
+    var lead = news[0];
+    steps.push({ k: "Lead story", ev: lead, t: "Today's lead: " + lead.title + ". " + lead.body,
+      go: function(){ select({ kind: "ev", id: lead.id }, { fly: true, alt: lead.alt || EV_ALT.news || 0.8 }); }, ms: 11500 });
+    news.slice(1).forEach(function(e){ ev(e, e.body); });
+  }
+  of("read", 2).forEach(function(e, i){
+    ev(e, (i ? "Second most-read" : "The place the world read about most") + " on Wikipedia: " + e.title + ". " + clip(e.body, 150));
+  });
   of("hot", 1).concat(of("cold", 1), of("wind", 1)).forEach(function(e){ ev(e, EV_LABEL[e.kind] + ": " + e.title + ", " + e.big + ". " + e.body); });
   of("aurora", 1).forEach(function(e){ ev(e); });
   of("flare", 1).forEach(function(e){ ev(e); });
@@ -2248,24 +2364,53 @@ function worldSteps(){
     go: function(){ deselect(); flyTo(mid, 1.3, 3400); } });
   steps.push({ k: "Sunrise", t: "And it's sunrise right here, right now. The line sweeps west at 1,670 km/h at the equator and never stops.",
     go: function(){ deselect(); flyTo({ lat: 0, lng: wrapLng(sun.lng - 90) }, 1.4, 3400); }, ms: 8000 });
-  steps.push({ k: "Home", t: "That was the last 24 hours. And this is you — press T to go round again.",
+  steps.push({ k: "Home", t: "That's today's edition — the next one lands tomorrow. The Daily button will replay this one.",
     go: function(){ select({ kind: "home" }, { fly: true, alt: 1.1 }); }, ms: 6500 });
   steps.forEach(function(s){
     if (!s.ms) s.ms = clamp(4800 + s.t.length * 32, 7000, 12500);
     if (s.time === undefined) s.time = s.ev ? s.ev.t : null;
     s.tl = s.time || (s.ev && s.ev.tl) || null;
   });
+  var total = steps.reduce(function(sum, s){ return sum + s.ms; }, 0);
+  var minutes = Math.max(1, Math.round((total + 9000) / 60000));
+  steps.unshift({
+    k: "Daily edition · " + tourDayShort(),
+    t: tourDayLabel() + ". Today's edition: " + (bits.length ? bits.join(", ") : "a quiet day") +
+      (topName ? ". Lead: " + clip(topName, 88) + "." : "") + " " + (steps.length + 1) + " stops, about " + minutes + " minutes. Sit back.",
+    go: function(){ deselect(); flyTo({ lat: 20, lng: wrapLng(sun.lng - 30) }, 3.2, 3000); setTimeout(function(){ if (S.tour) setAutoRotate(true); }, 3100); },
+    ms: 9000, time: null, tl: null
+  });
   return steps;
 }
 var EV_ALT = { storm: 0.9, fire: 0.7, volcano: 0.6, ice: 0.9, flood: 0.8, launch: 0.55, news: 0.8, read: 0.8, hot: 0.9, cold: 0.9, wind: 0.9 };
 
-function startWorld(){
+function startWorld(skipRefresh){
   if (!S.globe) return;
-  if (!S.world.at){ caption("24 h", "Still gathering the day's events — one moment.", true); loadWorld().then(startWorld, function(){}); return; }
+  if (S.tour) return;
+  if (!S.world.at){
+    caption("Daily edition", "Still gathering today's edition — one moment.", true);
+    loadWorld().then(startWorld, function(){ caption("Daily edition", "The feeds didn't answer — try again in a moment.", true); });
+    return;
+  }
+  if (S.world.at < localDayStart()){
+    caption("Daily edition", "Building today's edition — one moment.", true);
+    loadWorld().then(startWorld, function(){ caption("Daily edition", "The feeds didn't answer — try again in a moment.", true); });
+    return;
+  }
+  var ed = editionForToday(false);
+  if (!ed && skipRefresh !== true && Date.now() - S.world.at > 10 * 60000){
+    caption("Daily edition", "Catching up on today's stories — one moment.", true);
+    loadWorld().then(function(){ startWorld(true); }, function(){
+      caption("Daily edition", "Using the latest available data — one moment.", true);
+      startWorld(true);
+    });
+    return;
+  }
+  if (!ed) ed = editionForToday(true);
   stopTour();
-  S.tour = { steps: worldSteps(), i: -1, timer: 0, world: true };
-  $("geTourBtn").classList.add("on");
-  $("geTourBtn").textContent = "■ Stop";
+  useEditionEvents(ed);
+  S.tour = { steps: worldSteps(), i: -1, timer: 0, world: true, edition: ed ? ed.day : null };
+  paintTourButton();
   /* cinematic: panels and the lock card step aside, nearby planes hide */
   S.root.classList.add("touring-world");
   S.dirtyArcs = true; S.gCandAt = 0;
@@ -2452,8 +2597,9 @@ function frame(now){
     if (S.U) S.U.uSun.value = xyz(s.lat, s.lng);
     if (S.iss && Date.now() - (S.orbitAt || 0) > 60000){ S.orbitAt = Date.now(); buildOrbitPath(); paintPaths(); }
     keepRingShader();
-    /* screensaver: leave it alone for 45 s and it starts showing off */
-    if (!S.tour && !S.booting && !S.fly && Date.now() - S.lastInput > 45000 && $("geHelp").hidden){
+    paintTourButton();
+    /* screensaver: leave it alone for 45 s and it starts showing off — once a day */
+    if (!S.tour && !S.booting && !S.fly && !watchedToday() && Date.now() - S.lastInput > 45000 && $("geHelp").hidden){
       startWorld();
     }
   }
