@@ -1,12 +1,12 @@
 {
   "version": 2,
-  "updated_at": "2026-11-01T06:00:09+00:00",
+  "updated_at": "2026-11-02T06:15:03+00:00",
   "items": [
     {
       "id": "3addcc24b497faf6",
       "topic": "Manchester United · all competitions",
       "summary": "",
-      "updated_at": "2026-11-01T06:00:09+00:00",
+      "updated_at": "2026-11-02T06:15:03+00:00",
       "status": "provider-data",
       "sources": [
         {
@@ -97,9 +97,9 @@
     },
     {
       "id": "359bde922ce0d9f2",
-      "topic": "LoL · 2026-10-31 to 2026-11-08 (UTC window)",
+      "topic": "LoL · 2026-11-01 to 2026-11-09 (UTC window)",
       "summary": "",
-      "updated_at": "2026-11-01T06:00:09+00:00",
+      "updated_at": "2026-11-02T06:15:03+00:00",
       "status": "provider-data",
       "sources": [
         {
@@ -173,39 +173,6 @@
           "source_url": "https://api.pandascore.co/matches/1711020",
           "starts_at": "2026-11-08T22:00:00Z",
           "completed": false
-        },
-        {
-          "id": "1711009",
-          "title": "Karmine Corp vs Movistar KOI",
-          "when": "Sat 31 Oct 2026 17:11 GMT",
-          "status": "finished",
-          "detail": "Karmine Corp 2 — 0 Movistar KOI",
-          "competition": "Worlds",
-          "source_url": "https://api.pandascore.co/matches/1711009",
-          "starts_at": "2026-10-31T17:11:47Z",
-          "completed": true
-        },
-        {
-          "id": "1711008",
-          "title": "LOS vs LYON",
-          "when": "Sat 31 Oct 2026 19:01 GMT",
-          "status": "finished",
-          "detail": "LOS 1 — 2 LYON",
-          "competition": "Worlds",
-          "source_url": "https://api.pandascore.co/matches/1711008",
-          "starts_at": "2026-10-31T19:01:30Z",
-          "completed": true
-        },
-        {
-          "id": "1711010",
-          "title": "Hanwha Life Esports vs Bilibili Gaming",
-          "when": "Sat 31 Oct 2026 22:04 GMT",
-          "status": "finished",
-          "detail": "Hanwha Life Esports 0 — 2 Bilibili Gaming",
-          "competition": "Worlds",
-          "source_url": "https://api.pandascore.co/matches/1711010",
-          "starts_at": "2026-10-31T22:04:40Z",
-          "completed": true
         }
       ]
     },
@@ -213,7 +180,7 @@
       "id": "385c7d7fbe7d8716",
       "topic": "Formula 1 · schedule and classification",
       "summary": "",
-      "updated_at": "2026-11-01T06:00:09+00:00",
+      "updated_at": "2026-11-02T06:15:03+00:00",
       "status": "provider-data",
       "sources": [
         {
@@ -223,21 +190,21 @@
       ],
       "facts": [
         {
-          "id": "next-2026-19",
-          "title": "Mexico City Grand Prix",
-          "when": "Sun 01 Nov 2026 20:00 GMT",
+          "id": "next-2026-20",
+          "title": "Brazilian Grand Prix",
+          "when": "Sun 08 Nov 2026 17:00 GMT",
           "status": "Next race in provider schedule",
-          "detail": "Autódromo Hermanos Rodríguez",
-          "competition": "Formula 1 · round 19",
+          "detail": "Autódromo José Carlos Pace",
+          "competition": "Formula 1 · round 20",
           "source_url": "https://api.jolpi.ca/ergast/f1/current/next.json"
         },
         {
-          "id": "last-2026-18",
-          "title": "United States Grand Prix",
-          "when": "2026-10-25",
+          "id": "last-2026-19",
+          "title": "Mexico City Grand Prix",
+          "when": "2026-11-01",
           "status": "Latest published race result · top five",
-          "detail": "1. Andrea Kimi Antonelli · Mercedes · 25 points · Finished\n2. Charles Leclerc · Ferrari · 18 points · Finished\n3. Max Verstappen · Red Bull · 15 points · Finished\n4. Lewis Hamilton · Ferrari · 12 points · Finished\n5. Lando Norris · McLaren · 10 points · Finished",
-          "competition": "Formula 1 · round 18",
+          "detail": "1. Max Verstappen · Red Bull · 25 points · Finished\n2. Lewis Hamilton · Ferrari · 18 points · Finished\n3. Andrea Kimi Antonelli · Mercedes · 15 points · Finished\n4. Charles Leclerc · Ferrari · 12 points · Finished\n5. Lando Norris · McLaren · 10 points · Finished",
+          "competition": "Formula 1 · round 19",
           "source_url": "https://api.jolpi.ca/ergast/f1/current/last/results.json"
         }
       ]
@@ -246,7 +213,7 @@
       "id": "b08bc42d1737ca5e",
       "topic": "Wales men · international football",
       "summary": "",
-      "updated_at": "2026-11-01T06:00:09+00:00",
+      "updated_at": "2026-11-02T06:15:03+00:00",
       "status": "provider-data",
       "sources": [
         {
@@ -324,30 +291,10 @@
     }
   ],
   "today": {
-    "date": "2026-11-01",
-    "updated_at": "2026-11-01T06:00:09+00:00",
+    "date": "2026-11-02",
+    "updated_at": "2026-11-02T06:15:03+00:00",
     "timezone": "Europe/London",
-    "items": [
-      {
-        "id": "f1-next-2026-19",
-        "group": "f1",
-        "title": "Mexico City Grand Prix",
-        "competition": "Formula 1 · round 19",
-        "starts_at": "2026-11-01T20:00:00Z",
-        "when": "Sun 01 Nov 2026 20:00 GMT",
-        "status": "Next race in provider schedule",
-        "detail": "Autódromo Hermanos Rodríguez",
-        "viewing": [],
-        "viewing_status": "UK broadcaster not confirmed",
-        "sources": [
-          {
-            "title": "Jolpica F1 data",
-            "url": "https://api.jolpi.ca/ergast/f1/current/next.json"
-          }
-        ],
-        "updated_at": "2026-11-01T06:00:09+00:00"
-      }
-    ],
+    "items": [],
     "coverage": [
       {
         "group": "manutd",
@@ -362,7 +309,7 @@
       {
         "group": "f1",
         "status": "checked",
-        "matches": 1
+        "matches": 0
       },
       {
         "group": "wales",
