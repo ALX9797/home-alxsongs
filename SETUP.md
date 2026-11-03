@@ -416,17 +416,18 @@ Lives in `godseye/` and loads nothing heavy until it's opened.
   polls so they move smoothly, with arcs from each flight's origin to its real
   destination (adsbdb).
 - **Worldwide traffic** — every airborne aircraft on Earth (~10,000) from the
-  [OpenSky Network](https://opensky-network.org), fetched by the visitor's own
-  browser: blue dots, brighter at cruise altitude, amber for heavy jets. Zoom in
+  [OpenSky Network](https://opensky-network.org), proxied by the music-mbp home
+  server: blue dots, brighter at cruise altitude, amber for heavy jets. Zoom in
   and the nearest ~120 turn into clickable icons; lock one anywhere and it looks
   up the route (arc to its destination), airframe and photo. The 3–4 MB answer
   is parsed on a background thread and drawn as a few particle clouds updated in
-  place, so it stays smooth. Anonymous OpenSky allows ~100 worldwide requests a
-  day per visitor; Godseye polls every 2 minutes while open (and dead-reckons in
-  between), and backs off for 15 minutes if refused. Set `GODSEYE_GLOBAL_URL` in
-  `config.js` to use another source in the same format, or `""` to turn it off.
-  If this layer never appears, OpenSky is refusing browser requests — the fix
-  would be a `/global` route on the Worker.
+  place, so it stays smooth. OpenSky refuses direct browser and datacenter
+  requests, so the home server fetches it over its residential connection and
+  caches the result for 5 minutes. `GODSEYE_GLOBAL_URL` in `config.js` points at
+  that `/global` route (exposed through Tailscale Funnel); set it to another
+  source in the same format, or `""` to turn it off. If this layer never
+  appears, check `https://music-mbp.tailee7d0d.ts.net:8443/global/health` and
+  the `opensky-proxy` container on music-mbp.
 - **Orbit** — ~150 naked-eye satellites from CelesTrak (cached 6 h), propagated
   with SGP4; the ISS gets its orbit drawn and the time of its **next pass over
   you**. If CelesTrak is unreachable it falls back to the ISS alone
